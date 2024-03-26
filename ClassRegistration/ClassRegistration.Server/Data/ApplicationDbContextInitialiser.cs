@@ -61,7 +61,7 @@ namespace ClassRegistration.Server.Data
             }
 
             var studentRole = new IdentityRole("Student");
-            if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
+            if (_roleManager.Roles.All(r => r.Name != studentRole.Name))
             {
                 var role = await _roleManager.CreateAsync(studentRole);
                 if (role != null)
@@ -77,7 +77,7 @@ namespace ClassRegistration.Server.Data
             var admin = new ApplicationUser { UserName = "admin", Email = "admin" };
             if (_userManager.Users.All(u => u.UserName != admin.UserName))
             {
-                await _userManager.CreateAsync(admin, "UnifiedAppAdmin1!");
+                await _userManager.CreateAsync(admin, "Admin@123");
                 if (!string.IsNullOrWhiteSpace(adminRole.Name))
                 {
                     await _userManager.AddToRolesAsync(admin, new[] { adminRole.Name });
