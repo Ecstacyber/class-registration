@@ -83,6 +83,16 @@ namespace ClassRegistration.Server.Data
                     await _userManager.AddToRolesAsync(admin, new[] { adminRole.Name });
                 }
             }
+
+            var student = new ApplicationUser { UserName = "student", Email = "student" };
+            if (_userManager.Users.All(u => u.UserName != student.UserName))
+            {
+                await _userManager.CreateAsync(student, "Student@123");
+                if (!string.IsNullOrWhiteSpace(studentRole.Name))
+                {
+                    await _userManager.AddToRolesAsync(student, new[] { studentRole.Name });
+                }
+            }
         }
     }
 }
