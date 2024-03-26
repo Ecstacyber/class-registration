@@ -43,11 +43,11 @@ namespace ClassRegistration.Server.Data
                 throw;
             }
         }
+
         public async Task TrySeedAsync()
         {
             // Default roles
             var adminRole = new IdentityRole("Admin");
-
             if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
             {
                 var role = await _roleManager.CreateAsync(adminRole);
@@ -60,9 +60,21 @@ namespace ClassRegistration.Server.Data
                 }
             }
 
+            var studentRole = new IdentityRole("Student");
+            if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
+            {
+                var role = await _roleManager.CreateAsync(studentRole);
+                if (role != null)
+                {
+                    await _roleManager.AddClaimAsync(studentRole, new Claim("RoleClaim", "HasRoleView"));
+                    await _roleManager.AddClaimAsync(studentRole, new Claim("RoleClaim", "HasRoleAdd"));
+                    await _roleManager.AddClaimAsync(studentRole, new Claim("RoleClaim", "HasRoleEdit"));
+                    await _roleManager.AddClaimAsync(studentRole, new Claim("RoleClaim", "HasRoleDelete"));
+                }
+            }
+
             // Default users
             var admin = new ApplicationUser { UserName = "admin", Email = "admin" };
-
             if (_userManager.Users.All(u => u.UserName != admin.UserName))
             {
                 await _userManager.CreateAsync(admin, "UnifiedAppAdmin1!");

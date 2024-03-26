@@ -8,7 +8,7 @@ namespace ClassRegistration.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +22,12 @@ namespace ClassRegistration.Server
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddAuthorization();
-            builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddRoles<IdentityRole>().AddSignInManager().AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped<ApplicationDbContextInitialiser>();
             
             var app = builder.Build();
 
@@ -56,6 +58,10 @@ namespace ClassRegistration.Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
+                using var scope = app.Services.CreateScope();
+                var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+                await initialiser.InitialiseAsync();
+                await initialiser.SeedAsync();
             }
 
             app.UseHttpsRedirection();

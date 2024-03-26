@@ -4,23 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClassRegistration.Server.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            builder.Entity<ApplicationUser>(entity =>
-            {
-                entity.Property(e => e.UserType).HasColumnName("UserType");
-            });
         }
     }
 }
