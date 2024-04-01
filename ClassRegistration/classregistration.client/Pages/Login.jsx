@@ -3,27 +3,23 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
     // state variables for email and passwords
-    const [email, setEmail] = useState < string > ("");
-    const [password, setPassword] = useState < string > ("");
-    const [rememberme, setRememberme] = useState < boolean > (false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [rememberme, setRememberme] = useState(false);
     // state variable for error messages
-    const [error, setError] = useState < string > ("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     // handle change events for input fields
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === "email") setEmail(value);
         if (name === "password") setPassword(value);
         if (name === "rememberme") setRememberme(e.target.checked);
     };
 
-    const handleRegisterClick = () => {
-        navigate("/register");
-    }
-
     // handle submit event for the form
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         // validate email and passwords
         if (!email || !password) {
@@ -48,24 +44,20 @@ function Login() {
                     email: email,
                     password: password,
                 }),
-            })
-
-                .then((data) => {
-                    // handle success or error from the server
-                    console.log(data);
-                    if (data.ok) {
-                        setError("Successful Login.");
-                        window.location.href = '/';
-                    }
-                    else
-                        setError("Error Logging In.");
-
-                })
-                .catch((error) => {
-                    // handle network error
-                    console.error(error);
-                    setError("Error Logging in.");
-                });
+            }).then((data) => {
+                // handle success or error from the server
+                console.log(data);
+                if (data.ok) {
+                    setError("Successful Login.");
+                    window.location.href = '/';
+                }
+                else
+                    setError("Error Logging In.");
+            }).catch((error) => {
+                // handle network error
+                console.error(error);
+                setError("Error Logging in.");
+            });
         }
     };
 
@@ -107,9 +99,6 @@ function Login() {
                 </div>
                 <div>
                     <button type="submit">Login</button>
-                </div>
-                <div>
-                    <button onClick={handleRegisterClick}>Register</button>
                 </div>
             </form>
             {error && <p className="error">{error}</p>}

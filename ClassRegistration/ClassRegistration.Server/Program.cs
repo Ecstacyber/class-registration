@@ -20,12 +20,13 @@ namespace ClassRegistration.Server
             });
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();           
+            builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddAuthorization();
-            builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddRoles<IdentityRole>().AddSignInManager().AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddAuthentication();
 
             builder.Services.AddScoped<ApplicationDbContextInitialiser>();
             
@@ -38,12 +39,9 @@ namespace ClassRegistration.Server
 
             app.MapPost("/logout", async (SignInManager<ApplicationUser> signInManager) =>
             {
-
                 await signInManager.SignOutAsync();
                 return Results.Ok();
-
             }).RequireAuthorization();
-
 
             app.MapGet("/pingauth", (ClaimsPrincipal user) =>
             {
@@ -65,14 +63,10 @@ namespace ClassRegistration.Server
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.MapFallbackToFile("/index.html");
-
             app.Run();
         }
     }

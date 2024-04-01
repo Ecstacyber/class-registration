@@ -74,7 +74,7 @@ namespace ClassRegistration.Server.Data
             }
 
             // Default users
-            var admin = new ApplicationUser { UserName = "admin", Email = "admin" };
+            var admin = new ApplicationUser { UserName = "admin", Email = "admin@gmail.com" };
             if (_userManager.Users.All(u => u.UserName != admin.UserName))
             {
                 await _userManager.CreateAsync(admin, "Admin@123");
@@ -84,7 +84,7 @@ namespace ClassRegistration.Server.Data
                 }
             }
 
-            var student = new ApplicationUser { UserName = "student", Email = "student" };
+            var student = new ApplicationUser { UserName = "student", Email = "student@gmail.com" };
             if (_userManager.Users.All(u => u.UserName != student.UserName))
             {
                 await _userManager.CreateAsync(student, "Student@123");
