@@ -63,6 +63,10 @@ export default defineConfig({
                 target,
                 secure: false
             },
+            '^/pingauth': {
+                target,
+                secure: false
+            }
         },
         port: 5173,
         https: {

@@ -20,9 +20,9 @@ namespace ClassRegistration.Server
             });
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();           
+            builder.Services.AddAuthorization();             
             builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddAuthorization();
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -63,7 +63,6 @@ namespace ClassRegistration.Server
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
