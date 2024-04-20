@@ -4,6 +4,7 @@ using ClassRegistration.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassRegistration.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240420190653_Add-UserClass-TuitionFee-Semester")]
+    partial class AddUserClassTuitionFeeSemester
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,7 +261,10 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<int>("ApplicationUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("Created")
@@ -281,7 +287,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("ApplicationUserId1");
 
                     b.HasIndex("SemesterId");
 
@@ -590,7 +596,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                 {
                     b.HasOne("ClassRegistration.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("TuitionFee")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("ApplicationUserId1");
 
                     b.HasOne("ClassRegistration.Domain.Entities.Semester", "Semester")
                         .WithMany("TuitionFees")
