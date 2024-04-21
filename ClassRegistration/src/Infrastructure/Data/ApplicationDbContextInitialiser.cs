@@ -67,6 +67,19 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
+        // Default departments
+        var department = new Department
+        {
+            ShortName = "Admin",
+            FullName = "Administrator",
+            Description = "Default department for development, testing",
+        };
+        if (!_context.Departments.Any(x => x.ShortName == department.ShortName))
+        {
+            await _context.Departments.AddAsync(department);
+            await _context.SaveChangesAsync();
+        }
+        
         // Default roles
         var administratorRole = new IdentityRole(Roles.Administrator);
 
@@ -76,7 +89,7 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Department = department, DepartmentId = department.Id };
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {

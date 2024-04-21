@@ -17,6 +17,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Class> Classes => Set<Class>();
     public DbSet<UserClass> UserClasses => Set<UserClass>();
+    public DbSet<Semester> Semesters => Set<Semester>();
+    public DbSet<TuitionFee> TuitionFees => Set<TuitionFee>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

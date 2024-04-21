@@ -125,3 +125,21 @@ DELETE {{Web_HostAddress}}/api/TodoItems/1
 Cookie: {{AuthCookieName}}={{AuthCookieValue}}
 
 ###
+
+# POST CreateDepartment
+POST {{Web_HostAddress}}/api/Departments
+Cookie: {{AuthCookieName}}={{AuthCookieValue}}
+Content-Type: application/json
+
+// CreateDepartmentCommand
+{
+  "ShortName": "CNPM",
+  "LongName": "Công nghệ phần mềm",
+  "Description": ""
+}
+
+###
+
+# Get Department
+GET {{Web_HostAddress}}/api/Departments
+Cookie: {{AuthCookieName}}={{AuthCookieValue}}
