@@ -101,6 +101,78 @@ export class DepartmentsClient {
         }
         return Promise.resolve<number>(null as any);
     }
+
+    deleteDepartment(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Departments/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteDepartment(_response);
+        });
+    }
+
+    protected processDeleteDepartment(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    updateDeparment(id: number, command: UpdateDepartmentCommand): Promise<void> {
+        let url_ = this.baseUrl + "/api/Departments/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateDeparment(_response);
+        });
+    }
+
+    protected processUpdateDeparment(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class TodoItemsClient {
@@ -609,6 +681,54 @@ export class CreateDepartmentCommand implements ICreateDepartmentCommand {
 }
 
 export interface ICreateDepartmentCommand {
+    shortName?: string | undefined;
+    fullName?: string | undefined;
+    description?: string | undefined;
+}
+
+export class UpdateDepartmentCommand implements IUpdateDepartmentCommand {
+    id?: number;
+    shortName?: string | undefined;
+    fullName?: string | undefined;
+    description?: string | undefined;
+
+    constructor(data?: IUpdateDepartmentCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.shortName = _data["shortName"];
+            this.fullName = _data["fullName"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): UpdateDepartmentCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateDepartmentCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["shortName"] = this.shortName;
+        data["fullName"] = this.fullName;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IUpdateDepartmentCommand {
+    id?: number;
     shortName?: string | undefined;
     fullName?: string | undefined;
     description?: string | undefined;

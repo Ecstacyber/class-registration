@@ -68,35 +68,61 @@ public class ApplicationDbContextInitialiser
     public async Task TrySeedAsync()
     {
         // Default departments
-        var department = new Department
+        var adminDepartment = new Department
         {
-            ShortName = "Admin",
+            ShortName = "ADMIN",
             FullName = "Administrator",
-            Description = "Default department for development, testing",
+            Description = "Default administrator department for development, testing",
         };
-        if (!_context.Departments.Any(x => x.ShortName == department.ShortName))
+        if (!_context.Departments.Any(x => x.ShortName == adminDepartment.ShortName))
         {
-            await _context.Departments.AddAsync(department);
+            await _context.Departments.AddAsync(adminDepartment);
             await _context.SaveChangesAsync();
         }
-        
+
+        var studentDepartment = new Department
+        {
+            ShortName = "STUDENT",
+            FullName = "Student",
+            Description = "Default student department for development, testing",
+        };
+        if (!_context.Departments.Any(x => x.ShortName == studentDepartment.ShortName))
+        {
+            await _context.Departments.AddAsync(studentDepartment);
+            await _context.SaveChangesAsync();
+        }
+
         // Default roles
         var administratorRole = new IdentityRole(Roles.Administrator);
-
         if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
         {
             await _roleManager.CreateAsync(administratorRole);
         }
 
-        // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Department = department, DepartmentId = department.Id };
+        var studentRole = new IdentityRole(Roles.Student);
+        if (_roleManager.Roles.All(r => r.Name != studentRole.Name))
+        {
+            await _roleManager.CreateAsync(studentRole);
+        }
 
+        // Default users
+        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
+            await _userManager.CreateAsync(administrator, "Administrator@1");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
             {
                 await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+            }
+        }
+
+        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        if (_userManager.Users.All(u => u.UserName != student.UserName))
+        {
+            await _userManager.CreateAsync(student, "Student@1");
+            if (!string.IsNullOrWhiteSpace(studentRole.Name))
+            {
+                await _userManager.AddToRolesAsync(student, new[] { studentRole.Name });
             }
         }
 

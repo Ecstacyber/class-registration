@@ -1,6 +1,7 @@
 ﻿using ClassRegistration.Application.Departments.Commands.CreateDepartment;
+using ClassRegistration.Application.Departments.Commands.DeleteDepartment;
+using ClassRegistration.Application.Departments.Commands.UpdateDepartment;
 using ClassRegistration.Application.Departments.Queries.GetDepartments;
-using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Web.Endpoints;
 
@@ -11,7 +12,9 @@ public class Departments : EndpointGroupBase
         app.MapGroup(this)
             .RequireAuthorization()
             .MapGet(GetDepartments)
-            .MapPost(CreateDepartment);
+            .MapPost(CreateDepartment)
+            .MapDelete(DeleteDepartment, "{id}")
+            .MapPut(UpdateDeparment, "{id}");
     }
 
     public Task<IEnumerable<DepartmentDto>> GetDepartments(ISender sender, [AsParameters] GetDepartmentsQuery query)
@@ -22,5 +25,18 @@ public class Departments : EndpointGroupBase
     public Task<int> CreateDepartment(ISender sender, CreateDepartmentCommand command)
     {
         return sender.Send(command);
+    }
+
+    public async Task<IResult> DeleteDepartment(ISender sender, int id)
+    {
+        await sender.Send(new DeleteDepartmentCommand(id));
+        return Results.NoContent();
+    }
+
+    public async Task<IResult> UpdateDeparment(ISender sender, int id, UpdateDepartmentCommand command)
+    {
+        if (id != command.Id) return Results.BadRequest();
+        await sender.Send(command);
+        return Results.NoContent();
     }
 }
