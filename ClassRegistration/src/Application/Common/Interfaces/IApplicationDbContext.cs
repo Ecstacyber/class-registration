@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Semester> Semesters { get; }
     DbSet<TuitionFee> TuitionFees { get; }
     DbSet<UserClass> UserClasses { get; }
+    DbSet<PrerequisiteCourse> PrerequisiteCourses { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

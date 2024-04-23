@@ -19,10 +19,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<UserClass> UserClasses => Set<UserClass>();
     public DbSet<Semester> Semesters => Set<Semester>();
     public DbSet<TuitionFee> TuitionFees => Set<TuitionFee>();
+    public DbSet<PrerequisiteCourse> PrerequisiteCourses => Set<PrerequisiteCourse>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        builder.Entity<PrerequisiteCourse>(entity =>
+        {
+            entity.HasOne(x => x.Course)
+                .WithMany(x => x.Current)
+                .HasForeignKey(x => x.CourseId)
+                .HasConstraintName("FK_PrerequisiteCourse_CourseId");
+
+            entity.HasOne(x => x.Prerequisite)
+                .WithMany(x => x.Prerequisites)
+                .HasForeignKey(x => x.PrerequisiteCourseId)
+                .HasConstraintName("FK_PrerequisiteCourse_PrerequisiteCourseId");
+        });
     }
 }

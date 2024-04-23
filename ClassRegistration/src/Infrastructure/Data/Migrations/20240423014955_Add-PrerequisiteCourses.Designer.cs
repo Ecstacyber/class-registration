@@ -4,6 +4,7 @@ using ClassRegistration.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassRegistration.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240423014955_Add-PrerequisiteCourses")]
+    partial class AddPrerequisiteCourses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,7 +153,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CourseId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("Created")
@@ -165,7 +168,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PrerequisiteCourseId")
+                    b.Property<int>("PrerequisiteCourseId")
                         .HasColumnType("int");
 
                     b.Property<bool>("RequirePassed")
@@ -384,7 +387,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -606,13 +609,15 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.HasOne("ClassRegistration.Domain.Entities.Course", "Course")
                         .WithMany("Current")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_PrerequisiteCourse_CourseId");
 
                     b.HasOne("ClassRegistration.Domain.Entities.Course", "Prerequisite")
                         .WithMany("Prerequisites")
                         .HasForeignKey("PrerequisiteCourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_PrerequisiteCourse_PrerequisiteCourseId");
 
                     b.Navigation("Course");
@@ -696,7 +701,9 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                 {
                     b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Department");
                 });
