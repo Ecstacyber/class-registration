@@ -78,4 +78,18 @@ public class IdentityService : IIdentityService
 
         return result.ToApplicationResult();
     }
+
+    public async Task<IEnumerable<IUser>> GetUserListAsync()
+    {
+        return await _userManager.Users
+            .Select(x => new User
+            {
+                Id = x.Id,
+                DepartmentId = x.DepartmentId,
+                Email = x.Email,
+                UserName = x.UserName,
+                Roles = _userManager.GetRolesAsync(x).GetAwaiter().GetResult().ToList()
+            })
+            .ToListAsync();
+    }
 }
