@@ -1200,6 +1200,9 @@ export interface IClassDto {
 export class CreateClassCommand implements ICreateClassCommand {
     courseId?: number;
     classCode?: string | undefined;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
     fee?: string | undefined;
     credit?: number;
 
@@ -1216,6 +1219,9 @@ export class CreateClassCommand implements ICreateClassCommand {
         if (_data) {
             this.courseId = _data["courseId"];
             this.classCode = _data["classCode"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
             this.fee = _data["fee"];
             this.credit = _data["credit"];
         }
@@ -1232,6 +1238,9 @@ export class CreateClassCommand implements ICreateClassCommand {
         data = typeof data === 'object' ? data : {};
         data["courseId"] = this.courseId;
         data["classCode"] = this.classCode;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
         data["fee"] = this.fee;
         data["credit"] = this.credit;
         return data;
@@ -1241,6 +1250,9 @@ export class CreateClassCommand implements ICreateClassCommand {
 export interface ICreateClassCommand {
     courseId?: number;
     classCode?: string | undefined;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
     fee?: string | undefined;
     credit?: number;
 }
@@ -1249,6 +1261,9 @@ export class UpdateClassCommand implements IUpdateClassCommand {
     id?: number;
     courseId?: number;
     classCode?: string | undefined;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
     fee?: string | undefined;
     credit?: number;
 
@@ -1266,6 +1281,9 @@ export class UpdateClassCommand implements IUpdateClassCommand {
             this.id = _data["id"];
             this.courseId = _data["courseId"];
             this.classCode = _data["classCode"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
             this.fee = _data["fee"];
             this.credit = _data["credit"];
         }
@@ -1283,6 +1301,9 @@ export class UpdateClassCommand implements IUpdateClassCommand {
         data["id"] = this.id;
         data["courseId"] = this.courseId;
         data["classCode"] = this.classCode;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
         data["fee"] = this.fee;
         data["credit"] = this.credit;
         return data;
@@ -1293,6 +1314,9 @@ export interface IUpdateClassCommand {
     id?: number;
     courseId?: number;
     classCode?: string | undefined;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
     fee?: string | undefined;
     credit?: number;
 }

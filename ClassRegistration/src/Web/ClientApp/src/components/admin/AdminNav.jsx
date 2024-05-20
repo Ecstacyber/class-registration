@@ -1,9 +1,10 @@
 ﻿import React from 'react'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import { CNavItem, CNavTitle } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
     cilHouse,
-    cilNewspaper
+    cilNewspaper,
+    cilSchool
 } from '@coreui/icons'
 
 const AdminNav = [
@@ -19,9 +20,15 @@ const AdminNav = [
     },
     {
         component: CNavItem,
-        name: 'Khoa học',
+        name: 'Khoa',
         to: '/admin-index/department',
         icon: <CIcon icon={cilNewspaper} customClassName="nav-icon" />
+    },
+    {
+        component: CNavItem,
+        name: 'Môn học',
+        to: '/admin-index/course',
+        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />
     }
 ]
 

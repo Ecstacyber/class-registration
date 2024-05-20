@@ -2,7 +2,8 @@ import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { AdminIndex } from "./components/admin/AdminIndex";
-import { Department } from "./components/admin/Department";
+import { Department } from "./components/admin/department/Department";
+import { Course } from "./components/admin/course/Course";
 import { StudentIndex } from "./components/student/StudentIndex";
 
 const AppRoutes = [
@@ -32,6 +33,11 @@ const AppRoutes = [
     path: '/admin-index/department',
     name: 'Department',
     element: <Department />
+  },
+  {
+    path: '/admin-index/course',
+    name: 'Course',
+    element: <Course />
   }
 ];
 
