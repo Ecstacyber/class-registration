@@ -7,6 +7,9 @@ public record UpdateClassCommand : IRequest
     public int Id { get; init; }
     public int CourseId { get; init; }
     public string? ClassCode { get; init; }
+    public int DayOfWeek { get; init; }
+    public int StartPeriod { get; init; }
+    public int EndPeriod { get; init; }
     public string? Fee { get; init; }
     public int Credit { get; init; }
 }
@@ -53,6 +56,9 @@ public class UpdateClassCommandHandler : IRequestHandler<UpdateClassCommand>
         entity.CourseId = request.Id;
         entity.ClassCode = request.ClassCode;
         entity.Fee = request.Fee;
+        entity.DayOfWeek = request.DayOfWeek;
+        entity.StartPeriod = request.StartPeriod;
+        entity.EndPeriod = request.EndPeriod;
         entity.Credit = request.Credit;
 
         await _context.SaveChangesAsync(cancellationToken);

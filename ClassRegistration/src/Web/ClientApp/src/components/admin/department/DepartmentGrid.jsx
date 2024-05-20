@@ -171,7 +171,6 @@ export class DepartmentGrid extends React.Component {
                         enableHeaderFocus={true}
                         dataStateChange={this.dataStateChange.bind(this)}
                         dataSourceChanged={this.dataSourceChanged.bind(this)}
-                        actionComplete={this.onActionComplete.bind(this)}
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='50'></ColumnDirective>

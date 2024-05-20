@@ -900,6 +900,18 @@
             "type": "string",
             "nullable": true
           },
+          "dayOfWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "endPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
           "fee": {
             "type": "string",
             "nullable": true
@@ -925,6 +937,18 @@
           "classCode": {
             "type": "string",
             "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "endPeriod": {
+            "type": "integer",
+            "format": "int32"
           },
           "fee": {
             "type": "string",

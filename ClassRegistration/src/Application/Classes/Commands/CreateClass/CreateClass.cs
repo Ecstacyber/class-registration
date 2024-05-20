@@ -7,6 +7,9 @@ public record CreateClassCommand : IRequest<int>
 {
     public int CourseId { get; init; }
     public string? ClassCode { get; init; }
+    public int DayOfWeek { get; init; }
+    public int StartPeriod { get; init; }
+    public int EndPeriod { get; init; }
     public string? Fee { get; init; }
     public int Credit { get; init; }
 }
@@ -52,6 +55,9 @@ public class CreateClassCommandHandler : IRequestHandler<CreateClassCommand, int
             CourseId = request.CourseId,
             ClassCode = request.ClassCode,
             Fee = request.Fee,
+            DayOfWeek = request.DayOfWeek,
+            StartPeriod = request.StartPeriod,
+            EndPeriod = request.EndPeriod,
             Credit = request.Credit
         };
         _context.Classes.Add(entity);
