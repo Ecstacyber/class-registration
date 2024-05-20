@@ -17,7 +17,7 @@ public class Departments : EndpointGroupBase
             .MapPut(UpdateDeparment, "{id}");
     }
 
-    public Task<IEnumerable<DepartmentDto>> GetDepartments(ISender sender, [AsParameters] GetDepartmentsQuery query)
+    public Task<DepartmentDto> GetDepartments(ISender sender, [AsParameters] GetDepartmentsQuery query)
     {
         return sender.Send(query);
     }

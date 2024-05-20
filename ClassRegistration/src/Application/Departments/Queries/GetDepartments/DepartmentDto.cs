@@ -4,15 +4,7 @@ namespace ClassRegistration.Application.Departments.Queries.GetDepartments;
 
 public class DepartmentDto
 {
-    public int Id { get; set; }
-    public string? ShortName { get; set; }
-    public string? FullName { get; set; }
-    public string? Description { get; set; }
-    private class Mapping : Profile
-    {
-        public Mapping()
-        {
-            CreateMap<Department, DepartmentDto>();
-        }
-    }
+    public IReadOnlyCollection<Result> Result { get; init; } = Array.Empty<Result>();
+    public IReadOnlyCollection<Items> Items { get; init; } = Array.Empty<Items>();
+    public int Count { get; init; }
 }

@@ -350,8 +350,22 @@ export class DepartmentsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getDepartments(): Promise<DepartmentDto[]> {
-        let url_ = this.baseUrl + "/api/Departments";
+    getDepartments(inlineCount: string | null | undefined, skip: number | null | undefined, top: number | null | undefined, orderBy: string | null | undefined, filterParams: string | null | undefined, filterValue: string | null | undefined, searchString: string | null | undefined): Promise<DepartmentDto> {
+        let url_ = this.baseUrl + "/api/Departments?";
+        if (inlineCount !== undefined && inlineCount !== null)
+            url_ += "InlineCount=" + encodeURIComponent("" + inlineCount) + "&";
+        if (skip !== undefined && skip !== null)
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (top !== undefined && top !== null)
+            url_ += "Top=" + encodeURIComponent("" + top) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterParams !== undefined && filterParams !== null)
+            url_ += "FilterParams=" + encodeURIComponent("" + filterParams) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
+        if (searchString !== undefined && searchString !== null)
+            url_ += "SearchString=" + encodeURIComponent("" + searchString) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -366,7 +380,7 @@ export class DepartmentsClient {
         });
     }
 
-    protected processGetDepartments(response: Response): Promise<DepartmentDto[]> {
+    protected processGetDepartments(response: Response): Promise<DepartmentDto> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -374,14 +388,7 @@ export class DepartmentsClient {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(DepartmentDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = DepartmentDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -389,7 +396,7 @@ export class DepartmentsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<DepartmentDto[]>(null as any);
+        return Promise.resolve<DepartmentDto>(null as any);
     }
 
     createDepartment(command: CreateDepartmentCommand): Promise<number> {
@@ -1439,12 +1446,72 @@ export interface IUpdateCourseCommand {
 }
 
 export class DepartmentDto implements IDepartmentDto {
+    result?: Result[];
+    items?: Items[];
+    count?: number;
+
+    constructor(data?: IDepartmentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(Result.fromJS(item));
+            }
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(Items.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): DepartmentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DepartmentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IDepartmentDto {
+    result?: Result[];
+    items?: Items[];
+    count?: number;
+}
+
+export class Result implements IResult {
     id?: number;
     shortName?: string | undefined;
     fullName?: string | undefined;
     description?: string | undefined;
 
-    constructor(data?: IDepartmentDto) {
+    constructor(data?: IResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1462,9 +1529,9 @@ export class DepartmentDto implements IDepartmentDto {
         }
     }
 
-    static fromJS(data: any): DepartmentDto {
+    static fromJS(data: any): Result {
         data = typeof data === 'object' ? data : {};
-        let result = new DepartmentDto();
+        let result = new Result();
         result.init(data);
         return result;
     }
@@ -1479,7 +1546,55 @@ export class DepartmentDto implements IDepartmentDto {
     }
 }
 
-export interface IDepartmentDto {
+export interface IResult {
+    id?: number;
+    shortName?: string | undefined;
+    fullName?: string | undefined;
+    description?: string | undefined;
+}
+
+export class Items implements IItems {
+    id?: number;
+    shortName?: string | undefined;
+    fullName?: string | undefined;
+    description?: string | undefined;
+
+    constructor(data?: IItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.shortName = _data["shortName"];
+            this.fullName = _data["fullName"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): Items {
+        data = typeof data === 'object' ? data : {};
+        let result = new Items();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["shortName"] = this.shortName;
+        data["fullName"] = this.fullName;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IItems {
     id?: number;
     shortName?: string | undefined;
     fullName?: string | undefined;
@@ -1487,8 +1602,8 @@ export interface IDepartmentDto {
 }
 
 export class CreateDepartmentCommand implements ICreateDepartmentCommand {
-    shortName?: string | undefined;
-    fullName?: string | undefined;
+    shortName?: string;
+    fullName?: string;
     description?: string | undefined;
 
     constructor(data?: ICreateDepartmentCommand) {
@@ -1525,15 +1640,15 @@ export class CreateDepartmentCommand implements ICreateDepartmentCommand {
 }
 
 export interface ICreateDepartmentCommand {
-    shortName?: string | undefined;
-    fullName?: string | undefined;
+    shortName?: string;
+    fullName?: string;
     description?: string | undefined;
 }
 
 export class UpdateDepartmentCommand implements IUpdateDepartmentCommand {
     id?: number;
-    shortName?: string | undefined;
-    fullName?: string | undefined;
+    shortName?: string;
+    fullName?: string;
     description?: string | undefined;
 
     constructor(data?: IUpdateDepartmentCommand) {
@@ -1573,8 +1688,8 @@ export class UpdateDepartmentCommand implements IUpdateDepartmentCommand {
 
 export interface IUpdateDepartmentCommand {
     id?: number;
-    shortName?: string | undefined;
-    fullName?: string | undefined;
+    shortName?: string;
+    fullName?: string;
     description?: string | undefined;
 }
 

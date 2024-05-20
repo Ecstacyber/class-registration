@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { Container } from 'reactstrap';
-import { NavMenu } from './NavMenu';
+import { StudentNavbar } from './student/StudentNavbar';
 
-export class Layout extends Component {
-  static displayName = Layout.name;
+export class StudentLayout extends Component {
+  static displayName = StudentLayout.name;
 
   render() {
     return (
       <div>
-        <NavMenu />
+        <StudentNavbar />
         <Container tag="main">
           {this.props.children}
         </Container>

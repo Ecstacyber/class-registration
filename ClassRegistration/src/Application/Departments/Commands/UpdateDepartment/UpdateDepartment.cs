@@ -5,8 +5,8 @@ namespace ClassRegistration.Application.Departments.Commands.UpdateDepartment;
 public record UpdateDepartmentCommand : IRequest
 {
     public int Id { get; init; }
-    public string? ShortName { get; init; }
-    public string? FullName { get; init; }
+    public required string ShortName { get; init; }
+    public required string FullName { get; init; }
     public string? Description { get; init; }
 }
 

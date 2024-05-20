@@ -2,6 +2,10 @@
 @using Microsoft.AspNetCore.Mvc.ViewEngines
 @inject IWebHostEnvironment Environment
 @inject ICompositeViewEngine Engine
+@using ClassRegistration.Infrastructure.Identity
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,7 +29,16 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" href="~/">Web</a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    @if (User.IsInRole("Administrator")) {
+                        <a class="navbar-brand" href="~/admin-index">Class Registration</a>
+                    }
+                    @if (User.IsInRole("Student"))
+                    {
+                        <a class="navbar-brand" href="~/student-index">Class Registration</a>
+                    }
+                }               
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

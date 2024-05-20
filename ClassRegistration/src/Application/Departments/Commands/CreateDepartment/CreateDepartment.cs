@@ -6,8 +6,8 @@ namespace ClassRegistration.Application.Departments.Commands.CreateDepartment;
 
 public record CreateDepartmentCommand : IRequest<int>
 {
-    public string? ShortName { get; init; }
-    public string? FullName { get; set; }
+    public required string ShortName { get; init; }
+    public required string FullName { get; set; }
     public string? Description { get; set; }
 }
 

@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import followIfLoginRedirect from '../api-authorization/followIfLoginRedirect';
-import { AdminLayout } from '../AdminLayout';
+import { StudentLayout } from '../StudentLayout';
 
-export class AdminIndex extends Component {
-    static displayName = AdminIndex.name;
+export class StudentIndex extends Component {
+    static displayName = StudentIndex.name;
 
     render() {
         return (
-            <AdminLayout>
+            <StudentLayout>
                 <div className="container">
                     <div className="row">
-                        <h1>This is admin index page</h1>
+                        <h1>This is student index page</h1>
                     </div>
                 </div>
-            </AdminLayout>
+            </StudentLayout>
         );
     }
 }
