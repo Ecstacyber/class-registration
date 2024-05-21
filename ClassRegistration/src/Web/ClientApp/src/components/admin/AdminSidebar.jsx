@@ -13,9 +13,6 @@ import CIcon from '@coreui/icons-react'
 
 import { AdminSidebarNav } from './AdminSidebarNav'
 
-import { logo } from '../../assets/brand/logo'
-import { sygnet } from '../../assets/brand/sygnet'
-
 // sidebar nav config
 import AdminNav from '../admin/AdminNav'
 

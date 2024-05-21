@@ -3,6 +3,7 @@
 namespace ClassRegistration.Application.Courses.Queries.GetCourses;
 public class CourseDto
 {
+    public int Id { get; set; }
     public int DepartmentId { get; set; }
     public string? CourseCode { get; set; }
     public string? CourseName { get; set; }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ClassRegistration.Domain.Entities;
 
-namespace ClassRegistration.Domain.Entities;
 public class Semester : BaseAuditableEntity
 {
     public int StartYear { get; set; }

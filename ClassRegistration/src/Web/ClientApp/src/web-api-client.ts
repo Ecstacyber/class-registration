@@ -340,6 +340,52 @@ export class CoursesClient {
     }
 }
 
+export class CurrentUserInfoClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getUserInfo(): Promise<User> {
+        let url_ = this.baseUrl + "/api/CurrentUserInfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUserInfo(_response);
+        });
+    }
+
+    protected processGetUserInfo(response: Response): Promise<User> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<User>(null as any);
+    }
+}
+
 export class DepartmentsClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -496,6 +542,133 @@ export class DepartmentsClient {
     }
 
     protected processUpdateDeparment(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class PrerequisiteCoursesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getPrerequisiteCourses(): Promise<PrerequisiteCourseDto[]> {
+        let url_ = this.baseUrl + "/api/PrerequisiteCourses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPrerequisiteCourses(_response);
+        });
+    }
+
+    protected processGetPrerequisiteCourses(response: Response): Promise<PrerequisiteCourseDto[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PrerequisiteCourseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PrerequisiteCourseDto[]>(null as any);
+    }
+
+    createCoursePrerequisite(command: CreateCoursePrerequisiteCommand): Promise<number> {
+        let url_ = this.baseUrl + "/api/PrerequisiteCourses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateCoursePrerequisite(_response);
+        });
+    }
+
+    protected processCreateCoursePrerequisite(response: Response): Promise<number> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<number>(null as any);
+    }
+
+    deleteCoursePrerequisite(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PrerequisiteCourses/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteCoursePrerequisite(_response);
+        });
+    }
+
+    protected processDeleteCoursePrerequisite(response: Response): Promise<void> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -1043,7 +1216,7 @@ export class TodoListsClient {
     }
 }
 
-export class UsersClient {
+export class UserClassesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1053,8 +1226,135 @@ export class UsersClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getUserList(): Promise<IUser[]> {
-        let url_ = this.baseUrl + "/api/Users";
+    getUserInClass(): Promise<UserClassDto[]> {
+        let url_ = this.baseUrl + "/api/UserClasses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUserInClass(_response);
+        });
+    }
+
+    protected processGetUserInClass(response: Response): Promise<UserClassDto[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(UserClassDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto[]>(null as any);
+    }
+
+    addUserToClass(command: AddUserToClassCommand): Promise<number> {
+        let url_ = this.baseUrl + "/api/UserClasses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddUserToClass(_response);
+        });
+    }
+
+    protected processAddUserToClass(response: Response): Promise<number> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<number>(null as any);
+    }
+
+    removeUserFromClass(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/UserClasses/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemoveUserFromClass(_response);
+        });
+    }
+
+    protected processRemoveUserFromClass(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class UserListClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getUserList(): Promise<User[]> {
+        let url_ = this.baseUrl + "/api/UserList";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1069,7 +1369,7 @@ export class UsersClient {
         });
     }
 
-    protected processGetUserList(response: Response): Promise<IUser[]> {
+    protected processGetUserList(response: Response): Promise<User[]> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -1080,7 +1380,7 @@ export class UsersClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(IUser.fromJS(item));
+                    result200!.push(User.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1092,7 +1392,7 @@ export class UsersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<IUser[]>(null as any);
+        return Promise.resolve<User[]>(null as any);
     }
 }
 
@@ -1150,6 +1450,7 @@ export class WeatherForecastsClient {
 }
 
 export class ClassDto implements IClassDto {
+    id?: number;
     courseId?: number;
     classCode?: string | undefined;
     fee?: string | undefined;
@@ -1166,6 +1467,7 @@ export class ClassDto implements IClassDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.courseId = _data["courseId"];
             this.classCode = _data["classCode"];
             this.fee = _data["fee"];
@@ -1182,6 +1484,7 @@ export class ClassDto implements IClassDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["courseId"] = this.courseId;
         data["classCode"] = this.classCode;
         data["fee"] = this.fee;
@@ -1191,6 +1494,7 @@ export class ClassDto implements IClassDto {
 }
 
 export interface IClassDto {
+    id?: number;
     courseId?: number;
     classCode?: string | undefined;
     fee?: string | undefined;
@@ -1322,6 +1626,7 @@ export interface IUpdateClassCommand {
 }
 
 export class CourseDto implements ICourseDto {
+    id?: number;
     departmentId?: number;
     courseCode?: string | undefined;
     courseName?: string | undefined;
@@ -1338,6 +1643,7 @@ export class CourseDto implements ICourseDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.departmentId = _data["departmentId"];
             this.courseCode = _data["courseCode"];
             this.courseName = _data["courseName"];
@@ -1354,6 +1660,7 @@ export class CourseDto implements ICourseDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["departmentId"] = this.departmentId;
         data["courseCode"] = this.courseCode;
         data["courseName"] = this.courseName;
@@ -1363,6 +1670,7 @@ export class CourseDto implements ICourseDto {
 }
 
 export interface ICourseDto {
+    id?: number;
     departmentId?: number;
     courseCode?: string | undefined;
     courseName?: string | undefined;
@@ -1467,6 +1775,66 @@ export interface IUpdateCourseCommand {
     courseCode?: string | undefined;
     courseName?: string | undefined;
     description?: string | undefined;
+}
+
+export class User implements IUser {
+    id?: string | undefined;
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    roles?: string[] | undefined;
+
+    constructor(data?: IUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.departmentId = _data["departmentId"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["departmentId"] = this.departmentId;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IUser {
+    id?: string | undefined;
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    roles?: string[] | undefined;
 }
 
 export class DepartmentDto implements IDepartmentDto {
@@ -1717,7 +2085,100 @@ export interface IUpdateDepartmentCommand {
     description?: string | undefined;
 }
 
+export class PrerequisiteCourseDto implements IPrerequisiteCourseDto {
+    id?: number;
+    courseId?: number;
+    prerequisiteCourseId?: number;
+    requirePassed?: boolean;
+
+    constructor(data?: IPrerequisiteCourseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.courseId = _data["courseId"];
+            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
+            this.requirePassed = _data["requirePassed"];
+        }
+    }
+
+    static fromJS(data: any): PrerequisiteCourseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PrerequisiteCourseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["courseId"] = this.courseId;
+        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
+        data["requirePassed"] = this.requirePassed;
+        return data;
+    }
+}
+
+export interface IPrerequisiteCourseDto {
+    id?: number;
+    courseId?: number;
+    prerequisiteCourseId?: number;
+    requirePassed?: boolean;
+}
+
+export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisiteCommand {
+    courseId?: number | undefined;
+    prerequisiteCourseId?: number | undefined;
+    requirePassed?: boolean;
+
+    constructor(data?: ICreateCoursePrerequisiteCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.courseId = _data["courseId"];
+            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
+            this.requirePassed = _data["requirePassed"];
+        }
+    }
+
+    static fromJS(data: any): CreateCoursePrerequisiteCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateCoursePrerequisiteCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["courseId"] = this.courseId;
+        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
+        data["requirePassed"] = this.requirePassed;
+        return data;
+    }
+}
+
+export interface ICreateCoursePrerequisiteCommand {
+    courseId?: number | undefined;
+    prerequisiteCourseId?: number | undefined;
+    requirePassed?: boolean;
+}
+
 export class SemesterDto implements ISemesterDto {
+    id?: number;
     startYear?: number;
     endYear?: number;
     split?: number;
@@ -1733,6 +2194,7 @@ export class SemesterDto implements ISemesterDto {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.startYear = _data["startYear"];
             this.endYear = _data["endYear"];
             this.split = _data["split"];
@@ -1748,6 +2210,7 @@ export class SemesterDto implements ISemesterDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["startYear"] = this.startYear;
         data["endYear"] = this.endYear;
         data["split"] = this.split;
@@ -1756,6 +2219,7 @@ export class SemesterDto implements ISemesterDto {
 }
 
 export interface ISemesterDto {
+    id?: number;
     startYear?: number;
     endYear?: number;
     split?: number;
@@ -2388,10 +2852,13 @@ export interface IUpdateTodoListCommand {
     title?: string | undefined;
 }
 
-export abstract class IUser implements IIUser {
-    id?: string | undefined;
+export class UserClassDto implements IUserClassDto {
+    id?: number;
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
 
-    constructor(data?: IIUser) {
+    constructor(data?: IUserClassDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2403,23 +2870,78 @@ export abstract class IUser implements IIUser {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.classId = _data["classId"];
+            this.semesterId = _data["semesterId"];
+            this.passed = _data["passed"];
         }
     }
 
-    static fromJS(data: any): IUser {
+    static fromJS(data: any): UserClassDto {
         data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'IUser' cannot be instantiated.");
+        let result = new UserClassDto();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["classId"] = this.classId;
+        data["semesterId"] = this.semesterId;
+        data["passed"] = this.passed;
         return data;
     }
 }
 
-export interface IIUser {
-    id?: string | undefined;
+export interface IUserClassDto {
+    id?: number;
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
+}
+
+export class AddUserToClassCommand implements IAddUserToClassCommand {
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
+
+    constructor(data?: IAddUserToClassCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.classId = _data["classId"];
+            this.semesterId = _data["semesterId"];
+            this.passed = _data["passed"];
+        }
+    }
+
+    static fromJS(data: any): AddUserToClassCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddUserToClassCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["classId"] = this.classId;
+        data["semesterId"] = this.semesterId;
+        data["passed"] = this.passed;
+        return data;
+    }
+}
+
+export interface IAddUserToClassCommand {
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
 }
 
 export class WeatherForecast implements IWeatherForecast {
