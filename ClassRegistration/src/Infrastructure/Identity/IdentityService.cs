@@ -1,5 +1,6 @@
 using ClassRegistration.Application.Common.Interfaces;
 using ClassRegistration.Application.Common.Models;
+using ClassRegistration.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -79,7 +80,7 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<IEnumerable<IUser>> GetUserListAsync()
+    public async Task<IEnumerable<User>> GetUserListAsync()
     {
         return await _userManager.Users
             .Select(x => new User
@@ -91,5 +92,21 @@ public class IdentityService : IIdentityService
                 Roles = _userManager.GetRolesAsync(x).GetAwaiter().GetResult().ToList()
             })
             .ToListAsync();
+    }
+
+    public async Task<User> GetUserInfoAsync(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        return user == null
+            ? new User()
+            : new User
+            {
+                Id = user.Id,
+                DepartmentId = user.DepartmentId,
+                Email = user.Email,
+                UserName = user.UserName,
+                Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToList()
+
+            };
     }
 }

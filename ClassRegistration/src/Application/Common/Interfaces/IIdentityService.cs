@@ -1,4 +1,5 @@
 ﻿using ClassRegistration.Application.Common.Models;
+using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.Common.Interfaces;
 
@@ -13,5 +14,6 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
     Task<Result> DeleteUserAsync(string userId);
-    Task<IEnumerable<IUser>> GetUserListAsync();
+    Task<IEnumerable<User>> GetUserListAsync();
+    Task<User> GetUserInfoAsync(string id);
 }
