@@ -1,8 +1,7 @@
 ﻿///Using to past user data to application layer
-using ClassRegistration.Application.Common.Interfaces;
+namespace ClassRegistration.Domain.Entities;
 
-namespace ClassRegistration.Infrastructure.Identity;
-public class User : IUser
+public class User
 {
     public string? Id { get; set; }
     public string? UserName { get; set; }
