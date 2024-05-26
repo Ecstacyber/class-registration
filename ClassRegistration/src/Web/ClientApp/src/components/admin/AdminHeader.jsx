@@ -100,9 +100,9 @@ const AdminHeader = () => {
                     </CNavItem>
                 </CHeaderNav>
             </CContainer>
-            <CContainer className="px-4" fluid>
-                <AdminBreadcrumb />
-            </CContainer>
+            {/*<CContainer className="px-4" fluid>*/}
+            {/*    <AdminBreadcrumb />*/}
+            {/*</CContainer>*/}
         </CHeader>
     );
 }

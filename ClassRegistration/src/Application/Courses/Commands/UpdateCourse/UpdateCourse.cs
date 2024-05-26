@@ -6,8 +6,8 @@ public record UpdateCourseCommand : IRequest
 {
     public int Id { get; init; }
     public int DepartmentId { get; init; }
-    public string? CourseCode { get; init; }
-    public string? CourseName { get; init; }
+    public required string CourseCode { get; init; }
+    public required string CourseName { get; init; }
     public string? Description { get; init; }
 }
 
@@ -19,13 +19,13 @@ public class UpdateCourseCommandValidator : AbstractValidator<UpdateCourseComman
     {
         _context = context;
 
-        RuleFor(x => x.CourseCode)
-            .NotEmpty()
-            .MaximumLength(10)
-            .MustAsync(BeUniqueCourseCode)
-                .When(x => x.Id != 0)
-                .WithMessage("'{PropertyName}' must be unique.")
-                .WithErrorCode("Unique");
+        //RuleFor(x => x.CourseCode)
+        //    .NotEmpty()
+        //    .MaximumLength(10)
+        //    .MustAsync(BeUniqueCourseCode)
+        //        .When(x => x.Id != 0)
+        //        .WithMessage("'{PropertyName}' must be unique.")
+        //        .WithErrorCode("Unique");
 
         RuleFor(x => x.DepartmentId)
             .MustAsync(ExistedDepartmentId)

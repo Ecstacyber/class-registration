@@ -6,8 +6,8 @@ namespace ClassRegistration.Application.Courses.Commands.CreateCourse;
 public record CreateCourseCommand : IRequest<int>
 {
     public int DepartmentId { get; init; }
-    public string? CourseCode { get; init; }
-    public string? CourseName { get; init; }
+    public required string CourseCode { get; init; }
+    public required string CourseName { get; init; }
     public string? Description { get; init; }
 }
 

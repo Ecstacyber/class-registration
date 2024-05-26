@@ -20,7 +20,7 @@ public class Departments : EndpointGroupBase
     public Task<DepartmentDto> GetDepartments(ISender sender, [AsParameters] GetDepartmentsQuery query)
     {
         return sender.Send(query);
-    }
+    }   
 
     public Task<int> CreateDepartment(ISender sender, CreateDepartmentCommand command)
     {
