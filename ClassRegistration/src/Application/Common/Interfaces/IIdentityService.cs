@@ -15,4 +15,5 @@ public interface IIdentityService
 
     Task<Result> DeleteUserAsync(string userId);
     Task<User> GetUserInfoAsync(string id);
+    Task<IEnumerable<User?>> GetUserListAsync();
 }

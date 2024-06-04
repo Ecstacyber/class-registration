@@ -20,18 +20,17 @@ public class GetUserListQueryValidator : AbstractValidator<GetUserListQuery>
 
 public class GetUserListQueryHandler : IRequestHandler<GetUserListQuery, IEnumerable<UserDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IIdentityService _identityService;
     private readonly IMapper _mapper;
-    public GetUserListQueryHandler(IApplicationDbContext applicationDbContext, IMapper mapper)
+    public GetUserListQueryHandler(IIdentityService identityService, IMapper mapper)
     {
-        _context = applicationDbContext;
+        _identityService = identityService;
         _mapper = mapper;
     }
 
     public async Task<IEnumerable<UserDto>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Humans
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
+        var users = await _identityService.GetUserListAsync();
+        return _mapper.Map<IEnumerable<UserDto>>(users);
     }
 }

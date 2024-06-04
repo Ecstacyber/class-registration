@@ -12,15 +12,18 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IApplicationDbContext _context;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IApplicationDbContext context)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
+        _context = context;
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -32,10 +35,17 @@ public class IdentityService : IIdentityService
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
+        var human = new User
+        {
+            UserName = userName,
+            Email = userName
+        };
+
         var user = new ApplicationUser
         {
             UserName = userName,
             Email = userName,
+            HumanId = human.Id,
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -84,7 +94,26 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return new User();
+
+        user.Human = await _context.Humans.FirstOrDefaultAsync(x => x.Id == user.HumanId);
+        if (user.Human == null) return new User();
         user.Human.Roles = await _userManager.GetRolesAsync(user);
+
         return user.Human;
+    }
+
+    public async Task<IEnumerable<User?>> GetUserListAsync()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        foreach (var user in users)
+        {
+            user.Human = await _context.Humans
+                .Include(x => x.Department)
+                .FirstOrDefaultAsync(x => x.Id == user.HumanId);
+            if (user.Human == null) continue;
+            user.Human.Roles = await _userManager.GetRolesAsync(user);
+        }
+
+        return users.Select(x => x.Human);
     }
 }

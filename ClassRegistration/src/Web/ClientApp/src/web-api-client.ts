@@ -1343,7 +1343,7 @@ export class UserClassesClient {
     }
 }
 
-export class UserListClient {
+export class UsersClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1354,7 +1354,7 @@ export class UserListClient {
     }
 
     getUserList(): Promise<UserDto[]> {
-        let url_ = this.baseUrl + "/api/UserList";
+        let url_ = this.baseUrl + "/api/Users";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1934,7 +1934,6 @@ export class Department extends BaseAuditableEntity implements IDepartment {
     shortName?: string;
     fullName?: string;
     description?: string | undefined;
-    user?: User | undefined;
     courses?: Course[];
 
     constructor(data?: IDepartment) {
@@ -1947,7 +1946,6 @@ export class Department extends BaseAuditableEntity implements IDepartment {
             this.shortName = _data["shortName"];
             this.fullName = _data["fullName"];
             this.description = _data["description"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
             if (Array.isArray(_data["courses"])) {
                 this.courses = [] as any;
                 for (let item of _data["courses"])
@@ -1968,7 +1966,6 @@ export class Department extends BaseAuditableEntity implements IDepartment {
         data["shortName"] = this.shortName;
         data["fullName"] = this.fullName;
         data["description"] = this.description;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         if (Array.isArray(this.courses)) {
             data["courses"] = [];
             for (let item of this.courses)
@@ -1983,215 +1980,7 @@ export interface IDepartment extends IBaseAuditableEntity {
     shortName?: string;
     fullName?: string;
     description?: string | undefined;
-    user?: User | undefined;
     courses?: Course[];
-}
-
-export class User extends BaseAuditableEntity implements IUser {
-    userName?: string | undefined;
-    email?: string | undefined;
-    departmentId?: number | undefined;
-    department?: Department | undefined;
-    userClasses?: UserClass[];
-    tuitionFee?: TuitionFee[];
-    roles?: string[];
-
-    constructor(data?: IUser) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.userName = _data["userName"];
-            this.email = _data["email"];
-            this.departmentId = _data["departmentId"];
-            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
-            if (Array.isArray(_data["tuitionFee"])) {
-                this.tuitionFee = [] as any;
-                for (let item of _data["tuitionFee"])
-                    this.tuitionFee!.push(TuitionFee.fromJS(item));
-            }
-            if (Array.isArray(_data["roles"])) {
-                this.roles = [] as any;
-                for (let item of _data["roles"])
-                    this.roles!.push(item);
-            }
-        }
-    }
-
-    static override fromJS(data: any): User {
-        data = typeof data === 'object' ? data : {};
-        let result = new User();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userName"] = this.userName;
-        data["email"] = this.email;
-        data["departmentId"] = this.departmentId;
-        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
-        if (Array.isArray(this.tuitionFee)) {
-            data["tuitionFee"] = [];
-            for (let item of this.tuitionFee)
-                data["tuitionFee"].push(item.toJSON());
-        }
-        if (Array.isArray(this.roles)) {
-            data["roles"] = [];
-            for (let item of this.roles)
-                data["roles"].push(item);
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IUser extends IBaseAuditableEntity {
-    userName?: string | undefined;
-    email?: string | undefined;
-    departmentId?: number | undefined;
-    department?: Department | undefined;
-    userClasses?: UserClass[];
-    tuitionFee?: TuitionFee[];
-    roles?: string[];
-}
-
-export class UserClass extends BaseAuditableEntity implements IUserClass {
-    classId?: number;
-    semesterId?: number;
-    passed?: boolean;
-    class?: Class | undefined;
-    semester?: Semester | undefined;
-    user?: User | undefined;
-
-    constructor(data?: IUserClass) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.classId = _data["classId"];
-            this.semesterId = _data["semesterId"];
-            this.passed = _data["passed"];
-            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
-            this.semester = _data["semester"] ? Semester.fromJS(_data["semester"]) : <any>undefined;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): UserClass {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserClass();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["classId"] = this.classId;
-        data["semesterId"] = this.semesterId;
-        data["passed"] = this.passed;
-        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
-        data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IUserClass extends IBaseAuditableEntity {
-    classId?: number;
-    semesterId?: number;
-    passed?: boolean;
-    class?: Class | undefined;
-    semester?: Semester | undefined;
-    user?: User | undefined;
-}
-
-export class Class extends BaseAuditableEntity implements IClass {
-    courseId?: number;
-    classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    course?: Course;
-    userClasses?: UserClass[];
-
-    constructor(data?: IClass) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.courseId = _data["courseId"];
-            this.classCode = _data["classCode"];
-            this.fee = _data["fee"];
-            this.credit = _data["credit"];
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.startPeriod = _data["startPeriod"];
-            this.endPeriod = _data["endPeriod"];
-            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Class {
-        data = typeof data === 'object' ? data : {};
-        let result = new Class();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["courseId"] = this.courseId;
-        data["classCode"] = this.classCode;
-        data["fee"] = this.fee;
-        data["credit"] = this.credit;
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["startPeriod"] = this.startPeriod;
-        data["endPeriod"] = this.endPeriod;
-        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IClass extends IBaseAuditableEntity {
-    courseId?: number;
-    classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    course?: Course;
-    userClasses?: UserClass[];
 }
 
 export class Course extends BaseAuditableEntity implements ICourse {
@@ -2279,14 +2068,18 @@ export interface ICourse extends IBaseAuditableEntity {
     prerequisites?: PrerequisiteCourse[];
 }
 
-export class PrerequisiteCourse extends BaseAuditableEntity implements IPrerequisiteCourse {
-    courseId?: number | undefined;
-    prerequisiteCourseId?: number | undefined;
-    requirePassed?: boolean;
-    course?: Course | undefined;
-    prerequisite?: Course | undefined;
+export class Class extends BaseAuditableEntity implements IClass {
+    courseId?: number;
+    classCode?: string | undefined;
+    fee?: string | undefined;
+    credit?: number;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    course?: Course;
+    userClasses?: UserClass[];
 
-    constructor(data?: IPrerequisiteCourse) {
+    constructor(data?: IClass) {
         super(data);
     }
 
@@ -2294,16 +2087,24 @@ export class PrerequisiteCourse extends BaseAuditableEntity implements IPrerequi
         super.init(_data);
         if (_data) {
             this.courseId = _data["courseId"];
-            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
-            this.requirePassed = _data["requirePassed"];
+            this.classCode = _data["classCode"];
+            this.fee = _data["fee"];
+            this.credit = _data["credit"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
             this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
-            this.prerequisite = _data["prerequisite"] ? Course.fromJS(_data["prerequisite"]) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
         }
     }
 
-    static override fromJS(data: any): PrerequisiteCourse {
+    static override fromJS(data: any): Class {
         data = typeof data === 'object' ? data : {};
-        let result = new PrerequisiteCourse();
+        let result = new Class();
         result.init(data);
         return result;
     }
@@ -2311,49 +2112,86 @@ export class PrerequisiteCourse extends BaseAuditableEntity implements IPrerequi
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["courseId"] = this.courseId;
-        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
-        data["requirePassed"] = this.requirePassed;
+        data["classCode"] = this.classCode;
+        data["fee"] = this.fee;
+        data["credit"] = this.credit;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
         data["course"] = this.course ? this.course.toJSON() : <any>undefined;
-        data["prerequisite"] = this.prerequisite ? this.prerequisite.toJSON() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IPrerequisiteCourse extends IBaseAuditableEntity {
-    courseId?: number | undefined;
-    prerequisiteCourseId?: number | undefined;
-    requirePassed?: boolean;
-    course?: Course | undefined;
-    prerequisite?: Course | undefined;
+export interface IClass extends IBaseAuditableEntity {
+    courseId?: number;
+    classCode?: string | undefined;
+    fee?: string | undefined;
+    credit?: number;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    course?: Course;
+    userClasses?: UserClass[];
 }
 
-export abstract class BaseEvent implements IBaseEvent {
+export class UserClass extends BaseAuditableEntity implements IUserClass {
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
+    class?: Class | undefined;
+    semester?: Semester | undefined;
+    user?: User | undefined;
 
-    constructor(data?: IBaseEvent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
+    constructor(data?: IUserClass) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.classId = _data["classId"];
+            this.semesterId = _data["semesterId"];
+            this.passed = _data["passed"];
+            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
+            this.semester = _data["semester"] ? Semester.fromJS(_data["semester"]) : <any>undefined;
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
         }
     }
 
-    init(_data?: any) {
+    static override fromJS(data: any): UserClass {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserClass();
+        result.init(data);
+        return result;
     }
 
-    static fromJS(data: any): BaseEvent {
+    override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data["classId"] = this.classId;
+        data["semesterId"] = this.semesterId;
+        data["passed"] = this.passed;
+        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
+        data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface IBaseEvent {
+export interface IUserClass extends IBaseAuditableEntity {
+    classId?: number;
+    semesterId?: number;
+    passed?: boolean;
+    class?: Class | undefined;
+    semester?: Semester | undefined;
+    user?: User | undefined;
 }
 
 export class Semester extends BaseAuditableEntity implements ISemester {
@@ -2464,6 +2302,164 @@ export interface ITuitionFee extends IBaseAuditableEntity {
     semesterId?: number;
     semester?: Semester | undefined;
     user?: User | undefined;
+}
+
+export class User extends BaseAuditableEntity implements IUser {
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    userClasses?: UserClass[];
+    tuitionFee?: TuitionFee[];
+    roles?: string[];
+
+    constructor(data?: IUser) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.departmentId = _data["departmentId"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
+            if (Array.isArray(_data["tuitionFee"])) {
+                this.tuitionFee = [] as any;
+                for (let item of _data["tuitionFee"])
+                    this.tuitionFee!.push(TuitionFee.fromJS(item));
+            }
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["departmentId"] = this.departmentId;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
+        if (Array.isArray(this.tuitionFee)) {
+            data["tuitionFee"] = [];
+            for (let item of this.tuitionFee)
+                data["tuitionFee"].push(item.toJSON());
+        }
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IUser extends IBaseAuditableEntity {
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    userClasses?: UserClass[];
+    tuitionFee?: TuitionFee[];
+    roles?: string[];
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
+}
+
+export class PrerequisiteCourse extends BaseAuditableEntity implements IPrerequisiteCourse {
+    courseId?: number | undefined;
+    prerequisiteCourseId?: number | undefined;
+    requirePassed?: boolean;
+    course?: Course | undefined;
+    prerequisite?: Course | undefined;
+
+    constructor(data?: IPrerequisiteCourse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.courseId = _data["courseId"];
+            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
+            this.requirePassed = _data["requirePassed"];
+            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
+            this.prerequisite = _data["prerequisite"] ? Course.fromJS(_data["prerequisite"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): PrerequisiteCourse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PrerequisiteCourse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["courseId"] = this.courseId;
+        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
+        data["requirePassed"] = this.requirePassed;
+        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
+        data["prerequisite"] = this.prerequisite ? this.prerequisite.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IPrerequisiteCourse extends IBaseAuditableEntity {
+    courseId?: number | undefined;
+    prerequisiteCourseId?: number | undefined;
+    requirePassed?: boolean;
+    course?: Course | undefined;
+    prerequisite?: Course | undefined;
 }
 
 export class DepartmentDto implements IDepartmentDto {

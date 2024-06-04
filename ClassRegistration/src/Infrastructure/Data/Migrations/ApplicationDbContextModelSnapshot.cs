@@ -369,9 +369,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId")
-                        .IsUnique()
-                        .HasFilter("[DepartmentId] IS NOT NULL");
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Humans");
                 });
@@ -719,8 +717,8 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
                 {
                     b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
-                        .WithOne("User")
-                        .HasForeignKey("ClassRegistration.Domain.Entities.User", "DepartmentId");
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
 
                     b.Navigation("Department");
                 });
@@ -829,8 +827,6 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Department", b =>
                 {
                     b.Navigation("Courses");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>

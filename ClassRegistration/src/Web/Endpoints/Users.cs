@@ -3,7 +3,7 @@ using ClassRegistration.Application.Users.Queries.GetUserList;
 
 namespace ClassRegistration.Web.Endpoints;
 
-public class UserList : EndpointGroupBase
+public class Users : EndpointGroupBase
 {
     public override void Map(WebApplication app)
     {

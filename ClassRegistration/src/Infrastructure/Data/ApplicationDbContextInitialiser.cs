@@ -107,18 +107,28 @@ public class ApplicationDbContextInitialiser
 
         // Default users
         var humanAdmin = new User { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Human = humanAdmin };
+        if (!_context.Humans.Any(x => x.UserName == humanAdmin.UserName))
+        {
+            await _context.Humans.AddAsync(humanAdmin);
+        }
+        var humanStudent = new User { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        if (!_context.Humans.Any(x => x.UserName == humanStudent.UserName))
+        {
+            await _context.Humans.AddAsync(humanStudent);
+        }
+        await _context.SaveChangesAsync();
+
+        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", HumanId = humanAdmin.Id };
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
             await _userManager.CreateAsync(administrator, "Administrator@1");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
 
-        var humanStudent = new User { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
-        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Human = humanStudent };
+        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", HumanId = humanStudent.Id };
         if (_userManager.Users.All(u => u.UserName != student.UserName))
         {
             await _userManager.CreateAsync(student, "Student@1");

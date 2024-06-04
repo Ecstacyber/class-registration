@@ -6,6 +6,6 @@ namespace ClassRegistration.Infrastructure.Identity;
 public class ApplicationUser : IdentityUser
 {
     public int HumanId { get; set; }
-    public User Human { get; set; } = new User();
+    public User? Human { get; set; }
 
 }

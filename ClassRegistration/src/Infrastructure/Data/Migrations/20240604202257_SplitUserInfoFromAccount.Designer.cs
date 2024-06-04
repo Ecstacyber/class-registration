@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassRegistration.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240604160627_SplitUserInfoFromUser")]
-    partial class SplitUserInfoFromUser
+    [Migration("20240604202257_SplitUserInfoFromAccount")]
+    partial class SplitUserInfoFromAccount
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -372,9 +372,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId")
-                        .IsUnique()
-                        .HasFilter("[DepartmentId] IS NOT NULL");
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Humans");
                 });
@@ -722,8 +720,8 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
                 {
                     b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
-                        .WithOne("User")
-                        .HasForeignKey("ClassRegistration.Domain.Entities.User", "DepartmentId");
+                        .WithMany()
+                        .HasForeignKey("DepartmentId");
 
                     b.Navigation("Department");
                 });
@@ -832,8 +830,6 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Department", b =>
                 {
                     b.Navigation("Courses");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>

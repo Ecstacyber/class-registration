@@ -1,4 +1,5 @@
-﻿using ClassRegistration.Domain.Entities;
+﻿using ClassRegistration.Application.Departments.Queries.GetDepartments;
+using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.Users.Queries.GetUserInfo;
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassRegistration.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class SplitUserInfoFromUser : Migration
+    public partial class SplitUserInfoFromAccount : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,26 +59,26 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                 type: "int",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "DayOfWeek",
-                table: "Classes",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            //migrationBuilder.AddColumn<int>(
+            //    name: "DayOfWeek",
+            //    table: "Classes",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0);
 
-            migrationBuilder.AddColumn<int>(
-                name: "EndPeriod",
-                table: "Classes",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            //migrationBuilder.AddColumn<int>(
+            //    name: "EndPeriod",
+            //    table: "Classes",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0);
 
-            migrationBuilder.AddColumn<int>(
-                name: "StartPeriod",
-                table: "Classes",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            //migrationBuilder.AddColumn<int>(
+            //    name: "StartPeriod",
+            //    table: "Classes",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "HumanId",
@@ -129,9 +129,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Humans_DepartmentId",
                 table: "Humans",
-                column: "DepartmentId",
-                unique: true,
-                filter: "[DepartmentId] IS NOT NULL");
+                column: "DepartmentId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUsers_Humans_HumanId",
