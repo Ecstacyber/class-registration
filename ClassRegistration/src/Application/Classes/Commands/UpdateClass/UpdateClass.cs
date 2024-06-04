@@ -53,7 +53,7 @@ public class UpdateClassCommandHandler : IRequestHandler<UpdateClassCommand>
         var entity = await _context.Classes.FindAsync([request.Id], cancellationToken);
         Guard.Against.NotFound(request.Id, entity);
 
-        entity.CourseId = request.Id;
+        entity.CourseId = request.CourseId;
         entity.ClassCode = request.ClassCode;
         entity.Fee = request.Fee;
         entity.DayOfWeek = request.DayOfWeek;

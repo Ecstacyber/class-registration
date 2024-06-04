@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ClassRegistration.Application.Common.Interfaces;
-using ClassRegistration.Application.Courses.Queries.GetCourses;
+﻿using ClassRegistration.Application.Common.Interfaces;
 
 namespace ClassRegistration.Application.Classes.Queries.GetClasses;
 

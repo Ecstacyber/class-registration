@@ -106,7 +106,8 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        var humanAdmin = new User { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Human = humanAdmin };
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
             await _userManager.CreateAsync(administrator, "Administrator@1");
@@ -116,7 +117,8 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        var humanStudent = new User { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Human = humanStudent };
         if (_userManager.Users.All(u => u.UserName != student.UserName))
         {
             await _userManager.CreateAsync(student, "Student@1");

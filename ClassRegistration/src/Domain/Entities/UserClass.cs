@@ -7,4 +7,5 @@ public class UserClass : BaseAuditableEntity
     public bool Passed { get; set; }
     public Class? Class { get; set; }
     public Semester? Semester { get; set; }
+    public User? User { get; set; }
 }

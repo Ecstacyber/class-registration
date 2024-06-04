@@ -4,6 +4,7 @@ using ClassRegistration.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassRegistration.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240528133728_Update-Class")]
+    partial class UpdateClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -308,6 +311,9 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
@@ -326,54 +332,13 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<long>("TotalFee")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("SemesterId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("TuitionFees");
-                });
-
-            modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId")
-                        .IsUnique()
-                        .HasFilter("[DepartmentId] IS NOT NULL");
-
-                    b.ToTable("Humans");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.UserClass", b =>
@@ -383,6 +348,9 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
@@ -405,16 +373,13 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<int>("SemesterId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ClassId");
 
                     b.HasIndex("SemesterId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserClasses");
                 });
@@ -431,15 +396,15 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<int>("HumanId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -476,7 +441,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HumanId");
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -701,32 +666,25 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.TuitionFee", b =>
                 {
+                    b.HasOne("ClassRegistration.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("TuitionFee")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("ClassRegistration.Domain.Entities.Semester", "Semester")
                         .WithMany("TuitionFees")
                         .HasForeignKey("SemesterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassRegistration.Domain.Entities.User", "User")
-                        .WithMany("TuitionFee")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Semester");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
-                {
-                    b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
-                        .WithOne("User")
-                        .HasForeignKey("ClassRegistration.Domain.Entities.User", "DepartmentId");
-
-                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.UserClass", b =>
                 {
+                    b.HasOne("ClassRegistration.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("UserClasses")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("ClassRegistration.Domain.Entities.Class", "Class")
                         .WithMany("UserClasses")
                         .HasForeignKey("ClassId")
@@ -739,26 +697,18 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassRegistration.Domain.Entities.User", "User")
-                        .WithMany("UserClasses")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Class");
 
                     b.Navigation("Semester");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClassRegistration.Infrastructure.Identity.ApplicationUser", b =>
                 {
-                    b.HasOne("ClassRegistration.Domain.Entities.User", "Human")
+                    b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("HumanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
-                    b.Navigation("Human");
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -829,8 +779,6 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Department", b =>
                 {
                     b.Navigation("Courses");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>
@@ -845,7 +793,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
+            modelBuilder.Entity("ClassRegistration.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("TuitionFee");
 

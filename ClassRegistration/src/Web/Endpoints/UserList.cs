@@ -1,5 +1,5 @@
-﻿using ClassRegistration.Application.Users.Queries.GetUserList;
-using ClassRegistration.Domain.Entities;
+﻿using ClassRegistration.Application.Users.Queries.GetUserInfo;
+using ClassRegistration.Application.Users.Queries.GetUserList;
 
 namespace ClassRegistration.Web.Endpoints;
 
@@ -12,7 +12,7 @@ public class UserList : EndpointGroupBase
             .MapGet(GetUserList);
     }
 
-    public Task<IEnumerable<User>> GetUserList(ISender sender, [AsParameters] GetUserListQuery query)
+    public Task<IEnumerable<UserDto>> GetUserList(ISender sender, [AsParameters] GetUserListQuery query)
     {
         return sender.Send(query);
     }

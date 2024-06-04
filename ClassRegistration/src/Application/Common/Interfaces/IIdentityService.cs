@@ -14,6 +14,5 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
     Task<Result> DeleteUserAsync(string userId);
-    Task<IEnumerable<User>> GetUserListAsync();
     Task<User> GetUserInfoAsync(string id);
 }

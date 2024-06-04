@@ -1,27 +1,29 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
-using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.Users.Queries.GetUserInfo;
 
-public record GetUserInfoQuery() : IRequest<User>
+public record GetUserInfoQuery() : IRequest<UserDto>
 {
 
 }
 
-public class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, User>
+public class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, UserDto>
 {
     private readonly IIdentityService _identityService;
     private readonly IUser _user;
+    private readonly IMapper _mapper;
 
-    public GetUserInfoQueryHandler(IIdentityService identityService, IUser user)
+    public GetUserInfoQueryHandler(IIdentityService identityService, IUser user, IMapper mapper)
     {
         _identityService = identityService;
         _user = user;
+        _mapper = mapper;
     }
 
-    public async Task<User> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
+    public async Task<UserDto> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
     {
         Guard.Against.NullOrEmpty(_user.Id, nameof(_user.Id));
-        return await _identityService.GetUserInfoAsync(_user.Id);
+        var user = _mapper.Map<UserDto>(await _identityService.GetUserInfoAsync(_user.Id));
+        return user;
     }
 }

@@ -246,7 +246,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -1009,7 +1009,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/User"
+                    "$ref": "#/components/schemas/UserDto"
                   }
                 }
               }
@@ -1216,13 +1216,13 @@
           }
         }
       },
-      "User": {
+      "UserDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "userName": {
             "type": "string",
@@ -1237,6 +1237,14 @@
             "format": "int32",
             "nullable": true
           },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
+          },
           "roles": {
             "type": "array",
             "nullable": true,
@@ -1245,6 +1253,411 @@
             }
           }
         }
+      },
+      "Department": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "shortName": {
+                "type": "string"
+              },
+              "fullName": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "user": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/User"
+                  }
+                ]
+              },
+              "courses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "User": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userName": {
+                "type": "string",
+                "nullable": true
+              },
+              "email": {
+                "type": "string",
+                "nullable": true
+              },
+              "departmentId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "department": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Department"
+                  }
+                ]
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
+                }
+              },
+              "tuitionFee": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TuitionFee"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UserClass": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "classId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "semesterId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "class": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Class"
+                  }
+                ]
+              },
+              "semester": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Semester"
+                  }
+                ]
+              },
+              "user": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/User"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Class": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "courseId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "classCode": {
+                "type": "string",
+                "nullable": true
+              },
+              "fee": {
+                "type": "string",
+                "nullable": true
+              },
+              "credit": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "dayOfWeek": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "startPeriod": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "endPeriod": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "course": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Course": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "departmentId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "courseCode": {
+                "type": "string",
+                "nullable": true
+              },
+              "courseName": {
+                "type": "string",
+                "nullable": true
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "department": {
+                "$ref": "#/components/schemas/Department"
+              },
+              "classes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Class"
+                }
+              },
+              "current": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PrerequisiteCourse"
+                }
+              },
+              "prerequisites": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PrerequisiteCourse"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PrerequisiteCourse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "courseId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "prerequisiteCourseId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "requirePassed": {
+                "type": "boolean"
+              },
+              "course": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                ]
+              },
+              "prerequisite": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "Semester": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "startYear": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "endYear": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "split": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
+                }
+              },
+              "tuitionFees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TuitionFee"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TuitionFee": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "totalFee": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "semesterId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "semester": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Semester"
+                  }
+                ]
+              },
+              "user": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/User"
+                  }
+                ]
+              }
+            }
+          }
+        ]
       },
       "DepartmentDto": {
         "type": "object",
