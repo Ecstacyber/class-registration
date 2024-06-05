@@ -8,8 +8,6 @@ public class Course : BaseAuditableEntity
     public int? DepartmentId { get; set; }
     public required string CourseCode { get; set; }
     public required string CourseName { get; set; }
-    public required long Fee { get; set; }
-    public required int Credit { get; set; }
     public string? Description { get; set; }
     public Department Department { get; set; } = null!;
     public IList<Class> Classes { get; set; } = new List<Class>();

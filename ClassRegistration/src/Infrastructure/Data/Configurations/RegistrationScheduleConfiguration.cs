@@ -15,5 +15,6 @@ public class RegistrationScheduleConfiguration : IEntityTypeConfiguration<Regist
         builder.Property(t => t.Name).IsRequired();
         builder.Property(t => t.StartDate).IsRequired();
         builder.Property(t => t.EndDate).IsRequired();
+        builder.Property(t => t.FeePerCredit).IsRequired();
     }  
 }

@@ -7,6 +7,7 @@ public class ClassResult
     public int Id { get; set; }
     public int CourseId { get; set; }
     public int ClassTypeId { get; set; }
+    public int RegistrationScheduleId { get; set; }
     public string? ClassCode { get; set; }
     public string? DepartmentName { get; set; }
     public int DayOfWeek { get; set; }
@@ -16,6 +17,7 @@ public class ClassResult
     public bool CanBeRegistered { get; set; }
     public ClassType? ClassType { get; set; }
     public Course? Course { get; set; }
+    public RegistrationSchedule? RegistrationSchedule { get; set; }
     public IList<UserClass> UserClasses { get; set; } = new List<UserClass>();
     private class Mapping : Profile
     {

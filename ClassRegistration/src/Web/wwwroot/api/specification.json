@@ -495,7 +495,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -1503,10 +1503,10 @@
         }
       }
     },
-    "/api/UserList": {
+    "/api/Users": {
       "get": {
         "tags": [
-          "UserList"
+          "Users"
         ],
         "operationId": "GetUserList",
         "responses": {
@@ -1517,7 +1517,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/User"
+                    "$ref": "#/components/schemas/UserDto"
                   }
                 }
               }
@@ -1584,6 +1584,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "registrationScheduleId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "classCode": {
             "type": "string",
             "nullable": true
@@ -1624,6 +1628,14 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/Course"
+              }
+            ]
+          },
+          "registrationSchedule": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RegistrationSchedule"
               }
             ]
           },
@@ -1676,6 +1688,11 @@
                 "format": "int32",
                 "nullable": true
               },
+              "registrationScheduleId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
               "classCode": {
                 "type": "string"
               },
@@ -1691,6 +1708,10 @@
                 "type": "integer",
                 "format": "int32"
               },
+              "credit": {
+                "type": "integer",
+                "format": "int32"
+              },
               "capacity": {
                 "type": "integer",
                 "format": "int32"
@@ -1703,6 +1724,9 @@
               },
               "classType": {
                 "$ref": "#/components/schemas/ClassType"
+              },
+              "registrationSchedule": {
+                "$ref": "#/components/schemas/RegistrationSchedule"
               },
               "userClasses": {
                 "type": "array",
@@ -1733,14 +1757,6 @@
               },
               "courseName": {
                 "type": "string"
-              },
-              "fee": {
-                "type": "integer",
-                "format": "int64"
-              },
-              "credit": {
-                "type": "integer",
-                "format": "int32"
               },
               "description": {
                 "type": "string",
@@ -1884,6 +1900,52 @@
           }
         ]
       },
+      "RegistrationSchedule": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "feePerCredit": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "classes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Class"
+                }
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
+                }
+              },
+              "tuitionFees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TuitionFee"
+                }
+              }
+            }
+          }
+        ]
+      },
       "UserClass": {
         "allOf": [
           {
@@ -1899,6 +1961,11 @@
                 "nullable": true
               },
               "registrationScheduleId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "userId": {
                 "type": "integer",
                 "format": "int32",
                 "nullable": true
@@ -1921,12 +1988,20 @@
                     "$ref": "#/components/schemas/RegistrationSchedule"
                   }
                 ]
+              },
+              "user": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/User"
+                  }
+                ]
               }
             }
           }
         ]
       },
-      "RegistrationSchedule": {
+      "User": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -1935,16 +2010,26 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "startDate": {
+              "userName": {
                 "type": "string",
-                "format": "date-time"
+                "nullable": true
               },
-              "endDate": {
+              "email": {
                 "type": "string",
-                "format": "date-time"
+                "nullable": true
+              },
+              "departmentId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "department": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Department"
+                  }
+                ]
               },
               "userClasses": {
                 "type": "array",
@@ -1952,10 +2037,16 @@
                   "$ref": "#/components/schemas/UserClass"
                 }
               },
-              "tuitionFees": {
+              "tuitionFee": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/TuitionFee"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
               }
             }
@@ -1987,6 +2078,14 @@
                     "$ref": "#/components/schemas/RegistrationSchedule"
                   }
                 ]
+              },
+              "user": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/User"
+                  }
+                ]
               }
             }
           }
@@ -2004,6 +2103,14 @@
             "type": "string"
           },
           "classTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrationScheduleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "credit": {
             "type": "integer",
             "format": "int32"
           },
@@ -2041,8 +2148,16 @@
             "type": "integer",
             "format": "int32"
           },
+          "registrationScheduleId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "classCode": {
             "type": "string"
+          },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
           },
           "dayOfWeek": {
             "type": "integer",
@@ -2145,14 +2260,6 @@
           "courseName": {
             "type": "string"
           },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
           "description": {
             "type": "string",
             "nullable": true
@@ -2181,14 +2288,6 @@
           "courseName": {
             "type": "string"
           },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
           "description": {
             "type": "string",
             "nullable": true
@@ -2213,14 +2312,6 @@
           "courseName": {
             "type": "string"
           },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
           "description": {
             "type": "string",
             "nullable": true
@@ -2238,14 +2329,6 @@
           "courseName": {
             "type": "string"
           },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          },
           "description": {
             "type": "string",
             "nullable": true
@@ -2260,13 +2343,13 @@
           }
         }
       },
-      "User": {
+      "UserDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string",
-            "nullable": true
+            "type": "integer",
+            "format": "int32"
           },
           "userName": {
             "type": "string",
@@ -2280,6 +2363,14 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
           },
           "roles": {
             "type": "array",
@@ -2479,6 +2570,10 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "feePerCredit": {
+            "type": "integer",
+            "format": "int32"
           },
           "userClasses": {
             "type": "array",

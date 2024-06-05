@@ -112,7 +112,24 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        var humanAdmin = new User { UserName = "administrator@localhost", Email = "administrator@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        if (!_context.Humans.Any(x => x.UserName == humanAdmin.UserName))
+        {
+            await _context.Humans.AddAsync(humanAdmin);
+        }
+        var humanStudent = new User { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        if (!_context.Humans.Any(x => x.UserName == humanStudent.UserName))
+        {
+            await _context.Humans.AddAsync(humanStudent);
+        }
+        var humanLecturer = new User { UserName = "lecturer@localhost", Email = "lecturer@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        if (!_context.Humans.Any(x => x.UserName == humanStudent.UserName))
+        {
+            await _context.Humans.AddAsync(humanStudent);
+        }
+        await _context.SaveChangesAsync();
+
+        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", HumanId = humanAdmin.Id };
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
             await _userManager.CreateAsync(administrator, "Administrator@1");
@@ -122,17 +139,7 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        var administrator2 = new ApplicationUser { UserName = "administrator2@localhost", Email = "administrator2@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
-        if (_userManager.Users.All(u => u.UserName != administrator2.UserName))
-        {
-            await _userManager.CreateAsync(administrator2, "Administrator@2");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
-            {
-                await _userManager.AddToRolesAsync(administrator2, new[] { administratorRole.Name });
-            }
-        }
-
-        var lecturer = new ApplicationUser { UserName = "lecturer@localhost", Email = "lecturer@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        var lecturer = new ApplicationUser { UserName = "lecturer@localhost", Email = "lecturer@localhost", HumanId = humanLecturer.Id };
         if (_userManager.Users.All(u => u.UserName != lecturer.UserName))
         {
             await _userManager.CreateAsync(lecturer, "Lecturer@1");
@@ -142,7 +149,7 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
+        var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", HumanId = humanStudent.Id };
         if (_userManager.Users.All(u => u.UserName != student.UserName))
         {
             await _userManager.CreateAsync(student, "Student@1");

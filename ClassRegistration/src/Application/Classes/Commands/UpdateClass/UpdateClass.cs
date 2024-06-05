@@ -7,7 +7,9 @@ public record UpdateClassCommand : IRequest
     public int Id { get; init; }
     public int CourseId { get; init; }
     public required int ClassTypeId { get; init; }
+    public required int RegistrationScheduleId { get; init; }
     public required string ClassCode { get; init; }
+    public int Credit { get; init; }   
     public int DayOfWeek { get; init; }
     public int StartPeriod { get; init; }
     public int EndPeriod { get; init; }
@@ -68,7 +70,9 @@ public class UpdateClassCommandHandler : IRequestHandler<UpdateClassCommand>
 
         entity.CourseId = request.CourseId;
         entity.ClassTypeId = request.ClassTypeId;
+        entity.RegistrationScheduleId = request.RegistrationScheduleId;
         entity.ClassCode = request.ClassCode;
+        entity.Credit = request.Credit;
         entity.DayOfWeek = request.DayOfWeek;
         entity.StartPeriod = request.StartPeriod;
         entity.EndPeriod = request.EndPeriod;

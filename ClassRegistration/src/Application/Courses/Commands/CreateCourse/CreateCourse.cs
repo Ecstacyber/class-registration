@@ -8,8 +8,6 @@ public record CreateCourseCommand : IRequest<int>
     public int DepartmentId { get; init; }
     public required string CourseCode { get; init; }
     public required string CourseName { get; init; }
-    public required int Credit { get; init; }
-    public required long Fee { get; init; }
     public string? Description { get; init; }
 }
 
@@ -60,8 +58,6 @@ public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, i
         {
             CourseCode = request.CourseCode,
             CourseName = request.CourseName,
-            Credit = request.Credit,
-            Fee = request.Fee,
             Description = request.Description,
             DepartmentId = request.DepartmentId
         };

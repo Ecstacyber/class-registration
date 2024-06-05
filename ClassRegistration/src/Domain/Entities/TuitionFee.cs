@@ -5,4 +5,5 @@ public class TuitionFee : BaseAuditableEntity
     public long TotalFee { get; set; }
     public int? RegistrationScheduleId { get; set; }
     public RegistrationSchedule? RegistrationSchedule { get; set; }
+    public User? User { get; set; }
 }

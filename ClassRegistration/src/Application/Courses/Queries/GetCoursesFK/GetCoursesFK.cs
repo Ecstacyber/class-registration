@@ -30,8 +30,6 @@ public class GetPrerequisiteCoursesFKQueryHandler : IRequestHandler<GetCoursesFK
             {
                 PrerequisiteCourseId = x.Id,
                 CourseName = x.CourseCode + " - " + x.CourseName,
-                Credit = x.Credit,
-                Fee = x.Fee,
                 Description = x.Description,
                 Department = x.Department
             })

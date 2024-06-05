@@ -8,6 +8,8 @@ public record CreateClassCommand : IRequest<int>
     public int CourseId { get; init; }
     public required string ClassCode { get; init; }
     public required int ClassTypeId { get; init; }
+    public required int RegistrationScheduleId { get; init; }
+    public int Credit { get; init; }
     public int DayOfWeek { get; init; }
     public int StartPeriod { get; init; }
     public int EndPeriod { get; init; }
@@ -26,8 +28,7 @@ public class CreateClassCommandValidator : AbstractValidator<CreateClassCommand>
                 .WithMessage("'{PropertyName}' must exist.");
 
         RuleFor(v => v.ClassCode)
-            .NotEmpty().WithMessage("'{PropertyName}' must exist.")
-            .MaximumLength(10).WithMessage("ClassCode must not exceed 10 characters.");
+            .NotEmpty().WithMessage("'{PropertyName}' must not be empty.");
 
         RuleFor(v => v.DayOfWeek)
             .NotEmpty()
@@ -68,6 +69,8 @@ public class CreateClassCommandHandler : IRequestHandler<CreateClassCommand, int
             CourseId = request.CourseId,
             ClassCode = request.ClassCode,
             ClassTypeId = request.ClassTypeId,
+            RegistrationScheduleId = request.RegistrationScheduleId,
+            Credit = request.Credit,
             DayOfWeek = request.DayOfWeek,
             StartPeriod = request.StartPeriod,
             EndPeriod = request.EndPeriod,

@@ -15,6 +15,7 @@ public interface IApplicationDbContext
     DbSet<TuitionFee> TuitionFees { get; }
     DbSet<UserClass> UserClasses { get; }
     DbSet<PrerequisiteCourse> PrerequisiteCourses { get; }
+    DbSet<User> Humans { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

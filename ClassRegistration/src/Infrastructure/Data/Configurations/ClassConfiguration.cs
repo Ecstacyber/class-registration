@@ -14,5 +14,6 @@ public class ClassConfiguration : IEntityTypeConfiguration<Class>
     {
         builder.Property(t => t.ClassCode).HasMaxLength(50).IsRequired();
         builder.Property(t => t.Capacity).IsRequired();
+        builder.Property(t => t.Credit).IsRequired();
     }
 }

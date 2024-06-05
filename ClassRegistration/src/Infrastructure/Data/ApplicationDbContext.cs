@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Semester> Semesters => Set<Semester>();
     public DbSet<TuitionFee> TuitionFees => Set<TuitionFee>();
     public DbSet<PrerequisiteCourse> PrerequisiteCourses => Set<PrerequisiteCourse>();
+    public DbSet<User> Humans => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -40,5 +41,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(x => x.PrerequisiteCourseId)
                 .HasConstraintName("FK_PrerequisiteCourse_PrerequisiteCourseId");
         });
+
+        builder.Entity<User>().Ignore(x => x.Roles);
     }
 }
