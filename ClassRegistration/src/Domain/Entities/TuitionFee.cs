@@ -3,6 +3,6 @@
 public class TuitionFee : BaseAuditableEntity
 {
     public long TotalFee { get; set; }
-    public int SemesterId { get; set; }
-    public Semester? Semester { get; set; }
+    public int? RegistrationScheduleId { get; set; }
+    public RegistrationSchedule? RegistrationSchedule { get; set; }
 }

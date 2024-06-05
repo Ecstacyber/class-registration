@@ -30,12 +30,21 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("CanBeRegistered")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
                     b.Property<string>("ClassCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("CourseId")
+                    b.Property<int?>("ClassTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CourseId")
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("Created")
@@ -44,10 +53,42 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Credit")
+                    b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<string>("Fee")
+                    b.Property<int>("EndPeriod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StartPeriod")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassTypeId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.ClassType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("LastModified")
@@ -56,11 +97,13 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("Classes");
+                    b.ToTable("ClassTypes");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Course", b =>
@@ -86,11 +129,17 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int>("Credit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Fee")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("datetimeoffset");
@@ -178,6 +227,46 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.HasIndex("PrerequisiteCourseId");
 
                     b.ToTable("PrerequisiteCourses");
+                });
+
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SemesterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SemesterId");
+
+                    b.ToTable("RegistrationSchedules");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>
@@ -314,7 +403,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SemesterId")
+                    b.Property<int?>("RegistrationScheduleId")
                         .HasColumnType("int");
 
                     b.Property<long>("TotalFee")
@@ -324,7 +413,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("SemesterId");
+                    b.HasIndex("RegistrationScheduleId");
 
                     b.ToTable("TuitionFees");
                 });
@@ -340,7 +429,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ClassId")
+                    b.Property<int?>("ClassId")
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("Created")
@@ -358,7 +447,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Property<bool>("Passed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SemesterId")
+                    b.Property<int?>("RegistrationScheduleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -367,7 +456,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.HasIndex("SemesterId");
+                    b.HasIndex("RegistrationScheduleId");
 
                     b.ToTable("UserClasses");
                 });
@@ -581,11 +670,15 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Class", b =>
                 {
+                    b.HasOne("ClassRegistration.Domain.Entities.ClassType", "ClassType")
+                        .WithMany("Class")
+                        .HasForeignKey("ClassTypeId");
+
                     b.HasOne("ClassRegistration.Domain.Entities.Course", "Course")
                         .WithMany("Classes")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourseId");
+
+                    b.Navigation("ClassType");
 
                     b.Navigation("Course");
                 });
@@ -594,9 +687,7 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                 {
                     b.HasOne("ClassRegistration.Domain.Entities.Department", "Department")
                         .WithMany("Courses")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
                     b.Navigation("Department");
                 });
@@ -606,18 +697,23 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.HasOne("ClassRegistration.Domain.Entities.Course", "Course")
                         .WithMany("Current")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_PrerequisiteCourse_CourseId");
 
                     b.HasOne("ClassRegistration.Domain.Entities.Course", "Prerequisite")
                         .WithMany("Prerequisites")
                         .HasForeignKey("PrerequisiteCourseId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_PrerequisiteCourse_PrerequisiteCourseId");
 
                     b.Navigation("Course");
 
                     b.Navigation("Prerequisite");
+                });
+
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationSchedule", b =>
+                {
+                    b.HasOne("ClassRegistration.Domain.Entities.Semester", null)
+                        .WithMany("RegistrationSchedules")
+                        .HasForeignKey("SemesterId");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.TodoItem", b =>
@@ -660,13 +756,11 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .WithMany("TuitionFee")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("ClassRegistration.Domain.Entities.Semester", "Semester")
+                    b.HasOne("ClassRegistration.Domain.Entities.RegistrationSchedule", "RegistrationSchedule")
                         .WithMany("TuitionFees")
-                        .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegistrationScheduleId");
 
-                    b.Navigation("Semester");
+                    b.Navigation("RegistrationSchedule");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.UserClass", b =>
@@ -677,19 +771,15 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
                     b.HasOne("ClassRegistration.Domain.Entities.Class", "Class")
                         .WithMany("UserClasses")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClassId");
 
-                    b.HasOne("ClassRegistration.Domain.Entities.Semester", "Semester")
+                    b.HasOne("ClassRegistration.Domain.Entities.RegistrationSchedule", "RegistrationSchedule")
                         .WithMany("UserClasses")
-                        .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegistrationScheduleId");
 
                     b.Navigation("Class");
 
-                    b.Navigation("Semester");
+                    b.Navigation("RegistrationSchedule");
                 });
 
             modelBuilder.Entity("ClassRegistration.Infrastructure.Identity.ApplicationUser", b =>
@@ -757,6 +847,11 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Navigation("UserClasses");
                 });
 
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.ClassType", b =>
+                {
+                    b.Navigation("Class");
+                });
+
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Course", b =>
                 {
                     b.Navigation("Classes");
@@ -771,11 +866,16 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Navigation("Courses");
                 });
 
-            modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationSchedule", b =>
                 {
                     b.Navigation("TuitionFees");
 
                     b.Navigation("UserClasses");
+                });
+
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.Semester", b =>
+                {
+                    b.Navigation("RegistrationSchedules");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.TodoList", b =>

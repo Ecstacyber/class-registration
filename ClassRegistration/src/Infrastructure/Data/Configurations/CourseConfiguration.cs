@@ -14,5 +14,7 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
     {
         builder.Property(t => t.CourseCode).HasMaxLength(50).IsRequired();
         builder.Property(t => t.CourseName).IsRequired();
+        builder.Property(t => t.Fee).IsRequired();
+        builder.Property(t => t.Credit).IsRequired();
     }
 }

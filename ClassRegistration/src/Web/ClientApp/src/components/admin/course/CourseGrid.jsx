@@ -1,4 +1,4 @@
-﻿import React, { Component, useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
     GridComponent,
     ColumnsDirective,
@@ -11,266 +11,19 @@ import {
     Edit,
     ForeignKey
 } from '@syncfusion/ej2-react-grids';
-import { DataManager, WebApiAdaptor } from '@syncfusion/ej2-data';
-//import { NavItem, NavLink } from 'reactstrap';
+import { createElement, L10n } from '@syncfusion/ej2-base';
+import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { useNavigate } from 'react-router-dom';
-import { DepartmentsClient, CoursesClient, DepartmentsFKRefClient } from '../../../web-api-client.ts';
+import { CoursesClient, DepartmentsFKRefClient } from '../../../web-api-client.ts';
 import '../../../custom.css'
-//import { CourseDialogTemplate } from './CourseDialogTemplate.jsx';
-
-//export class CourseGrid extends Component {
-//    static displayName = CourseGrid.name;
-
-//    constructor(props) {
-//        super(props);
-//        this.state = { depData: [], loading: true };
-//    }
-    
-//    courseClient = new CoursesClient();
-//    departmentsClient = new DepartmentsClient();
-//    departmentsFKRefClient = new DepartmentsFKRefClient();
-//    //departmentData = new DataManager({
-//    //    url: 'https://localhost:44447/api/DepartmentsFKRef',
-//    //    adaptor: new WebApiAdaptor()
-//    //});
-//    orderBy = '';
-//    filterAttr = '';
-//    filterText = '';
-//    gridInstance;
-//    fields = { text: 'text', value: 'value' };
-//    toolbarOptions = ['Add', 'Edit', 'Delete'];
-//    editSettings = {
-//        allowEditing: true,
-//        allowAdding: true,
-//        allowDeleting: true,
-//        showDeleteConfirmDialog: true,
-//        mode: 'Dialog'
-//    };
-//    validationRules = { required: true };
-//    pageSettings = { pageSizes: true };
-//    check = {
-//        type: 'CheckBox'
-//    };
-//    select = {
-//        persistSelection: true,
-//        type: 'Multiple',
-//        checkboxOnly: true
-//    };
-//    filter = {
-//        ignoreAccent: true
-//    };
-//    commands = [
-//        { type: 'Edit', buttonOption: { iconCss: ' e-icons e-edit', cssClass: 'e-flat' } }
-//    ];
-
-//    componentDidMount() {        
-//        this.courseClient.getCourses(0, 12)
-//            .then((gridData) => { this.gridInstance.dataSource = gridData });
-//    }
-
-//    UNSAFE_componentWillMount() {
-//        this.populateDepartmentFKData();
-//    }
-    
-//    onRecordDoubleClick(args) {
-//        console.log(args);
-//        //const navigate = useNavigate();
-//        //navigate('/admin-index/course/details/' + args.rowData.id);
-//    }
-
-//    dataStateChange(args) {
-//        console.log(args);
-//        if (args.action) {
-//            if (args.action.requestType === 'paging') {
-//                this.courseClient.getCourses(
-//                    args.skip,
-//                    args.take,
-//                    this.orderBy,
-//                    this.filterAttr,
-//                    this.filterText
-//                )
-//                    .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                return;
-//            }
-
-//            if (args.action.requestType === 'sorting') {
-//                if (args.action.columnName && args.action.direction) {
-//                    this.orderBy = args.action.columnName + '-' + args.action.direction;
-//                    this.courseClient.getCourses(
-//                        args.skip,
-//                        args.take,
-//                        this.orderBy,
-//                        this.filterAttr ? this.filterAttr : '',
-//                        this.filterText ? this.filterText : ''
-//                    )
-//                        .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                    return;
-//                }
-//                else {
-//                    this.orderBy = '';
-//                    this.courseClient.getCourses(
-//                        args.skip,
-//                        args.take,
-//                        '',
-//                        this.filterAttr ? this.filterAttr : '',
-//                        this.filterText ? this.filterText : ''
-//                    )
-//                        .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                    return;
-//                }
-//            }
-
-//            if (args.action.action === 'filter') {
-//                if (args.action.currentFilterObject.value && args.action.currentFilterObject.value !== '') {
-//                    this.filterAttr = args.action.currentFilterObject.field;
-//                    this.filterText = args.action.currentFilterObject.value;
-//                    this.courseClient.getCourses(
-//                        args.skip,
-//                        args.take,
-//                        this.orderBy,
-//                        this.filterAttr,
-//                        this.filterText
-//                    )
-//                        .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                    return;
-//                } else {
-//                    this.courseClient.getCourses(args.skip, args.take)
-//                        .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                    return;
-//                }
-
-//            }
-
-//            if (args.action.action === 'clearFilter') {
-//                this.filterAttr = '';
-//                this.filterText = '';
-//                this.courseClient.getCourses(args.skip, args.take)
-//                    .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                return;
-//            }
-
-//            if (args.action.requestType === 'refresh') {
-//                this.filterAttr = '';
-//                this.filterText = '';
-//                this.orderBy = '';
-//                this.courseClient.getCourses(0, 12)
-//                    .then((gridData) => { this.gridInstance.dataSource = gridData });
-//                return;
-//            }
-
-//            if (args.action.requestType === 'save') {
-//                this.filterAttr = '';
-//                this.filterText = '';
-//                this.orderBy = '';
-//                this.courseClient.getCourses(args.skip, args.take)
-//                    .then((gridData) => { this.gridInstance.dataSource = gridData });
-//            }
-
-//            this.courseClient.getCourses(args.skip, args.take)
-//                .then((gridData) => { this.gridInstance.dataSource = gridData });
-
-//        } else {
-//            this.courseClient.getCourses(args.skip, args.take)
-//                .then((gridData) => { this.gridInstance.dataSource = gridData });
-//        }
-//    }
-
-//    dataSourceChanged(args) {
-//        if (args.action === 'add') {
-//            this.courseClient.createCourse(args.data);
-//        } else if (args.action === 'edit') {
-//            this.courseClient.updateCourse(args.data.id, args.data);
-//        } else if (args.requestType === 'delete') {
-//            args.data.forEach((deleteData) => {
-//                this.courseClient.deleteCourse(deleteData.id);
-//            });           
-//        }
-//        this.filterAttr = '';
-//        this.filterText = '';
-//        this.orderBy = '';
-//        this.courseClient.getCourses(args.skip, args.take)
-//            .then((gridData) => { this.gridInstance.dataSource = gridData });
-//    }
-
-//    static renderCoursesGridData(depData) {
-//        return (
-//            <ColumnsDirective>
-//                <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
-//                <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-//                <ColumnDirective
-//                    field='departmentId'
-//                    foreignKeyValue='departmentName'
-//                    foreignKeyField='departmentId'
-//                    dataSource={depData}
-//                    headerText='Khoa'
-//                    width='50'
-//                    validationRules={CourseGrid.validationRules}
-//                    clipMode='EllipsisWithTooltip' />
-//                <ColumnDirective field='courseCode' headerText='Mã lớp' width='60' validationRules={CourseGrid.validationRules} clipMode='EllipsisWithTooltip' />
-//                <ColumnDirective field='courseName' headerText='Tên lớp' width='120' validationRules={CourseGrid.validationRules} clipMode='EllipsisWithTooltip' />
-//                <ColumnDirective headerText='Chi tiết' width='50' commands={ }>
-                    
-//                </ColumnDirective>
-//            </ColumnsDirective>
-
-//        )
-//    }
-
-//    async populateDepartmentFKData() {
-//        let client = new DepartmentsFKRefClient();
-//        const data = await client.getDepartmentsForFKRef();
-//        this.setState({ depData: data, loading: false });
-//    }
-
-//    render() {        
-//        let contents = this.state.loading
-//            ? <div></div>
-//            : CourseGrid.renderCoursesGridData(this.state.depData);
-//        return (
-//            <div className='control-pane'>
-//                <div className='control-section'>
-//                    <div style={{ paddingBottom: '18px' }}>
-//                        <h2>Danh sách môn học</h2>
-//                        <br />
-//                    </div>
-//                    <GridComponent id="overviewgrid"
-//                        dataSource={this.data}
-//                        toolbar={this.toolbarOptions}
-//                        editSettings={this.editSettings}
-//                        allowPaging={true}
-//                        pageSettings={this.pageSettings}
-//                        enableHover={true}
-//                        height='456'
-//                        loadingIndicator={{ indicatorType: 'Shimmer' }}
-//                        rowHeight={38}
-//                        ref={(g) => { this.gridInstance = g; }}
-//                        allowFiltering={true}
-//                        filterSettings={this.filter}
-//                        allowSorting={true}
-//                        allowMultiSorting={true}
-//                        allowSelection={true}
-//                        selectionSettings={this.select}
-//                        enableHeaderFocus={true}
-//                        dataStateChange={this.dataStateChange.bind(this)}
-//                        dataSourceChanged={this.dataSourceChanged.bind(this)}
-//                        recordDoubleClick={this.onRecordDoubleClick.bind(this)}
-//                    >
-//                        {contents}
-//                        <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
-//                    </GridComponent>
-//                </div>
-//            </div>
-//        )
-//    }
-//}
 
 const CourseGrid = () => {
-    const [ courseData, setCourseData ] = useState(null);
+    const [courseData, setCourseData] = useState({
+        result: [],
+        count: 0
+    });
     const [ departmentData, setDepartmentData ] = useState(null);
     const navigate = useNavigate();
-    //const [orderBy, setOrderBy] = useState('');
-    //const [filterAttr, setFilterAttr] = useState('');
-    //const [filterText, setFilterText] = useState('');
     let orderBy = '';
     let filterAttr = '';
     let filterText = '';
@@ -285,6 +38,23 @@ const CourseGrid = () => {
         mode: 'Dialog'
     };
     const validationRules = { required: true };
+    const numericValidationRules = {
+        required: true,
+        number: true
+    }
+    const feeParams = {
+        params: {
+            decimals: 0,
+            format: "N",
+            min: 0,
+            validateDecimalOnType: true
+        }
+    };
+    const departmentParams = {
+        params: {
+            allowFiltering: true
+        }
+    };
     const pageSettings = { pageSizes: true };
     const check = {
         type: 'CheckBox'
@@ -297,6 +67,56 @@ const CourseGrid = () => {
     const filter = {
         ignoreAccent: true
     };
+
+    //const filterBarTemplate = {
+    //    create: (args) => {
+    //        return createElement('input', { className: 'flm-input' });
+    //    },
+    //    write: (args) => {
+    //        departmentData.splice(0, 0, { 'type': 'All' }); // for clear filtering
+    //        const coursesClient = new CoursesClient();
+    //        const dropInstance = new DropDownList({
+    //            change: (arg) => {
+    //                if (gridInstance) {
+    //                    if (arg.value !== 'All') {
+    //                        console.log(arg);
+    //                        orderBy = '';
+    //                        filterAttr = 'classType';
+    //                        filterText = arg.value;
+    //                        coursesClient.getCourses(
+    //                            0,
+    //                            12,
+    //                            '',
+    //                            filterAttr,
+    //                            filterText
+    //                        )
+    //                            .then((gridData) => { gridInstance.dataSource = gridData });
+    //                    }
+    //                    else {
+    //                        console.log(arg);
+    //                        orderBy = '';
+    //                        filterAttr = '';
+    //                        filterText = '';
+    //                        coursesClient.getCourses(
+    //                            0,
+    //                            12,
+    //                            '',
+    //                            '',
+    //                            ''
+    //                        )
+    //                            .then((gridData) => { gridInstance.dataSource = gridData });
+    //                    }
+    //                }
+    //            },
+    //            dataSource: departmentData,
+    //            fields: { text: 'departmentName' },
+    //            index: 0,
+    //            placeholder: 'Chọn khoa',
+    //            popupHeight: '200px'
+    //        });
+    //        dropInstance.appendTo(args.element);
+    //    }
+    //};
 
     function dataStateChange(args) {
         console.log(args);
@@ -383,15 +203,16 @@ const CourseGrid = () => {
                 filterAttr = '';
                 filterText = '';
                 orderBy = '';
-                coursesClient.getCourses(args.skip, args.take)
+                coursesClient.getCourses(0, 12)
                     .then((gridData) => { gridInstance.dataSource = gridData });
+                return;
             }
 
-            coursesClient.getCourses(args.skip, args.take)
+            coursesClient.getCourses(0, 12)
                 .then((gridData) => { gridInstance.dataSource = gridData });
 
         } else {
-            coursesClient.getCourses(args.skip, args.take)
+            coursesClient.getCourses(0, 12)
                 .then((gridData) => { gridInstance.dataSource = gridData });
         }
     }
@@ -407,16 +228,18 @@ const CourseGrid = () => {
             args.data.forEach((deleteData) => {
                 coursesClient.deleteCourse(deleteData.id);
             });
+            filterAttr = '';
+            filterText = '';
+            orderBy = '';
+            coursesClient.getCourses(0, 12)
+                .then((gridData) => { gridInstance.dataSource = gridData });
+            return;
         }
-        filterAttr = '';
-        filterText = '';
-        orderBy = '';
-        coursesClient.getCourses(args.skip, args.take)
-            .then((gridData) => { gridInstance.dataSource = gridData });
+        
     }
 
     function onRecordDoubleClick(args) {
-        console.log(args);
+        //console.log(args);
         navigate('/admin-index/course/' + args.rowData.id);
     }
 
@@ -433,6 +256,21 @@ const CourseGrid = () => {
     useEffect(() => {
         getData();
     }, []);
+
+    function valueAccess(field, data, column) {
+        var value = data[column.field];
+        if (data['fee'] % 2 === 0) {
+            value = '' + value;
+            var parts = value.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
+        } else {
+            value = '' + value;
+            var parts = value.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
+        }
+    }
 
     if (departmentData !== null) {
         return (
@@ -460,24 +298,35 @@ const CourseGrid = () => {
                         allowSelection={true}
                         selectionSettings={select}
                         enableHeaderFocus={true}
-                        dataStateChange={dataStateChange}
-                        dataSourceChanged={dataSourceChanged}
-                        recordDoubleClick={onRecordDoubleClick}
+                        dataStateChange={dataStateChange.bind(this)}
+                        dataSourceChanged={dataSourceChanged.bind(this)}
+                        recordDoubleClick={onRecordDoubleClick.bind(this)}                        
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
                             <ColumnDirective
                                 field='departmentId'
-                                foreignKeyValue = 'departmentName'
-                                foreignKeyField = 'departmentId'
-                                dataSource = { departmentData }
+                                foreignKeyValue='departmentName'
+                                foreignKeyField='departmentId'
+                                dataSource={departmentData}
                                 headerText='Khoa'
                                 width='50'
                                 validationRules={validationRules}
+                                edit={departmentParams}
                                 clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='courseCode' headerText='Mã lớp' width='60' validationRules={validationRules} clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='courseName' headerText='Tên lớp' width='120' validationRules={validationRules} clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='courseCode' headerText='Mã môn học' width='60' validationRules={validationRules} clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='courseName' headerText='Tên môn học' width='120' validationRules={validationRules} clipMode='EllipsisWithTooltip' />                           
+                            <ColumnDirective field='credit' headerText='Tín chỉ' width='40' validationRules={numericValidationRules} clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective
+                                field='fee'
+                                headerText='Học phí'
+                                width='100'
+                                validationRules={numericValidationRules}
+                                clipMode='EllipsisWithTooltip'
+                                editType='numericedit'
+                                edit={feeParams}
+                                valueAccessor={valueAccess.bind(this)} />
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                     </GridComponent>

@@ -99,6 +99,12 @@ public class ApplicationDbContextInitialiser
             await _roleManager.CreateAsync(administratorRole);
         }
 
+        var lecturerRole = new IdentityRole(Roles.Lecturer);
+        if (_roleManager.Roles.All(r => r.Name != lecturerRole.Name))
+        {
+            await _roleManager.CreateAsync(lecturerRole);
+        }
+
         var studentRole = new IdentityRole(Roles.Student);
         if (_roleManager.Roles.All(r => r.Name != studentRole.Name))
         {
@@ -116,6 +122,26 @@ public class ApplicationDbContextInitialiser
             }
         }
 
+        var administrator2 = new ApplicationUser { UserName = "administrator2@localhost", Email = "administrator2@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        if (_userManager.Users.All(u => u.UserName != administrator2.UserName))
+        {
+            await _userManager.CreateAsync(administrator2, "Administrator@2");
+            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            {
+                await _userManager.AddToRolesAsync(administrator2, new[] { administratorRole.Name });
+            }
+        }
+
+        var lecturer = new ApplicationUser { UserName = "lecturer@localhost", Email = "lecturer@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
+        if (_userManager.Users.All(u => u.UserName != lecturer.UserName))
+        {
+            await _userManager.CreateAsync(lecturer, "Lecturer@1");
+            if (!string.IsNullOrWhiteSpace(lecturerRole.Name))
+            {
+                await _userManager.AddToRolesAsync(lecturer, new[] { lecturerRole.Name });
+            }
+        }
+
         var student = new ApplicationUser { UserName = "student@localhost", Email = "student@localhost", Department = studentDepartment, DepartmentId = studentDepartment.Id };
         if (_userManager.Users.All(u => u.UserName != student.UserName))
         {
@@ -124,6 +150,20 @@ public class ApplicationDbContextInitialiser
             {
                 await _userManager.AddToRolesAsync(student, new[] { studentRole.Name });
             }
+        }
+
+        // Default class types
+        if (!_context.ClassTypes.Any(x => x.Type == "Lý thuyết"))
+        {
+            var lt_type = new ClassType { Type = "Lý thuyết" };
+            _context.ClassTypes.Add(lt_type);
+            await _context.SaveChangesAsync();
+        }
+        if (!_context.ClassTypes.Any(x => x.Type == "Thực hành"))
+        {
+            var th_type = new ClassType { Type = "Thực hành" };
+            _context.ClassTypes.Add(th_type);
+            await _context.SaveChangesAsync();
         }
 
         // Default data

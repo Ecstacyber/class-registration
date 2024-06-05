@@ -9,7 +9,7 @@ export class Department extends Component {
         return (
             <AdminLayout>
                 <DepartmentGrid />
-            </AdminLayout>           
+            </AdminLayout>
         );
     }
 }

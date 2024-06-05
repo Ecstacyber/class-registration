@@ -16,7 +16,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Class> Classes => Set<Class>();
+    public DbSet<ClassType> ClassTypes => Set<ClassType>();
     public DbSet<UserClass> UserClasses => Set<UserClass>();
+    public DbSet<RegistrationSchedule> RegistrationSchedules => Set<RegistrationSchedule>();
     public DbSet<Semester> Semesters => Set<Semester>();
     public DbSet<TuitionFee> TuitionFees => Set<TuitionFee>();
     public DbSet<PrerequisiteCourse> PrerequisiteCourses => Set<PrerequisiteCourse>();

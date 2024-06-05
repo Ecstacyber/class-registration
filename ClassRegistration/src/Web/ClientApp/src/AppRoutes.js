@@ -1,11 +1,14 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
-import { Home } from "./components/Home";
+import Home from "./components/Home";
 import { AdminIndex } from "./components/admin/AdminIndex";
 import { Department } from "./components/admin/department/Department";
 import { Course } from "./components/admin/course/Course";
 import CourseDetails from "./components/admin/course/CourseDetails";
+import ClassDetails from "./components/admin/class/ClassDetails";
 import { StudentIndex } from "./components/student/StudentIndex";
+import RegistrationSchedule from './components/admin/registration-schedule/RegistrationSchedule'
+import ClassRegistration from "./components/student/class-registration/ClassRegistration";
 
 const AppRoutes = [
   {
@@ -43,6 +46,20 @@ const AppRoutes = [
   {
     path: 'admin-index/course/:courseId',
     element: <CourseDetails />
+  },
+  {
+    path: 'admin-index/course/:courseId/class/:classId',
+    element: <ClassDetails />
+  },
+  {
+    path: '/admin-index/registration-schedule',
+    name: 'Registration Schedule',
+    element: <RegistrationSchedule />
+  },
+  {
+    path: '/student-index/class-registration',
+    name: 'Home',
+    element: <ClassRegistration />
   }
 ];
 

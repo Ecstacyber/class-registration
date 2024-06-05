@@ -2,7 +2,7 @@
 
 namespace ClassRegistration.Application.PrerequisiteCourses.Queries.GetCoursePrerequisite;
 
-public record GetCoursePrerequisiteQuery : IRequest<IEnumerable<PrerequisiteCourseDto>>
+public record GetCoursePrerequisiteQuery : IRequest<PrerequisiteCourseDto>
 {
 }
 
@@ -13,7 +13,7 @@ public class GetCoursePrerequisiteQueryValidator : AbstractValidator<GetCoursePr
     }
 }
 
-public class GetCoursePrerequisiteQueryHandler : IRequestHandler<GetCoursePrerequisiteQuery, IEnumerable<PrerequisiteCourseDto>>
+public class GetCoursePrerequisiteQueryHandler : IRequestHandler<GetCoursePrerequisiteQuery, PrerequisiteCourseDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -24,10 +24,16 @@ public class GetCoursePrerequisiteQueryHandler : IRequestHandler<GetCoursePrereq
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<PrerequisiteCourseDto>> Handle(GetCoursePrerequisiteQuery request, CancellationToken cancellationToken)
+    public async Task<PrerequisiteCourseDto> Handle(GetCoursePrerequisiteQuery request, CancellationToken cancellationToken)
     {
-        return await _context.PrerequisiteCourses
-            .ProjectTo<PrerequisiteCourseDto>(_mapper.ConfigurationProvider)
+        var result = await _context.PrerequisiteCourses
+            .ProjectTo<PrerequisiteCoursesResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        return new PrerequisiteCourseDto
+        {
+            Result = result,
+            Count = result.Count
+        };
     }
 }

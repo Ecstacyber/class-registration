@@ -6,8 +6,8 @@ public class UserClassDto
 {
     public int Id { get; set; }
     public int ClassId { get; set; }
-    public int SemesterId { get; set; }
-    public bool Passed { get; set; }
+    public int? RegistrationScheduleId { get; set; }
+    public bool? Passed { get; set; }
     public class Mapping : Profile
     {
         public Mapping()

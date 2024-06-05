@@ -4,7 +4,8 @@ import CIcon from '@coreui/icons-react'
 import {
     cilHouse,
     cilNewspaper,
-    cilSchool
+    cilSchool,
+    cilCalendar
 } from '@coreui/icons'
 
 const AdminNav = [
@@ -29,6 +30,12 @@ const AdminNav = [
         name: 'Môn học',
         to: '/admin-index/course',
         icon: <CIcon icon={cilSchool} customClassName="nav-icon" />
+    },
+    {
+        component: CNavItem,
+        name: 'Lịch đăng ký',
+        to: '/admin-index/registration-schedule',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />
     }
 ]
 

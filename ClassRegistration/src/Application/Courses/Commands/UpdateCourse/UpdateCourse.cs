@@ -8,6 +8,8 @@ public record UpdateCourseCommand : IRequest
     public int DepartmentId { get; init; }
     public required string CourseCode { get; init; }
     public required string CourseName { get; init; }
+    public required int Credit { get; init; }
+    public required long Fee { get; init; }
     public string? Description { get; init; }
 }
 
@@ -62,6 +64,8 @@ public class UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCommand>
         entity.DepartmentId = request.DepartmentId;
         entity.CourseCode = request.CourseCode;
         entity.CourseName = request.CourseName;
+        entity.Credit = request.Credit;
+        entity.Fee = request.Fee;
         entity.Description = request.Description;
 
         await _context.SaveChangesAsync(cancellationToken);

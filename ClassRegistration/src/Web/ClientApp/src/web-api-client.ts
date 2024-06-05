@@ -20,8 +20,22 @@ export class ClassesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getClasses(): Promise<ClassDto[]> {
-        let url_ = this.baseUrl + "/api/Classes";
+    getClasses(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined): Promise<ClassDto> {
+        let url_ = this.baseUrl + "/api/Classes?";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -36,7 +50,7 @@ export class ClassesClient {
         });
     }
 
-    protected processGetClasses(response: Response): Promise<ClassDto[]> {
+    protected processGetClasses(response: Response): Promise<ClassDto> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -44,14 +58,7 @@ export class ClassesClient {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ClassDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = ClassDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -59,7 +66,7 @@ export class ClassesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ClassDto[]>(null as any);
+        return Promise.resolve<ClassDto>(null as any);
     }
 
     createClass(command: CreateClassCommand): Promise<number> {
@@ -172,6 +179,123 @@ export class ClassesClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class ClassesByCourseIdClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getClassesByCourseId(courseId: number, skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined): Promise<ClassDto> {
+        let url_ = this.baseUrl + "/api/ClassesByCourseId?";
+        if (courseId === undefined || courseId === null)
+            throw new Error("The parameter 'courseId' must be defined and cannot be null.");
+        else
+            url_ += "CourseId=" + encodeURIComponent("" + courseId) + "&";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetClassesByCourseId(_response);
+        });
+    }
+
+    protected processGetClassesByCourseId(response: Response): Promise<ClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ClassDto>(null as any);
+    }
+}
+
+export class ClassTypesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getClassTypes(): Promise<ClassTypeDto[]> {
+        let url_ = this.baseUrl + "/api/ClassTypes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetClassTypes(_response);
+        });
+    }
+
+    protected processGetClassTypes(response: Response): Promise<ClassTypeDto[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ClassTypeDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ClassTypeDto[]>(null as any);
     }
 }
 
@@ -394,6 +518,59 @@ export class CoursesClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class CoursesFKClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getCoursesFK(): Promise<CoursesFKDto[]> {
+        let url_ = this.baseUrl + "/api/CoursesFK";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCoursesFK(_response);
+        });
+    }
+
+    protected processGetCoursesFK(response: Response): Promise<CoursesFKDto[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CoursesFKDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CoursesFKDto[]>(null as any);
     }
 }
 
@@ -676,7 +853,7 @@ export class PrerequisiteCoursesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getPrerequisiteCourses(): Promise<PrerequisiteCourseDto[]> {
+    getPrerequisiteCourses(): Promise<PrerequisiteCourseDto> {
         let url_ = this.baseUrl + "/api/PrerequisiteCourses";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -692,7 +869,7 @@ export class PrerequisiteCoursesClient {
         });
     }
 
-    protected processGetPrerequisiteCourses(response: Response): Promise<PrerequisiteCourseDto[]> {
+    protected processGetPrerequisiteCourses(response: Response): Promise<PrerequisiteCourseDto> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -700,14 +877,7 @@ export class PrerequisiteCoursesClient {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(PrerequisiteCourseDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = PrerequisiteCourseDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -715,7 +885,7 @@ export class PrerequisiteCoursesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PrerequisiteCourseDto[]>(null as any);
+        return Promise.resolve<PrerequisiteCourseDto>(null as any);
     }
 
     createCoursePrerequisite(command: CreateCoursePrerequisiteCommand): Promise<number> {
@@ -777,6 +947,244 @@ export class PrerequisiteCoursesClient {
     }
 
     protected processDeleteCoursePrerequisite(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class PrerequisiteCoursesByCourseIdClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getPrerequisiteCoursesByCourseId(courseId: number, skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined): Promise<PrerequisiteCourseDto> {
+        let url_ = this.baseUrl + "/api/PrerequisiteCoursesByCourseId?";
+        if (courseId === undefined || courseId === null)
+            throw new Error("The parameter 'courseId' must be defined and cannot be null.");
+        else
+            url_ += "CourseId=" + encodeURIComponent("" + courseId) + "&";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPrerequisiteCoursesByCourseId(_response);
+        });
+    }
+
+    protected processGetPrerequisiteCoursesByCourseId(response: Response): Promise<PrerequisiteCourseDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PrerequisiteCourseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PrerequisiteCourseDto>(null as any);
+    }
+}
+
+export class RegistrationSchedulesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getRegistrationSchedules(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined, filterOperator: string | null | undefined): Promise<RegistrationScheduleDto> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules?";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
+        if (filterOperator !== undefined && filterOperator !== null)
+            url_ += "FilterOperator=" + encodeURIComponent("" + filterOperator) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRegistrationSchedules(_response);
+        });
+    }
+
+    protected processGetRegistrationSchedules(response: Response): Promise<RegistrationScheduleDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegistrationScheduleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RegistrationScheduleDto>(null as any);
+    }
+
+    createRegistrationSchedule(command: CreateRegistrationScheduleCommand): Promise<number> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateRegistrationSchedule(_response);
+        });
+    }
+
+    protected processCreateRegistrationSchedule(response: Response): Promise<number> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<number>(null as any);
+    }
+
+    deleteRegistrationSchedule(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteRegistrationSchedule(_response);
+        });
+    }
+
+    protected processDeleteRegistrationSchedule(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    updateRegistrationSchedule(id: number, command: UpdateRegistrationScheduleCommand): Promise<void> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateRegistrationSchedule(_response);
+        });
+    }
+
+    protected processUpdateRegistrationSchedule(response: Response): Promise<void> {
         followIfLoginRedirect(response);
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
@@ -1558,11 +1966,8 @@ export class WeatherForecastsClient {
 }
 
 export class ClassDto implements IClassDto {
-    id?: number;
-    courseId?: number;
-    classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
+    result?: ClassResult[];
+    count?: number;
 
     constructor(data?: IClassDto) {
         if (data) {
@@ -1575,11 +1980,12 @@ export class ClassDto implements IClassDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
-            this.courseId = _data["courseId"];
-            this.classCode = _data["classCode"];
-            this.fee = _data["fee"];
-            this.credit = _data["credit"];
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(ClassResult.fromJS(item));
+            }
+            this.count = _data["count"];
         }
     }
 
@@ -1592,94 +1998,37 @@ export class ClassDto implements IClassDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["courseId"] = this.courseId;
-        data["classCode"] = this.classCode;
-        data["fee"] = this.fee;
-        data["credit"] = this.credit;
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
         return data;
     }
 }
 
 export interface IClassDto {
+    result?: ClassResult[];
+    count?: number;
+}
+
+export class ClassResult implements IClassResult {
     id?: number;
     courseId?: number;
+    classTypeId?: number;
     classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
-}
-
-export class CreateClassCommand implements ICreateClassCommand {
-    courseId?: number;
-    classCode?: string | undefined;
+    departmentName?: string | undefined;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
-    fee?: string | undefined;
-    credit?: number;
+    capacity?: number;
+    canBeRegistered?: boolean;
+    classType?: ClassType | undefined;
+    course?: Course | undefined;
+    userClasses?: UserClass[];
 
-    constructor(data?: ICreateClassCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.courseId = _data["courseId"];
-            this.classCode = _data["classCode"];
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.startPeriod = _data["startPeriod"];
-            this.endPeriod = _data["endPeriod"];
-            this.fee = _data["fee"];
-            this.credit = _data["credit"];
-        }
-    }
-
-    static fromJS(data: any): CreateClassCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateClassCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["courseId"] = this.courseId;
-        data["classCode"] = this.classCode;
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["startPeriod"] = this.startPeriod;
-        data["endPeriod"] = this.endPeriod;
-        data["fee"] = this.fee;
-        data["credit"] = this.credit;
-        return data;
-    }
-}
-
-export interface ICreateClassCommand {
-    courseId?: number;
-    classCode?: string | undefined;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    fee?: string | undefined;
-    credit?: number;
-}
-
-export class UpdateClassCommand implements IUpdateClassCommand {
-    id?: number;
-    courseId?: number;
-    classCode?: string | undefined;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    fee?: string | undefined;
-    credit?: number;
-
-    constructor(data?: IUpdateClassCommand) {
+    constructor(data?: IClassResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1692,18 +2041,27 @@ export class UpdateClassCommand implements IUpdateClassCommand {
         if (_data) {
             this.id = _data["id"];
             this.courseId = _data["courseId"];
+            this.classTypeId = _data["classTypeId"];
             this.classCode = _data["classCode"];
+            this.departmentName = _data["departmentName"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
             this.endPeriod = _data["endPeriod"];
-            this.fee = _data["fee"];
-            this.credit = _data["credit"];
+            this.capacity = _data["capacity"];
+            this.canBeRegistered = _data["canBeRegistered"];
+            this.classType = _data["classType"] ? ClassType.fromJS(_data["classType"]) : <any>undefined;
+            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): UpdateClassCommand {
+    static fromJS(data: any): ClassResult {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateClassCommand();
+        let result = new ClassResult();
         result.init(data);
         return result;
     }
@@ -1712,77 +2070,39 @@ export class UpdateClassCommand implements IUpdateClassCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["courseId"] = this.courseId;
+        data["classTypeId"] = this.classTypeId;
         data["classCode"] = this.classCode;
+        data["departmentName"] = this.departmentName;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
         data["endPeriod"] = this.endPeriod;
-        data["fee"] = this.fee;
-        data["credit"] = this.credit;
+        data["capacity"] = this.capacity;
+        data["canBeRegistered"] = this.canBeRegistered;
+        data["classType"] = this.classType ? this.classType.toJSON() : <any>undefined;
+        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IUpdateClassCommand {
+export interface IClassResult {
     id?: number;
     courseId?: number;
+    classTypeId?: number;
     classCode?: string | undefined;
+    departmentName?: string | undefined;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
-    fee?: string | undefined;
-    credit?: number;
-}
-
-export class CourseByIdDto implements ICourseByIdDto {
-    id?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department | undefined;
-
-    constructor(data?: ICourseByIdDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.courseCode = _data["courseCode"];
-            this.courseName = _data["courseName"];
-            this.description = _data["description"];
-            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CourseByIdDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CourseByIdDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["courseCode"] = this.courseCode;
-        data["courseName"] = this.courseName;
-        data["description"] = this.description;
-        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ICourseByIdDto {
-    id?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department | undefined;
+    capacity?: number;
+    canBeRegistered?: boolean;
+    classType?: ClassType | undefined;
+    course?: Course | undefined;
+    userClasses?: UserClass[];
 }
 
 export abstract class BaseEntity implements IBaseEntity {
@@ -1874,6 +2194,225 @@ export interface IBaseAuditableEntity extends IBaseEntity {
     lastModifiedBy?: string | undefined;
 }
 
+export class ClassType extends BaseAuditableEntity implements IClassType {
+    type?: string;
+    class?: Class[];
+
+    constructor(data?: IClassType) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.type = _data["type"];
+            if (Array.isArray(_data["class"])) {
+                this.class = [] as any;
+                for (let item of _data["class"])
+                    this.class!.push(Class.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): ClassType {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClassType();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["type"] = this.type;
+        if (Array.isArray(this.class)) {
+            data["class"] = [];
+            for (let item of this.class)
+                data["class"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IClassType extends IBaseAuditableEntity {
+    type?: string;
+    class?: Class[];
+}
+
+export class Class extends BaseAuditableEntity implements IClass {
+    courseId?: number | undefined;
+    classTypeId?: number | undefined;
+    classCode?: string;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+    canBeRegistered?: boolean;
+    course?: Course;
+    classType?: ClassType;
+    userClasses?: UserClass[];
+
+    constructor(data?: IClass) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.courseId = _data["courseId"];
+            this.classTypeId = _data["classTypeId"];
+            this.classCode = _data["classCode"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
+            this.capacity = _data["capacity"];
+            this.canBeRegistered = _data["canBeRegistered"];
+            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
+            this.classType = _data["classType"] ? ClassType.fromJS(_data["classType"]) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Class {
+        data = typeof data === 'object' ? data : {};
+        let result = new Class();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["courseId"] = this.courseId;
+        data["classTypeId"] = this.classTypeId;
+        data["classCode"] = this.classCode;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
+        data["capacity"] = this.capacity;
+        data["canBeRegistered"] = this.canBeRegistered;
+        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
+        data["classType"] = this.classType ? this.classType.toJSON() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IClass extends IBaseAuditableEntity {
+    courseId?: number | undefined;
+    classTypeId?: number | undefined;
+    classCode?: string;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+    canBeRegistered?: boolean;
+    course?: Course;
+    classType?: ClassType;
+    userClasses?: UserClass[];
+}
+
+export class Course extends BaseAuditableEntity implements ICourse {
+    departmentId?: number | undefined;
+    courseCode?: string;
+    courseName?: string;
+    fee?: number;
+    credit?: number;
+    description?: string | undefined;
+    department?: Department;
+    classes?: Class[];
+    current?: PrerequisiteCourse[];
+    prerequisites?: PrerequisiteCourse[];
+
+    constructor(data?: ICourse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.departmentId = _data["departmentId"];
+            this.courseCode = _data["courseCode"];
+            this.courseName = _data["courseName"];
+            this.fee = _data["fee"];
+            this.credit = _data["credit"];
+            this.description = _data["description"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+            if (Array.isArray(_data["classes"])) {
+                this.classes = [] as any;
+                for (let item of _data["classes"])
+                    this.classes!.push(Class.fromJS(item));
+            }
+            if (Array.isArray(_data["current"])) {
+                this.current = [] as any;
+                for (let item of _data["current"])
+                    this.current!.push(PrerequisiteCourse.fromJS(item));
+            }
+            if (Array.isArray(_data["prerequisites"])) {
+                this.prerequisites = [] as any;
+                for (let item of _data["prerequisites"])
+                    this.prerequisites!.push(PrerequisiteCourse.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Course {
+        data = typeof data === 'object' ? data : {};
+        let result = new Course();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["departmentId"] = this.departmentId;
+        data["courseCode"] = this.courseCode;
+        data["courseName"] = this.courseName;
+        data["fee"] = this.fee;
+        data["credit"] = this.credit;
+        data["description"] = this.description;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        if (Array.isArray(this.classes)) {
+            data["classes"] = [];
+            for (let item of this.classes)
+                data["classes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.current)) {
+            data["current"] = [];
+            for (let item of this.current)
+                data["current"].push(item.toJSON());
+        }
+        if (Array.isArray(this.prerequisites)) {
+            data["prerequisites"] = [];
+            for (let item of this.prerequisites)
+                data["prerequisites"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICourse extends IBaseAuditableEntity {
+    departmentId?: number | undefined;
+    courseCode?: string;
+    courseName?: string;
+    fee?: number;
+    credit?: number;
+    description?: string | undefined;
+    department?: Department;
+    classes?: Class[];
+    current?: PrerequisiteCourse[];
+    prerequisites?: PrerequisiteCourse[];
+}
+
 export class Department extends BaseAuditableEntity implements IDepartment {
     shortName?: string;
     fullName?: string;
@@ -1927,319 +2466,6 @@ export interface IDepartment extends IBaseAuditableEntity {
     courses?: Course[];
 }
 
-export class Course extends BaseAuditableEntity implements ICourse {
-    departmentId?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department;
-    classes?: Class[];
-    current?: PrerequisiteCourse[];
-    prerequisites?: PrerequisiteCourse[];
-
-    constructor(data?: ICourse) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.departmentId = _data["departmentId"];
-            this.courseCode = _data["courseCode"];
-            this.courseName = _data["courseName"];
-            this.description = _data["description"];
-            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
-            if (Array.isArray(_data["classes"])) {
-                this.classes = [] as any;
-                for (let item of _data["classes"])
-                    this.classes!.push(Class.fromJS(item));
-            }
-            if (Array.isArray(_data["current"])) {
-                this.current = [] as any;
-                for (let item of _data["current"])
-                    this.current!.push(PrerequisiteCourse.fromJS(item));
-            }
-            if (Array.isArray(_data["prerequisites"])) {
-                this.prerequisites = [] as any;
-                for (let item of _data["prerequisites"])
-                    this.prerequisites!.push(PrerequisiteCourse.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Course {
-        data = typeof data === 'object' ? data : {};
-        let result = new Course();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["departmentId"] = this.departmentId;
-        data["courseCode"] = this.courseCode;
-        data["courseName"] = this.courseName;
-        data["description"] = this.description;
-        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
-        if (Array.isArray(this.classes)) {
-            data["classes"] = [];
-            for (let item of this.classes)
-                data["classes"].push(item.toJSON());
-        }
-        if (Array.isArray(this.current)) {
-            data["current"] = [];
-            for (let item of this.current)
-                data["current"].push(item.toJSON());
-        }
-        if (Array.isArray(this.prerequisites)) {
-            data["prerequisites"] = [];
-            for (let item of this.prerequisites)
-                data["prerequisites"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface ICourse extends IBaseAuditableEntity {
-    departmentId?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department;
-    classes?: Class[];
-    current?: PrerequisiteCourse[];
-    prerequisites?: PrerequisiteCourse[];
-}
-
-export class Class extends BaseAuditableEntity implements IClass {
-    courseId?: number;
-    classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    course?: Course;
-    userClasses?: UserClass[];
-
-    constructor(data?: IClass) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.courseId = _data["courseId"];
-            this.classCode = _data["classCode"];
-            this.fee = _data["fee"];
-            this.credit = _data["credit"];
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.startPeriod = _data["startPeriod"];
-            this.endPeriod = _data["endPeriod"];
-            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Class {
-        data = typeof data === 'object' ? data : {};
-        let result = new Class();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["courseId"] = this.courseId;
-        data["classCode"] = this.classCode;
-        data["fee"] = this.fee;
-        data["credit"] = this.credit;
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["startPeriod"] = this.startPeriod;
-        data["endPeriod"] = this.endPeriod;
-        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IClass extends IBaseAuditableEntity {
-    courseId?: number;
-    classCode?: string | undefined;
-    fee?: string | undefined;
-    credit?: number;
-    dayOfWeek?: number;
-    startPeriod?: number;
-    endPeriod?: number;
-    course?: Course;
-    userClasses?: UserClass[];
-}
-
-export class UserClass extends BaseAuditableEntity implements IUserClass {
-    classId?: number;
-    semesterId?: number;
-    passed?: boolean;
-    class?: Class | undefined;
-    semester?: Semester | undefined;
-
-    constructor(data?: IUserClass) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.classId = _data["classId"];
-            this.semesterId = _data["semesterId"];
-            this.passed = _data["passed"];
-            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
-            this.semester = _data["semester"] ? Semester.fromJS(_data["semester"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): UserClass {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserClass();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["classId"] = this.classId;
-        data["semesterId"] = this.semesterId;
-        data["passed"] = this.passed;
-        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
-        data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IUserClass extends IBaseAuditableEntity {
-    classId?: number;
-    semesterId?: number;
-    passed?: boolean;
-    class?: Class | undefined;
-    semester?: Semester | undefined;
-}
-
-export class Semester extends BaseAuditableEntity implements ISemester {
-    startYear?: number;
-    endYear?: number;
-    split?: number;
-    userClasses?: UserClass[];
-    tuitionFees?: TuitionFee[];
-
-    constructor(data?: ISemester) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.startYear = _data["startYear"];
-            this.endYear = _data["endYear"];
-            this.split = _data["split"];
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
-            if (Array.isArray(_data["tuitionFees"])) {
-                this.tuitionFees = [] as any;
-                for (let item of _data["tuitionFees"])
-                    this.tuitionFees!.push(TuitionFee.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Semester {
-        data = typeof data === 'object' ? data : {};
-        let result = new Semester();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["startYear"] = this.startYear;
-        data["endYear"] = this.endYear;
-        data["split"] = this.split;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
-        if (Array.isArray(this.tuitionFees)) {
-            data["tuitionFees"] = [];
-            for (let item of this.tuitionFees)
-                data["tuitionFees"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface ISemester extends IBaseAuditableEntity {
-    startYear?: number;
-    endYear?: number;
-    split?: number;
-    userClasses?: UserClass[];
-    tuitionFees?: TuitionFee[];
-}
-
-export class TuitionFee extends BaseAuditableEntity implements ITuitionFee {
-    totalFee?: number;
-    semesterId?: number;
-    semester?: Semester | undefined;
-
-    constructor(data?: ITuitionFee) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.totalFee = _data["totalFee"];
-            this.semesterId = _data["semesterId"];
-            this.semester = _data["semester"] ? Semester.fromJS(_data["semester"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): TuitionFee {
-        data = typeof data === 'object' ? data : {};
-        let result = new TuitionFee();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["totalFee"] = this.totalFee;
-        data["semesterId"] = this.semesterId;
-        data["semester"] = this.semester ? this.semester.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface ITuitionFee extends IBaseAuditableEntity {
-    totalFee?: number;
-    semesterId?: number;
-    semester?: Semester | undefined;
-}
-
 export abstract class BaseEvent implements IBaseEvent {
 
     constructor(data?: IBaseEvent) {
@@ -2272,8 +2498,8 @@ export class PrerequisiteCourse extends BaseAuditableEntity implements IPrerequi
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
     requirePassed?: boolean;
-    course?: Course | undefined;
-    prerequisite?: Course | undefined;
+    course?: Course;
+    prerequisite?: Course;
 
     constructor(data?: IPrerequisiteCourse) {
         super(data);
@@ -2313,8 +2539,387 @@ export interface IPrerequisiteCourse extends IBaseAuditableEntity {
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
     requirePassed?: boolean;
-    course?: Course | undefined;
-    prerequisite?: Course | undefined;
+    course?: Course;
+    prerequisite?: Course;
+}
+
+export class UserClass extends BaseAuditableEntity implements IUserClass {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    passed?: boolean;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+
+    constructor(data?: IUserClass) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.classId = _data["classId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
+            this.passed = _data["passed"];
+            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
+            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): UserClass {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserClass();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["classId"] = this.classId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
+        data["passed"] = this.passed;
+        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
+        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IUserClass extends IBaseAuditableEntity {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    passed?: boolean;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+}
+
+export class RegistrationSchedule extends BaseAuditableEntity implements IRegistrationSchedule {
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    userClasses?: UserClass[];
+    tuitionFees?: TuitionFee[];
+
+    constructor(data?: IRegistrationSchedule) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
+            if (Array.isArray(_data["tuitionFees"])) {
+                this.tuitionFees = [] as any;
+                for (let item of _data["tuitionFees"])
+                    this.tuitionFees!.push(TuitionFee.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): RegistrationSchedule {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationSchedule();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
+        if (Array.isArray(this.tuitionFees)) {
+            data["tuitionFees"] = [];
+            for (let item of this.tuitionFees)
+                data["tuitionFees"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IRegistrationSchedule extends IBaseAuditableEntity {
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    userClasses?: UserClass[];
+    tuitionFees?: TuitionFee[];
+}
+
+export class TuitionFee extends BaseAuditableEntity implements ITuitionFee {
+    totalFee?: number;
+    registrationScheduleId?: number | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+
+    constructor(data?: ITuitionFee) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.totalFee = _data["totalFee"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
+            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): TuitionFee {
+        data = typeof data === 'object' ? data : {};
+        let result = new TuitionFee();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalFee"] = this.totalFee;
+        data["registrationScheduleId"] = this.registrationScheduleId;
+        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ITuitionFee extends IBaseAuditableEntity {
+    totalFee?: number;
+    registrationScheduleId?: number | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+}
+
+export class CreateClassCommand implements ICreateClassCommand {
+    courseId?: number;
+    classCode?: string;
+    classTypeId?: number;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+
+    constructor(data?: ICreateClassCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.courseId = _data["courseId"];
+            this.classCode = _data["classCode"];
+            this.classTypeId = _data["classTypeId"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
+            this.capacity = _data["capacity"];
+        }
+    }
+
+    static fromJS(data: any): CreateClassCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateClassCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["courseId"] = this.courseId;
+        data["classCode"] = this.classCode;
+        data["classTypeId"] = this.classTypeId;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
+        data["capacity"] = this.capacity;
+        return data;
+    }
+}
+
+export interface ICreateClassCommand {
+    courseId?: number;
+    classCode?: string;
+    classTypeId?: number;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+}
+
+export class UpdateClassCommand implements IUpdateClassCommand {
+    id?: number;
+    courseId?: number;
+    classTypeId?: number;
+    classCode?: string;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+
+    constructor(data?: IUpdateClassCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.courseId = _data["courseId"];
+            this.classTypeId = _data["classTypeId"];
+            this.classCode = _data["classCode"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startPeriod = _data["startPeriod"];
+            this.endPeriod = _data["endPeriod"];
+            this.capacity = _data["capacity"];
+        }
+    }
+
+    static fromJS(data: any): UpdateClassCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateClassCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["courseId"] = this.courseId;
+        data["classTypeId"] = this.classTypeId;
+        data["classCode"] = this.classCode;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startPeriod"] = this.startPeriod;
+        data["endPeriod"] = this.endPeriod;
+        data["capacity"] = this.capacity;
+        return data;
+    }
+}
+
+export interface IUpdateClassCommand {
+    id?: number;
+    courseId?: number;
+    classTypeId?: number;
+    classCode?: string;
+    dayOfWeek?: number;
+    startPeriod?: number;
+    endPeriod?: number;
+    capacity?: number;
+}
+
+export class ClassTypeDto implements IClassTypeDto {
+    classTypeId?: number;
+    type?: string;
+
+    constructor(data?: IClassTypeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.classTypeId = _data["classTypeId"];
+            this.type = _data["type"];
+        }
+    }
+
+    static fromJS(data: any): ClassTypeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClassTypeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["classTypeId"] = this.classTypeId;
+        data["type"] = this.type;
+        return data;
+    }
+}
+
+export interface IClassTypeDto {
+    classTypeId?: number;
+    type?: string;
+}
+
+export class CourseByIdDto implements ICourseByIdDto {
+    id?: number;
+    courseCode?: string;
+    courseName?: string;
+    credit?: number;
+    fee?: number;
+    description?: string | undefined;
+    department?: Department | undefined;
+
+    constructor(data?: ICourseByIdDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.courseCode = _data["courseCode"];
+            this.courseName = _data["courseName"];
+            this.credit = _data["credit"];
+            this.fee = _data["fee"];
+            this.description = _data["description"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CourseByIdDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CourseByIdDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["courseCode"] = this.courseCode;
+        data["courseName"] = this.courseName;
+        data["credit"] = this.credit;
+        data["fee"] = this.fee;
+        data["description"] = this.description;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICourseByIdDto {
+    id?: number;
+    courseCode?: string;
+    courseName?: string;
+    credit?: number;
+    fee?: number;
+    description?: string | undefined;
+    department?: Department | undefined;
 }
 
 export class CourseDto implements ICourseDto {
@@ -2370,6 +2975,8 @@ export class CourseResult implements ICourseResult {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
     department?: Department | undefined;
 
@@ -2388,6 +2995,8 @@ export class CourseResult implements ICourseResult {
             this.departmentId = _data["departmentId"];
             this.courseCode = _data["courseCode"];
             this.courseName = _data["courseName"];
+            this.credit = _data["credit"];
+            this.fee = _data["fee"];
             this.description = _data["description"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
         }
@@ -2406,6 +3015,8 @@ export class CourseResult implements ICourseResult {
         data["departmentId"] = this.departmentId;
         data["courseCode"] = this.courseCode;
         data["courseName"] = this.courseName;
+        data["credit"] = this.credit;
+        data["fee"] = this.fee;
         data["description"] = this.description;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
         return data;
@@ -2417,6 +3028,8 @@ export interface ICourseResult {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
     department?: Department | undefined;
 }
@@ -2425,6 +3038,8 @@ export class CreateCourseCommand implements ICreateCourseCommand {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
 
     constructor(data?: ICreateCourseCommand) {
@@ -2441,6 +3056,8 @@ export class CreateCourseCommand implements ICreateCourseCommand {
             this.departmentId = _data["departmentId"];
             this.courseCode = _data["courseCode"];
             this.courseName = _data["courseName"];
+            this.credit = _data["credit"];
+            this.fee = _data["fee"];
             this.description = _data["description"];
         }
     }
@@ -2457,6 +3074,8 @@ export class CreateCourseCommand implements ICreateCourseCommand {
         data["departmentId"] = this.departmentId;
         data["courseCode"] = this.courseCode;
         data["courseName"] = this.courseName;
+        data["credit"] = this.credit;
+        data["fee"] = this.fee;
         data["description"] = this.description;
         return data;
     }
@@ -2466,6 +3085,8 @@ export interface ICreateCourseCommand {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
 }
 
@@ -2474,6 +3095,8 @@ export class UpdateCourseCommand implements IUpdateCourseCommand {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
 
     constructor(data?: IUpdateCourseCommand) {
@@ -2491,6 +3114,8 @@ export class UpdateCourseCommand implements IUpdateCourseCommand {
             this.departmentId = _data["departmentId"];
             this.courseCode = _data["courseCode"];
             this.courseName = _data["courseName"];
+            this.credit = _data["credit"];
+            this.fee = _data["fee"];
             this.description = _data["description"];
         }
     }
@@ -2508,6 +3133,8 @@ export class UpdateCourseCommand implements IUpdateCourseCommand {
         data["departmentId"] = this.departmentId;
         data["courseCode"] = this.courseCode;
         data["courseName"] = this.courseName;
+        data["credit"] = this.credit;
+        data["fee"] = this.fee;
         data["description"] = this.description;
         return data;
     }
@@ -2518,7 +3145,65 @@ export interface IUpdateCourseCommand {
     departmentId?: number;
     courseCode?: string;
     courseName?: string;
+    credit?: number;
+    fee?: number;
     description?: string | undefined;
+}
+
+export class CoursesFKDto implements ICoursesFKDto {
+    prerequisiteCourseId?: number;
+    courseName?: string;
+    fee?: number;
+    credit?: number;
+    description?: string | undefined;
+    department?: Department | undefined;
+
+    constructor(data?: ICoursesFKDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
+            this.courseName = _data["courseName"];
+            this.fee = _data["fee"];
+            this.credit = _data["credit"];
+            this.description = _data["description"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CoursesFKDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CoursesFKDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
+        data["courseName"] = this.courseName;
+        data["fee"] = this.fee;
+        data["credit"] = this.credit;
+        data["description"] = this.description;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICoursesFKDto {
+    prerequisiteCourseId?: number;
+    courseName?: string;
+    fee?: number;
+    credit?: number;
+    description?: string | undefined;
+    department?: Department | undefined;
 }
 
 export class User implements IUser {
@@ -2806,10 +3491,8 @@ export interface IDepartmentDtoForFKRef {
 }
 
 export class PrerequisiteCourseDto implements IPrerequisiteCourseDto {
-    id?: number;
-    courseId?: number;
-    prerequisiteCourseId?: number;
-    requirePassed?: boolean;
+    result?: PrerequisiteCoursesResult[];
+    count?: number;
 
     constructor(data?: IPrerequisiteCourseDto) {
         if (data) {
@@ -2822,10 +3505,12 @@ export class PrerequisiteCourseDto implements IPrerequisiteCourseDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
-            this.courseId = _data["courseId"];
-            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
-            this.requirePassed = _data["requirePassed"];
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(PrerequisiteCoursesResult.fromJS(item));
+            }
+            this.count = _data["count"];
         }
     }
 
@@ -2838,18 +3523,74 @@ export class PrerequisiteCourseDto implements IPrerequisiteCourseDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["courseId"] = this.courseId;
-        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
-        data["requirePassed"] = this.requirePassed;
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
         return data;
     }
 }
 
 export interface IPrerequisiteCourseDto {
+    result?: PrerequisiteCoursesResult[];
+    count?: number;
+}
+
+export class PrerequisiteCoursesResult implements IPrerequisiteCoursesResult {
     id?: number;
     courseId?: number;
+    course?: Course | undefined;
     prerequisiteCourseId?: number;
+    prerequisite?: Course | undefined;
+    requirePassed?: boolean;
+
+    constructor(data?: IPrerequisiteCoursesResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.courseId = _data["courseId"];
+            this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
+            this.prerequisiteCourseId = _data["prerequisiteCourseId"];
+            this.prerequisite = _data["prerequisite"] ? Course.fromJS(_data["prerequisite"]) : <any>undefined;
+            this.requirePassed = _data["requirePassed"];
+        }
+    }
+
+    static fromJS(data: any): PrerequisiteCoursesResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PrerequisiteCoursesResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["courseId"] = this.courseId;
+        data["course"] = this.course ? this.course.toJSON() : <any>undefined;
+        data["prerequisiteCourseId"] = this.prerequisiteCourseId;
+        data["prerequisite"] = this.prerequisite ? this.prerequisite.toJSON() : <any>undefined;
+        data["requirePassed"] = this.requirePassed;
+        return data;
+    }
+}
+
+export interface IPrerequisiteCoursesResult {
+    id?: number;
+    courseId?: number;
+    course?: Course | undefined;
+    prerequisiteCourseId?: number;
+    prerequisite?: Course | undefined;
     requirePassed?: boolean;
 }
 
@@ -2897,11 +3638,224 @@ export interface ICreateCoursePrerequisiteCommand {
     requirePassed?: boolean;
 }
 
+export class RegistrationScheduleDto implements IRegistrationScheduleDto {
+    result?: RegistrationScheduleResult[];
+    count?: number;
+
+    constructor(data?: IRegistrationScheduleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(RegistrationScheduleResult.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): RegistrationScheduleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationScheduleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IRegistrationScheduleDto {
+    result?: RegistrationScheduleResult[];
+    count?: number;
+}
+
+export class RegistrationScheduleResult implements IRegistrationScheduleResult {
+    id?: number;
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    userClasses?: UserClass[];
+    tuitionFees?: TuitionFee[];
+
+    constructor(data?: IRegistrationScheduleResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
+            if (Array.isArray(_data["tuitionFees"])) {
+                this.tuitionFees = [] as any;
+                for (let item of _data["tuitionFees"])
+                    this.tuitionFees!.push(TuitionFee.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): RegistrationScheduleResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationScheduleResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
+        if (Array.isArray(this.tuitionFees)) {
+            data["tuitionFees"] = [];
+            for (let item of this.tuitionFees)
+                data["tuitionFees"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IRegistrationScheduleResult {
+    id?: number;
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    userClasses?: UserClass[];
+    tuitionFees?: TuitionFee[];
+}
+
+export class CreateRegistrationScheduleCommand implements ICreateRegistrationScheduleCommand {
+    name?: string;
+    startDate?: string;
+    endDate?: string;
+
+    constructor(data?: ICreateRegistrationScheduleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.startDate = _data["startDate"];
+            this.endDate = _data["endDate"];
+        }
+    }
+
+    static fromJS(data: any): CreateRegistrationScheduleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateRegistrationScheduleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["startDate"] = this.startDate;
+        data["endDate"] = this.endDate;
+        return data;
+    }
+}
+
+export interface ICreateRegistrationScheduleCommand {
+    name?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
+export class UpdateRegistrationScheduleCommand implements IUpdateRegistrationScheduleCommand {
+    id?: number;
+    name?: string;
+    startDate?: string;
+    endDate?: string;
+
+    constructor(data?: IUpdateRegistrationScheduleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.startDate = _data["startDate"];
+            this.endDate = _data["endDate"];
+        }
+    }
+
+    static fromJS(data: any): UpdateRegistrationScheduleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateRegistrationScheduleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["startDate"] = this.startDate;
+        data["endDate"] = this.endDate;
+        return data;
+    }
+}
+
+export interface IUpdateRegistrationScheduleCommand {
+    id?: number;
+    name?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
 export class SemesterDto implements ISemesterDto {
     id?: number;
     startYear?: number;
     endYear?: number;
     split?: number;
+    registrationSchedules?: RegistrationSchedule[];
 
     constructor(data?: ISemesterDto) {
         if (data) {
@@ -2918,6 +3872,11 @@ export class SemesterDto implements ISemesterDto {
             this.startYear = _data["startYear"];
             this.endYear = _data["endYear"];
             this.split = _data["split"];
+            if (Array.isArray(_data["registrationSchedules"])) {
+                this.registrationSchedules = [] as any;
+                for (let item of _data["registrationSchedules"])
+                    this.registrationSchedules!.push(RegistrationSchedule.fromJS(item));
+            }
         }
     }
 
@@ -2934,6 +3893,11 @@ export class SemesterDto implements ISemesterDto {
         data["startYear"] = this.startYear;
         data["endYear"] = this.endYear;
         data["split"] = this.split;
+        if (Array.isArray(this.registrationSchedules)) {
+            data["registrationSchedules"] = [];
+            for (let item of this.registrationSchedules)
+                data["registrationSchedules"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -2943,6 +3907,7 @@ export interface ISemesterDto {
     startYear?: number;
     endYear?: number;
     split?: number;
+    registrationSchedules?: RegistrationSchedule[];
 }
 
 export class CreateSemesterCommand implements ICreateSemesterCommand {
@@ -3575,8 +4540,8 @@ export interface IUpdateTodoListCommand {
 export class UserClassDto implements IUserClassDto {
     id?: number;
     classId?: number;
-    semesterId?: number;
-    passed?: boolean;
+    registrationScheduleId?: number | undefined;
+    passed?: boolean | undefined;
 
     constructor(data?: IUserClassDto) {
         if (data) {
@@ -3591,7 +4556,7 @@ export class UserClassDto implements IUserClassDto {
         if (_data) {
             this.id = _data["id"];
             this.classId = _data["classId"];
-            this.semesterId = _data["semesterId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
             this.passed = _data["passed"];
         }
     }
@@ -3607,7 +4572,7 @@ export class UserClassDto implements IUserClassDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["classId"] = this.classId;
-        data["semesterId"] = this.semesterId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
         data["passed"] = this.passed;
         return data;
     }
@@ -3616,13 +4581,13 @@ export class UserClassDto implements IUserClassDto {
 export interface IUserClassDto {
     id?: number;
     classId?: number;
-    semesterId?: number;
-    passed?: boolean;
+    registrationScheduleId?: number | undefined;
+    passed?: boolean | undefined;
 }
 
 export class AddUserToClassCommand implements IAddUserToClassCommand {
-    classId?: number;
-    semesterId?: number;
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
     passed?: boolean;
 
     constructor(data?: IAddUserToClassCommand) {
@@ -3637,7 +4602,7 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
     init(_data?: any) {
         if (_data) {
             this.classId = _data["classId"];
-            this.semesterId = _data["semesterId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
             this.passed = _data["passed"];
         }
     }
@@ -3652,15 +4617,15 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["classId"] = this.classId;
-        data["semesterId"] = this.semesterId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
         data["passed"] = this.passed;
         return data;
     }
 }
 
 export interface IAddUserToClassCommand {
-    classId?: number;
-    semesterId?: number;
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
     passed?: boolean;
 }
 

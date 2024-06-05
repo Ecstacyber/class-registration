@@ -9,6 +9,8 @@ public interface IApplicationDbContext
     DbSet<Department> Departments { get; }
     DbSet<Course> Courses { get; }
     DbSet<Class> Classes { get; }
+    DbSet<ClassType> ClassTypes { get; }
+    DbSet<RegistrationSchedule> RegistrationSchedules { get; }
     DbSet<Semester> Semesters { get; }
     DbSet<TuitionFee> TuitionFees { get; }
     DbSet<UserClass> UserClasses { get; }

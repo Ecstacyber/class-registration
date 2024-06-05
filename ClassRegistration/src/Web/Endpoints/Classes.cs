@@ -17,7 +17,7 @@ public class Classes : EndpointGroupBase
             .MapPut(UpdateClass, "{id}");
     }
 
-    public Task<IEnumerable<ClassDto>> GetClasses(ISender sender, [AsParameters] GetClassesQuery query)
+    public Task<ClassDto> GetClasses(ISender sender, [AsParameters] GetClassesQuery query)
     {
         return sender.Send(query);
     }

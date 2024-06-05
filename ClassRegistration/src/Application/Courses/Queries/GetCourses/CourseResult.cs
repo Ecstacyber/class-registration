@@ -8,6 +8,8 @@ public class CourseResult
     public int DepartmentId { get; set; }
     public required string CourseCode { get; set; }
     public required string CourseName { get; set; }
+    public int Credit { get; set; }
+    public long Fee { get; set; }
     public string? Description { get; set; }
     public Department? Department { get; set; }
     private class Mapping : Profile

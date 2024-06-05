@@ -6,12 +6,12 @@ public record UpdateClassCommand : IRequest
 {
     public int Id { get; init; }
     public int CourseId { get; init; }
-    public string? ClassCode { get; init; }
+    public required int ClassTypeId { get; init; }
+    public required string ClassCode { get; init; }
     public int DayOfWeek { get; init; }
     public int StartPeriod { get; init; }
     public int EndPeriod { get; init; }
-    public string? Fee { get; init; }
-    public int Credit { get; init; }
+    public int Capacity { get; init; }
 }
 
 public class UpdateClassCommandValidator : AbstractValidator<UpdateClassCommand>
@@ -29,7 +29,20 @@ public class UpdateClassCommandValidator : AbstractValidator<UpdateClassCommand>
             .NotEmpty().WithMessage("'{PropertyName}' must exist.")
             .MaximumLength(10).WithMessage("'{PropertyName}' must not exceed 10 characters.");
 
-        RuleFor(v => v.Credit)
+        RuleFor(v => v.DayOfWeek)
+            .NotEmpty()
+            .GreaterThanOrEqualTo(2)
+            .LessThanOrEqualTo(7);
+
+        RuleFor(v => v.StartPeriod)
+            .NotEmpty()
+            .LessThan(x => x.EndPeriod);
+
+        RuleFor(v => v.EndPeriod)
+            .NotEmpty()
+            .GreaterThan(x => x.StartPeriod);
+
+        RuleFor(v => v.Capacity)
             .GreaterThan(0);
     }
 
@@ -53,13 +66,13 @@ public class UpdateClassCommandHandler : IRequestHandler<UpdateClassCommand>
         var entity = await _context.Classes.FindAsync([request.Id], cancellationToken);
         Guard.Against.NotFound(request.Id, entity);
 
-        entity.CourseId = request.Id;
+        entity.CourseId = request.CourseId;
+        entity.ClassTypeId = request.ClassTypeId;
         entity.ClassCode = request.ClassCode;
-        entity.Fee = request.Fee;
         entity.DayOfWeek = request.DayOfWeek;
         entity.StartPeriod = request.StartPeriod;
         entity.EndPeriod = request.EndPeriod;
-        entity.Credit = request.Credit;
+        entity.Capacity = request.Capacity;
 
         await _context.SaveChangesAsync(cancellationToken);
     }

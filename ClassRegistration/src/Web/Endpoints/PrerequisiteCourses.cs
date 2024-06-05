@@ -15,7 +15,7 @@ public class PrerequisiteCourses : EndpointGroupBase
             .MapDelete(DeleteCoursePrerequisite, "{id}");
     }
 
-    public Task<IEnumerable<PrerequisiteCourseDto>> GetPrerequisiteCourses(ISender sender, [AsParameters] GetCoursePrerequisiteQuery query)
+    public Task<PrerequisiteCourseDto> GetPrerequisiteCourses(ISender sender, [AsParameters] GetCoursePrerequisiteQuery query)
     {
         return sender.Send(query);
     }

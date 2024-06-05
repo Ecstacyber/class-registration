@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+﻿import React, { Component } from 'react';
 import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import '../NavMenu.css';
@@ -30,10 +30,13 @@ export class StudentNavbar extends Component {
                     <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
                         <ul className="navbar-nav flex-grow">
                             <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/student-index">Home</NavLink>
+                                <NavLink tag={Link} className="text-dark" to="/student-index">Trang chủ</NavLink>
                             </NavItem>
                             <NavItem>
-                                <a className="nav-link text-dark" href="/Identity/Account/Manage">Account</a>
+                                <NavLink tag={Link} className="text-dark" to="/student-index/class-registration">Đăng ký môn học</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <a className="nav-link text-dark" href="/Identity/Account/Manage">Tài khoản</a>
                             </NavItem>
                         </ul>
                     </Collapse>

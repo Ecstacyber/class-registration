@@ -5,8 +5,8 @@ namespace ClassRegistration.Application.UserClasses.Commands.AddUserToClass;
 
 public record AddUserToClassCommand : IRequest<int>
 {
-    public int ClassId { get; init; }
-    public int SemesterId { get; init; }
+    public int? ClassId { get; init; }
+    public int? RegistrationScheduleId { get; init; }
     public bool Passed { get; init; }
 }
 
@@ -17,21 +17,21 @@ public class AddUserToClassCommandValidator : AbstractValidator<AddUserToClassCo
     {
         _context = context;
 
-        RuleFor(x => x.ClassId)
-            .MustAsync(ExistedClass)
-                .WithMessage("'{PropertyName}' must exist.")
-                .WithErrorCode("NotFound"); ;
+        //RuleFor(x => x.ClassId)
+        //    .MustAsync(ExistedClass)
+        //        .WithMessage("'{PropertyName}' must exist.")
+        //        .WithErrorCode("NotFound");
 
-        RuleFor(x => x.SemesterId)
-            .MustAsync(ExistedSemester)
-                .WithMessage("'{PropertyName}' must exist.")
-                .WithErrorCode("NotFound");
+        //RuleFor(x => x.RegistrationScheduleId)
+        //    .MustAsync(ExistedRegistrationSchedule)
+        //        .WithMessage("'{PropertyName}' must exist.")
+        //        .WithErrorCode("NotFound");
 
     }
 
-    private async Task<bool> ExistedSemester(int semesterId, CancellationToken token)
+    private async Task<bool> ExistedRegistrationSchedule(int registrationScheduleId, CancellationToken token)
     {
-        return await _context.Semesters.AnyAsync(x => x.Id == semesterId);
+        return await _context.RegistrationSchedules.AnyAsync(x => x.Id == registrationScheduleId);
     }
 
     private async Task<bool> ExistedClass(int classId, CancellationToken token)
@@ -54,7 +54,7 @@ public class AddUserToClassCommandHandler : IRequestHandler<AddUserToClassComman
         var entity = new UserClass
         {
             ClassId = request.ClassId,
-            SemesterId = request.SemesterId,
+            RegistrationScheduleId = request.RegistrationScheduleId,
             Passed = request.Passed,
         };
         _context.UserClasses.Add(entity);

@@ -45,8 +45,20 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, CourseDto
                 case "courseName":
                     courses = courses.Where(x => x.CourseName.ToLower().Contains(request.FilterValue));
                     break;
-                case "departmentId":
+                case "departmentName":
                     courses = courses.Where(x => x.Department.ShortName.ToLower().Contains(request.FilterValue));
+                    break;
+                case "credit":
+                    if (int.TryParse(request.FilterValue, out int credit))
+                    {
+                        courses = courses.Where(x => x.Credit == credit);
+                    }                  
+                    break;
+                case "fee":
+                    if (int.TryParse(request.FilterValue, out int fee))
+                    {
+                        courses = courses.Where(x => x.Fee == fee);
+                    }
                     break;
                 default:
                     break;
@@ -64,8 +76,16 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, CourseDto
                 case "courseName":
                     courses = orderBy[1] == "Ascending" ? courses.OrderBy(x => x.CourseName) : courses.OrderByDescending(x => x.CourseName);
                     break;
-                case "departmentId":
+                case "departmentName":
                     courses = orderBy[1] == "Ascending" ? courses.OrderBy(x => x.Department.ShortName) : courses.OrderByDescending(x => x.Department.ShortName);
+                    break;
+                case "credit":
+                    courses = orderBy[1] == "Ascending" ? courses.OrderBy(x => x.Credit) : courses.OrderByDescending(x => x.Credit);
+                    break;
+                case "fee":
+                    courses = orderBy[1] == "Ascending" ? courses.OrderBy(x => x.Fee) : courses.OrderByDescending(x => x.Fee);
+                    break;
+                default:
                     break;
             }
         }

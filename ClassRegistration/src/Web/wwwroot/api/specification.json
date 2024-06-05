@@ -12,16 +12,62 @@
           "Classes"
         ],
         "operationId": "GetClasses",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClassDto"
-                  }
+                  "$ref": "#/components/schemas/ClassDto"
                 }
               }
             }
@@ -116,6 +162,108 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/ClassesByCourseId": {
+      "get": {
+        "tags": [
+          "ClassesByCourseId"
+        ],
+        "operationId": "GetClassesByCourseId",
+        "parameters": [
+          {
+            "name": "CourseId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ClassTypes": {
+      "get": {
+        "tags": [
+          "ClassTypes"
+        ],
+        "operationId": "GetClassTypes",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassTypeDto"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -312,6 +460,29 @@
         }
       }
     },
+    "/api/CoursesFK": {
+      "get": {
+        "tags": [
+          "CoursesFK"
+        ],
+        "operationId": "GetCoursesFK",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CoursesFKDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CurrentUserInfo": {
       "get": {
         "tags": [
@@ -501,6 +672,29 @@
         }
       }
     },
+    "/api/DepartmentsFKRef": {
+      "get": {
+        "tags": [
+          "DepartmentsFKRef"
+        ],
+        "operationId": "GetDepartmentsForFKRef",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentDtoForFKRef"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/PrerequisiteCourses": {
       "get": {
         "tags": [
@@ -513,10 +707,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PrerequisiteCourseDto"
-                  }
+                  "$ref": "#/components/schemas/PrerequisiteCourseDto"
                 }
               }
             }
@@ -555,29 +746,6 @@
         }
       }
     },
-    "/api/DepartmentsFKRef": {
-      "get": {
-        "tags": [
-          "DepartmentsFKRef"
-        ],
-        "operationId": "GetDepartmentsForFKRef",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DepartmentDtoForFKRef"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/PrerequisiteCourses/{id}": {
       "delete": {
         "tags": [
@@ -596,6 +764,254 @@
             "x-position": 1
           }
         ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/PrerequisiteCoursesByCourseId": {
+      "get": {
+        "tags": [
+          "PrerequisiteCoursesByCourseId"
+        ],
+        "operationId": "GetPrerequisiteCoursesByCourseId",
+        "parameters": [
+          {
+            "name": "CourseId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrerequisiteCourseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RegistrationSchedules": {
+      "get": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "GetRegistrationSchedules",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "FilterOperator",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationScheduleDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "CreateRegistrationSchedule",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRegistrationScheduleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RegistrationSchedules/{id}": {
+      "delete": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "DeleteRegistrationSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "UpdateRegistrationSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRegistrationScheduleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
         "responses": {
           "200": {
             "description": ""
@@ -1140,6 +1556,22 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ClassResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
@@ -1148,29 +1580,15 @@
             "type": "integer",
             "format": "int32"
           },
-          "classCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "fee": {
-            "type": "string",
-            "nullable": true
-          },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "CreateClassCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "courseId": {
+          "classTypeId": {
             "type": "integer",
             "format": "int32"
           },
           "classCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentName": {
             "type": "string",
             "nullable": true
           },
@@ -1186,83 +1604,38 @@
             "type": "integer",
             "format": "int32"
           },
-          "fee": {
-            "type": "string",
-            "nullable": true
-          },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "UpdateClassCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
+          "capacity": {
             "type": "integer",
             "format": "int32"
           },
-          "courseId": {
-            "type": "integer",
-            "format": "int32"
+          "canBeRegistered": {
+            "type": "boolean"
           },
-          "classCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "dayOfWeek": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "startPeriod": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "endPeriod": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fee": {
-            "type": "string",
-            "nullable": true
-          },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "CourseByIdDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "courseCode": {
-            "type": "string"
-          },
-          "courseName": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
+          "classType": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/Department"
+                "$ref": "#/components/schemas/ClassType"
               }
             ]
+          },
+          "course": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Course"
+              }
+            ]
+          },
+          "userClasses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserClass"
+            }
           }
         }
       },
-      "Department": {
+      "ClassType": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -1271,20 +1644,70 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "shortName": {
+              "type": {
                 "type": "string"
               },
-              "fullName": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "courses": {
+              "class": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Course"
+                  "$ref": "#/components/schemas/Class"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Class": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "courseId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "classTypeId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "classCode": {
+                "type": "string"
+              },
+              "dayOfWeek": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "startPeriod": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "endPeriod": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "capacity": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "canBeRegistered": {
+                "type": "boolean"
+              },
+              "course": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "classType": {
+                "$ref": "#/components/schemas/ClassType"
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
                 }
               }
             }
@@ -1302,13 +1725,22 @@
             "properties": {
               "departmentId": {
                 "type": "integer",
-                "format": "int32"
+                "format": "int32",
+                "nullable": true
               },
               "courseCode": {
                 "type": "string"
               },
               "courseName": {
                 "type": "string"
+              },
+              "fee": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "credit": {
+                "type": "integer",
+                "format": "int32"
               },
               "description": {
                 "type": "string",
@@ -1339,7 +1771,7 @@
           }
         ]
       },
-      "Class": {
+      "Department": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -1348,148 +1780,21 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "courseId": {
-                "type": "integer",
-                "format": "int32"
+              "shortName": {
+                "type": "string"
               },
-              "classCode": {
+              "fullName": {
+                "type": "string"
+              },
+              "description": {
                 "type": "string",
                 "nullable": true
               },
-              "fee": {
-                "type": "string",
-                "nullable": true
-              },
-              "credit": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "dayOfWeek": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "startPeriod": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "endPeriod": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "course": {
-                "$ref": "#/components/schemas/Course"
-              },
-              "userClasses": {
+              "courses": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/UserClass"
+                  "$ref": "#/components/schemas/Course"
                 }
-              }
-            }
-          }
-        ]
-      },
-      "UserClass": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "classId": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "semesterId": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "passed": {
-                "type": "boolean"
-              },
-              "class": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Class"
-                  }
-                ]
-              },
-              "semester": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Semester"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "Semester": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "startYear": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "endYear": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "split": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "userClasses": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/UserClass"
-                }
-              },
-              "tuitionFees": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/TuitionFee"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "TuitionFee": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "totalFee": {
-                "type": "integer",
-                "format": "int64"
-              },
-              "semesterId": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "semester": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Semester"
-                  }
-                ]
               }
             }
           }
@@ -1524,62 +1829,6 @@
             }
           }
         ]
-      },
-      "UpdateCourseCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "departmentId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "courseCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "courseName": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "User": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "departmentId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "roles": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          }
-        }
       },
       "BaseEntity": {
         "type": "object",
@@ -1626,24 +1875,241 @@
                 "type": "boolean"
               },
               "course": {
+                "$ref": "#/components/schemas/Course"
+              },
+              "prerequisite": {
+                "$ref": "#/components/schemas/Course"
+              }
+            }
+          }
+        ]
+      },
+      "UserClass": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "classId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "registrationScheduleId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "class": {
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/Course"
+                    "$ref": "#/components/schemas/Class"
                   }
                 ]
               },
-              "prerequisite": {
+              "registrationSchedule": {
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/Course"
+                    "$ref": "#/components/schemas/RegistrationSchedule"
                   }
                 ]
               }
             }
           }
         ]
+      },
+      "RegistrationSchedule": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "userClasses": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UserClass"
+                }
+              },
+              "tuitionFees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TuitionFee"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TuitionFee": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "totalFee": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "registrationScheduleId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "registrationSchedule": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/RegistrationSchedule"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CreateClassCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classCode": {
+            "type": "string"
+          },
+          "classTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dayOfWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "endPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateClassCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classCode": {
+            "type": "string"
+          },
+          "dayOfWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "endPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ClassTypeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "classTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "CourseByIdDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "courseCode": {
+            "type": "string"
+          },
+          "courseName": {
+            "type": "string"
+          },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
+          }
+        }
       },
       "CourseDto": {
         "type": "object",
@@ -1679,6 +2145,14 @@
           "courseName": {
             "type": "string"
           },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
           "description": {
             "type": "string",
             "nullable": true
@@ -1707,6 +2181,14 @@
           "courseName": {
             "type": "string"
           },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
           "description": {
             "type": "string",
             "nullable": true
@@ -1731,9 +2213,80 @@
           "courseName": {
             "type": "string"
           },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
           "description": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "CoursesFKDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prerequisiteCourseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "courseName": {
+            "type": "string"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -1807,7 +2360,36 @@
           }
         }
       },
+      "DepartmentDtoForFKRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "departmentName": {
+            "type": "string"
+          }
+        }
+      },
       "PrerequisiteCourseDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrerequisiteCoursesResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PrerequisiteCoursesResult": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1819,9 +2401,25 @@
             "type": "integer",
             "format": "int32"
           },
+          "course": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Course"
+              }
+            ]
+          },
           "prerequisiteCourseId": {
             "type": "integer",
             "format": "int32"
+          },
+          "prerequisite": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Course"
+              }
+            ]
           },
           "requirePassed": {
             "type": "boolean"
@@ -1847,15 +2445,85 @@
           }
         }
       },
-      "DepartmentDtoForFKRef": {
+      "RegistrationScheduleDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "departmentId": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RegistrationScheduleResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RegistrationScheduleResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
             "type": "integer",
             "format": "int32"
           },
-          "departmentName": {
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userClasses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserClass"
+            }
+          },
+          "tuitionFees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TuitionFee"
+            }
+          }
+        }
+      },
+      "CreateRegistrationScheduleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateRegistrationScheduleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
             "type": "string"
           }
         }
@@ -1879,6 +2547,12 @@
           "split": {
             "type": "integer",
             "format": "int32"
+          },
+          "registrationSchedules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RegistrationSchedule"
+            }
           }
         }
       },
@@ -2162,12 +2836,14 @@
             "type": "integer",
             "format": "int32"
           },
-          "semesterId": {
+          "registrationScheduleId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "passed": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         }
       },
@@ -2177,11 +2853,13 @@
         "properties": {
           "classId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
-          "semesterId": {
+          "registrationScheduleId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "passed": {
             "type": "boolean"
