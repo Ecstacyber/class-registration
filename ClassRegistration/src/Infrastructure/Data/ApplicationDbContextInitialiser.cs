@@ -123,9 +123,9 @@ public class ApplicationDbContextInitialiser
             await _context.Humans.AddAsync(humanStudent);
         }
         var humanLecturer = new User { UserName = "lecturer@localhost", Email = "lecturer@localhost", Department = adminDepartment, DepartmentId = adminDepartment.Id };
-        if (!_context.Humans.Any(x => x.UserName == humanStudent.UserName))
+        if (!_context.Humans.Any(x => x.UserName == humanLecturer.UserName))
         {
-            await _context.Humans.AddAsync(humanStudent);
+            await _context.Humans.AddAsync(humanLecturer);
         }
         await _context.SaveChangesAsync();
 
