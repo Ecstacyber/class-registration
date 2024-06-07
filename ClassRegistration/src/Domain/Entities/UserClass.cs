@@ -6,7 +6,7 @@ public class UserClass : BaseAuditableEntity
     public int? RegistrationScheduleId { get; set; }
     public int? UserId {  get; set; }
     public bool Passed { get; set; }
-    public Class? Class { get; set; }
+    public Class Class { get; set; } = null!;
     public RegistrationSchedule? RegistrationSchedule { get; set; }
-    public User? User { get; set; }
+    public User User { get; set; } = null!;
 }

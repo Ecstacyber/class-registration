@@ -36,6 +36,9 @@ export class StudentNavbar extends Component {
                                 <NavLink tag={Link} className="text-dark" to="/student-index/class-registration">Đăng ký môn học</NavLink>
                             </NavItem>
                             <NavItem>
+                                <a className="nav-link text-dark" href="/student-index/registration-result">Kết quả đăng ký</a>
+                            </NavItem>
+                            <NavItem>
                                 <a className="nav-link text-dark" href="/Identity/Account/Manage">Tài khoản</a>
                             </NavItem>
                         </ul>

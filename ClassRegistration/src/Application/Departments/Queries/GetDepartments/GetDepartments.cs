@@ -41,7 +41,7 @@ public class GetDepartmentsQueryHandler : IRequestHandler<GetDepartmentsQuery, D
     public async Task<DepartmentDto> Handle(GetDepartmentsQuery request, CancellationToken cancellationToken)
     {
         List<Department> departments = new List<Department>();
-        int totalItems = 0;
+        int totalItems = await _context.Departments.CountAsync(cancellationToken);
 
         if (!string.IsNullOrEmpty(request.FilterParams) && !string.IsNullOrEmpty(request.FilterValue))
         {
@@ -173,14 +173,12 @@ public class GetDepartmentsQueryHandler : IRequestHandler<GetDepartmentsQuery, D
                         .OrderBy(x => x.Id)
                         .Skip((int)request.Skip)
                         .Take((int)request.Top).ToListAsync(cancellationToken);
-                    totalItems = departments.Count;
                 }
                 else
                 {
                     departments = await _context.Departments
                         .AsNoTracking()
                         .ToListAsync(cancellationToken);
-                    totalItems = departments.Count;
                 }
             }
         }

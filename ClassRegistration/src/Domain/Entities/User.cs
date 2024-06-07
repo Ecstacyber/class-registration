@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-///Using to past user data to application layer
+﻿///Used to pass user data to application layer
 namespace ClassRegistration.Domain.Entities;
 
 public class User : BaseAuditableEntity
@@ -11,5 +9,6 @@ public class User : BaseAuditableEntity
     public Department? Department { get; set; }
     public IList<UserClass> UserClasses { get; set; } = new List<UserClass>();
     public IList<TuitionFee> TuitionFee { get; set; } = new List<TuitionFee>();
+    public IList<RegistrationRecord> RegistrationRecords { get; set; } = new List<RegistrationRecord>();
     public IList<string> Roles { get; set; } = new List<string>();
 }

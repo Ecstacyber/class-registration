@@ -246,6 +246,58 @@ export class ClassesByCourseIdClient {
     }
 }
 
+export class ClassRegisterClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    registerStudent(userId: number | null | undefined, classId: number | null | undefined, registrationScheduleId: number | null | undefined): Promise<RegistrationResult> {
+        let url_ = this.baseUrl + "/api/ClassRegister?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        if (classId !== undefined && classId !== null)
+            url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
+        if (registrationScheduleId !== undefined && registrationScheduleId !== null)
+            url_ += "RegistrationScheduleId=" + encodeURIComponent("" + registrationScheduleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRegisterStudent(_response);
+        });
+    }
+
+    protected processRegisterStudent(response: Response): Promise<RegistrationResult> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegistrationResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RegistrationResult>(null as any);
+    }
+}
+
 export class ClassTypesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -574,6 +626,52 @@ export class CoursesFKClient {
     }
 }
 
+export class CurrentRegistrationScheduleInfoClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getCurrentRegistrationSchedule(): Promise<CurrentRegScheduleDto> {
+        let url_ = this.baseUrl + "/api/CurrentRegistrationScheduleInfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCurrentRegistrationSchedule(_response);
+        });
+    }
+
+    protected processGetCurrentRegistrationSchedule(response: Response): Promise<CurrentRegScheduleDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CurrentRegScheduleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CurrentRegScheduleDto>(null as any);
+    }
+}
+
 export class CurrentUserInfoClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -617,6 +715,106 @@ export class CurrentUserInfoClient {
             });
         }
         return Promise.resolve<UserDto>(null as any);
+    }
+}
+
+export class CurrentUserRegistrationRecordClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getCurrentUserRegistrationRecord(userId: number): Promise<RegistrationRecordDto> {
+        let url_ = this.baseUrl + "/api/CurrentUserRegistrationRecord?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCurrentUserRegistrationRecord(_response);
+        });
+    }
+
+    protected processGetCurrentUserRegistrationRecord(response: Response): Promise<RegistrationRecordDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegistrationRecordDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RegistrationRecordDto>(null as any);
+    }
+}
+
+export class CurrentUserRegistrationResultClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getCurrentUserRegistrationResult(userId: number): Promise<UserClassDto> {
+        let url_ = this.baseUrl + "/api/CurrentUserRegistrationResult?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCurrentUserRegistrationResult(_response);
+        });
+    }
+
+    protected processGetCurrentUserRegistrationResult(response: Response): Promise<UserClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto>(null as any);
     }
 }
 
@@ -1742,48 +1940,6 @@ export class UserClassesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getUserInClass(): Promise<UserClassDto[]> {
-        let url_ = this.baseUrl + "/api/UserClasses";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetUserInClass(_response);
-        });
-    }
-
-    protected processGetUserInClass(response: Response): Promise<UserClassDto[]> {
-        followIfLoginRedirect(response);
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(UserClassDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<UserClassDto[]>(null as any);
-    }
-
     addUserToClass(command: AddUserToClassCommand): Promise<number> {
         let url_ = this.baseUrl + "/api/UserClasses";
         url_ = url_.replace(/[?&]$/, "");
@@ -2020,15 +2176,17 @@ export class ClassResult implements IClassResult {
     registrationScheduleId?: number;
     classCode?: string | undefined;
     departmentName?: string | undefined;
+    credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    userClassCount?: number;
     canBeRegistered?: boolean;
     classType?: ClassType | undefined;
     course?: Course | undefined;
+    courseResult?: CourseResult | undefined;
     registrationSchedule?: RegistrationSchedule | undefined;
-    userClasses?: UserClass[];
 
     constructor(data?: IClassResult) {
         if (data) {
@@ -2047,19 +2205,17 @@ export class ClassResult implements IClassResult {
             this.registrationScheduleId = _data["registrationScheduleId"];
             this.classCode = _data["classCode"];
             this.departmentName = _data["departmentName"];
+            this.credit = _data["credit"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
             this.endPeriod = _data["endPeriod"];
             this.capacity = _data["capacity"];
+            this.userClassCount = _data["userClassCount"];
             this.canBeRegistered = _data["canBeRegistered"];
             this.classType = _data["classType"] ? ClassType.fromJS(_data["classType"]) : <any>undefined;
             this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
+            this.courseResult = _data["courseResult"] ? CourseResult.fromJS(_data["courseResult"]) : <any>undefined;
             this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
         }
     }
 
@@ -2078,19 +2234,17 @@ export class ClassResult implements IClassResult {
         data["registrationScheduleId"] = this.registrationScheduleId;
         data["classCode"] = this.classCode;
         data["departmentName"] = this.departmentName;
+        data["credit"] = this.credit;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
         data["endPeriod"] = this.endPeriod;
         data["capacity"] = this.capacity;
+        data["userClassCount"] = this.userClassCount;
         data["canBeRegistered"] = this.canBeRegistered;
         data["classType"] = this.classType ? this.classType.toJSON() : <any>undefined;
         data["course"] = this.course ? this.course.toJSON() : <any>undefined;
+        data["courseResult"] = this.courseResult ? this.courseResult.toJSON() : <any>undefined;
         data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
         return data;
     }
 }
@@ -2102,15 +2256,17 @@ export interface IClassResult {
     registrationScheduleId?: number;
     classCode?: string | undefined;
     departmentName?: string | undefined;
+    credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    userClassCount?: number;
     canBeRegistered?: boolean;
     classType?: ClassType | undefined;
     course?: Course | undefined;
+    courseResult?: CourseResult | undefined;
     registrationSchedule?: RegistrationSchedule | undefined;
-    userClasses?: UserClass[];
 }
 
 export abstract class BaseEntity implements IBaseEntity {
@@ -2250,7 +2406,6 @@ export interface IClassType extends IBaseAuditableEntity {
 export class Class extends BaseAuditableEntity implements IClass {
     courseId?: number | undefined;
     classTypeId?: number | undefined;
-    registrationScheduleId?: number | undefined;
     classCode?: string;
     dayOfWeek?: number;
     startPeriod?: number;
@@ -2260,8 +2415,8 @@ export class Class extends BaseAuditableEntity implements IClass {
     canBeRegistered?: boolean;
     course?: Course;
     classType?: ClassType;
-    registrationSchedule?: RegistrationSchedule;
     userClasses?: UserClass[];
+    registrationRecords?: RegistrationRecord[];
 
     constructor(data?: IClass) {
         super(data);
@@ -2272,7 +2427,6 @@ export class Class extends BaseAuditableEntity implements IClass {
         if (_data) {
             this.courseId = _data["courseId"];
             this.classTypeId = _data["classTypeId"];
-            this.registrationScheduleId = _data["registrationScheduleId"];
             this.classCode = _data["classCode"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
@@ -2282,11 +2436,15 @@ export class Class extends BaseAuditableEntity implements IClass {
             this.canBeRegistered = _data["canBeRegistered"];
             this.course = _data["course"] ? Course.fromJS(_data["course"]) : <any>undefined;
             this.classType = _data["classType"] ? ClassType.fromJS(_data["classType"]) : <any>undefined;
-            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
             if (Array.isArray(_data["userClasses"])) {
                 this.userClasses = [] as any;
                 for (let item of _data["userClasses"])
                     this.userClasses!.push(UserClass.fromJS(item));
+            }
+            if (Array.isArray(_data["registrationRecords"])) {
+                this.registrationRecords = [] as any;
+                for (let item of _data["registrationRecords"])
+                    this.registrationRecords!.push(RegistrationRecord.fromJS(item));
             }
         }
     }
@@ -2302,7 +2460,6 @@ export class Class extends BaseAuditableEntity implements IClass {
         data = typeof data === 'object' ? data : {};
         data["courseId"] = this.courseId;
         data["classTypeId"] = this.classTypeId;
-        data["registrationScheduleId"] = this.registrationScheduleId;
         data["classCode"] = this.classCode;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
@@ -2312,11 +2469,15 @@ export class Class extends BaseAuditableEntity implements IClass {
         data["canBeRegistered"] = this.canBeRegistered;
         data["course"] = this.course ? this.course.toJSON() : <any>undefined;
         data["classType"] = this.classType ? this.classType.toJSON() : <any>undefined;
-        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
         if (Array.isArray(this.userClasses)) {
             data["userClasses"] = [];
             for (let item of this.userClasses)
                 data["userClasses"].push(item.toJSON());
+        }
+        if (Array.isArray(this.registrationRecords)) {
+            data["registrationRecords"] = [];
+            for (let item of this.registrationRecords)
+                data["registrationRecords"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
@@ -2326,7 +2487,6 @@ export class Class extends BaseAuditableEntity implements IClass {
 export interface IClass extends IBaseAuditableEntity {
     courseId?: number | undefined;
     classTypeId?: number | undefined;
-    registrationScheduleId?: number | undefined;
     classCode?: string;
     dayOfWeek?: number;
     startPeriod?: number;
@@ -2336,8 +2496,8 @@ export interface IClass extends IBaseAuditableEntity {
     canBeRegistered?: boolean;
     course?: Course;
     classType?: ClassType;
-    registrationSchedule?: RegistrationSchedule;
     userClasses?: UserClass[];
+    registrationRecords?: RegistrationRecord[];
 }
 
 export class Course extends BaseAuditableEntity implements ICourse {
@@ -2555,95 +2715,14 @@ export interface IPrerequisiteCourse extends IBaseAuditableEntity {
     prerequisite?: Course;
 }
 
-export class RegistrationSchedule extends BaseAuditableEntity implements IRegistrationSchedule {
-    name?: string;
-    startDate?: Date;
-    endDate?: Date;
-    feePerCredit?: number;
-    classes?: Class[];
-    userClasses?: UserClass[];
-    tuitionFees?: TuitionFee[];
-
-    constructor(data?: IRegistrationSchedule) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
-            this.feePerCredit = _data["feePerCredit"];
-            if (Array.isArray(_data["classes"])) {
-                this.classes = [] as any;
-                for (let item of _data["classes"])
-                    this.classes!.push(Class.fromJS(item));
-            }
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
-            if (Array.isArray(_data["tuitionFees"])) {
-                this.tuitionFees = [] as any;
-                for (let item of _data["tuitionFees"])
-                    this.tuitionFees!.push(TuitionFee.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): RegistrationSchedule {
-        data = typeof data === 'object' ? data : {};
-        let result = new RegistrationSchedule();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
-        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        data["feePerCredit"] = this.feePerCredit;
-        if (Array.isArray(this.classes)) {
-            data["classes"] = [];
-            for (let item of this.classes)
-                data["classes"].push(item.toJSON());
-        }
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
-        if (Array.isArray(this.tuitionFees)) {
-            data["tuitionFees"] = [];
-            for (let item of this.tuitionFees)
-                data["tuitionFees"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IRegistrationSchedule extends IBaseAuditableEntity {
-    name?: string;
-    startDate?: Date;
-    endDate?: Date;
-    feePerCredit?: number;
-    classes?: Class[];
-    userClasses?: UserClass[];
-    tuitionFees?: TuitionFee[];
-}
-
 export class UserClass extends BaseAuditableEntity implements IUserClass {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
     passed?: boolean;
-    class?: Class | undefined;
+    class?: Class;
     registrationSchedule?: RegistrationSchedule | undefined;
-    user?: User | undefined;
+    user?: User;
 
     constructor(data?: IUserClass) {
         super(data);
@@ -2688,90 +2767,102 @@ export interface IUserClass extends IBaseAuditableEntity {
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
     passed?: boolean;
-    class?: Class | undefined;
+    class?: Class;
     registrationSchedule?: RegistrationSchedule | undefined;
-    user?: User | undefined;
+    user?: User;
 }
 
-export class User extends BaseAuditableEntity implements IUser {
-    userName?: string | undefined;
-    email?: string | undefined;
-    departmentId?: number | undefined;
-    department?: Department | undefined;
+export class RegistrationSchedule extends BaseAuditableEntity implements IRegistrationSchedule {
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    feePerCredit?: number;
+    classes?: Class[];
     userClasses?: UserClass[];
-    tuitionFee?: TuitionFee[];
-    roles?: string[];
+    tuitionFees?: TuitionFee[];
+    registrationRecords?: RegistrationRecord[];
 
-    constructor(data?: IUser) {
+    constructor(data?: IRegistrationSchedule) {
         super(data);
     }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.userName = _data["userName"];
-            this.email = _data["email"];
-            this.departmentId = _data["departmentId"];
-            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+            this.name = _data["name"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.feePerCredit = _data["feePerCredit"];
+            if (Array.isArray(_data["classes"])) {
+                this.classes = [] as any;
+                for (let item of _data["classes"])
+                    this.classes!.push(Class.fromJS(item));
+            }
             if (Array.isArray(_data["userClasses"])) {
                 this.userClasses = [] as any;
                 for (let item of _data["userClasses"])
                     this.userClasses!.push(UserClass.fromJS(item));
             }
-            if (Array.isArray(_data["tuitionFee"])) {
-                this.tuitionFee = [] as any;
-                for (let item of _data["tuitionFee"])
-                    this.tuitionFee!.push(TuitionFee.fromJS(item));
+            if (Array.isArray(_data["tuitionFees"])) {
+                this.tuitionFees = [] as any;
+                for (let item of _data["tuitionFees"])
+                    this.tuitionFees!.push(TuitionFee.fromJS(item));
             }
-            if (Array.isArray(_data["roles"])) {
-                this.roles = [] as any;
-                for (let item of _data["roles"])
-                    this.roles!.push(item);
+            if (Array.isArray(_data["registrationRecords"])) {
+                this.registrationRecords = [] as any;
+                for (let item of _data["registrationRecords"])
+                    this.registrationRecords!.push(RegistrationRecord.fromJS(item));
             }
         }
     }
 
-    static override fromJS(data: any): User {
+    static override fromJS(data: any): RegistrationSchedule {
         data = typeof data === 'object' ? data : {};
-        let result = new User();
+        let result = new RegistrationSchedule();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["userName"] = this.userName;
-        data["email"] = this.email;
-        data["departmentId"] = this.departmentId;
-        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        data["name"] = this.name;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["feePerCredit"] = this.feePerCredit;
+        if (Array.isArray(this.classes)) {
+            data["classes"] = [];
+            for (let item of this.classes)
+                data["classes"].push(item.toJSON());
+        }
         if (Array.isArray(this.userClasses)) {
             data["userClasses"] = [];
             for (let item of this.userClasses)
                 data["userClasses"].push(item.toJSON());
         }
-        if (Array.isArray(this.tuitionFee)) {
-            data["tuitionFee"] = [];
-            for (let item of this.tuitionFee)
-                data["tuitionFee"].push(item.toJSON());
+        if (Array.isArray(this.tuitionFees)) {
+            data["tuitionFees"] = [];
+            for (let item of this.tuitionFees)
+                data["tuitionFees"].push(item.toJSON());
         }
-        if (Array.isArray(this.roles)) {
-            data["roles"] = [];
-            for (let item of this.roles)
-                data["roles"].push(item);
+        if (Array.isArray(this.registrationRecords)) {
+            data["registrationRecords"] = [];
+            for (let item of this.registrationRecords)
+                data["registrationRecords"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IUser extends IBaseAuditableEntity {
-    userName?: string | undefined;
-    email?: string | undefined;
-    departmentId?: number | undefined;
-    department?: Department | undefined;
+export interface IRegistrationSchedule extends IBaseAuditableEntity {
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+    feePerCredit?: number;
+    classes?: Class[];
     userClasses?: UserClass[];
-    tuitionFee?: TuitionFee[];
-    roles?: string[];
+    tuitionFees?: TuitionFee[];
+    registrationRecords?: RegistrationRecord[];
 }
 
 export class TuitionFee extends BaseAuditableEntity implements ITuitionFee {
@@ -2819,16 +2910,230 @@ export interface ITuitionFee extends IBaseAuditableEntity {
     user?: User | undefined;
 }
 
+export class User extends BaseAuditableEntity implements IUser {
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    userClasses?: UserClass[];
+    tuitionFee?: TuitionFee[];
+    registrationRecords?: RegistrationRecord[];
+    roles?: string[];
+
+    constructor(data?: IUser) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.departmentId = _data["departmentId"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+            if (Array.isArray(_data["userClasses"])) {
+                this.userClasses = [] as any;
+                for (let item of _data["userClasses"])
+                    this.userClasses!.push(UserClass.fromJS(item));
+            }
+            if (Array.isArray(_data["tuitionFee"])) {
+                this.tuitionFee = [] as any;
+                for (let item of _data["tuitionFee"])
+                    this.tuitionFee!.push(TuitionFee.fromJS(item));
+            }
+            if (Array.isArray(_data["registrationRecords"])) {
+                this.registrationRecords = [] as any;
+                for (let item of _data["registrationRecords"])
+                    this.registrationRecords!.push(RegistrationRecord.fromJS(item));
+            }
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["departmentId"] = this.departmentId;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        if (Array.isArray(this.userClasses)) {
+            data["userClasses"] = [];
+            for (let item of this.userClasses)
+                data["userClasses"].push(item.toJSON());
+        }
+        if (Array.isArray(this.tuitionFee)) {
+            data["tuitionFee"] = [];
+            for (let item of this.tuitionFee)
+                data["tuitionFee"].push(item.toJSON());
+        }
+        if (Array.isArray(this.registrationRecords)) {
+            data["registrationRecords"] = [];
+            for (let item of this.registrationRecords)
+                data["registrationRecords"].push(item.toJSON());
+        }
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IUser extends IBaseAuditableEntity {
+    userName?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    userClasses?: UserClass[];
+    tuitionFee?: TuitionFee[];
+    registrationRecords?: RegistrationRecord[];
+    roles?: string[];
+}
+
+export class RegistrationRecord extends BaseAuditableEntity implements IRegistrationRecord {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    userId?: number | undefined;
+    result?: string;
+    message?: string | undefined;
+    dependency?: string | undefined;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+    user?: User | undefined;
+
+    constructor(data?: IRegistrationRecord) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.classId = _data["classId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
+            this.userId = _data["userId"];
+            this.result = _data["result"];
+            this.message = _data["message"];
+            this.dependency = _data["dependency"];
+            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
+            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): RegistrationRecord {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationRecord();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["classId"] = this.classId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
+        data["userId"] = this.userId;
+        data["result"] = this.result;
+        data["message"] = this.message;
+        data["dependency"] = this.dependency;
+        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
+        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IRegistrationRecord extends IBaseAuditableEntity {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    userId?: number | undefined;
+    result?: string;
+    message?: string | undefined;
+    dependency?: string | undefined;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+    user?: User | undefined;
+}
+
+export class CourseResult implements ICourseResult {
+    id?: number;
+    departmentId?: number;
+    courseCode?: string;
+    courseName?: string;
+    description?: string | undefined;
+    department?: Department | undefined;
+
+    constructor(data?: ICourseResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.departmentId = _data["departmentId"];
+            this.courseCode = _data["courseCode"];
+            this.courseName = _data["courseName"];
+            this.description = _data["description"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CourseResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new CourseResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["departmentId"] = this.departmentId;
+        data["courseCode"] = this.courseCode;
+        data["courseName"] = this.courseName;
+        data["description"] = this.description;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICourseResult {
+    id?: number;
+    departmentId?: number;
+    courseCode?: string;
+    courseName?: string;
+    description?: string | undefined;
+    department?: Department | undefined;
+}
+
 export class CreateClassCommand implements ICreateClassCommand {
     courseId?: number;
     classCode?: string;
     classTypeId?: number;
-    registrationScheduleId?: number;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    canBeRegistered?: string | undefined;
 
     constructor(data?: ICreateClassCommand) {
         if (data) {
@@ -2844,12 +3149,12 @@ export class CreateClassCommand implements ICreateClassCommand {
             this.courseId = _data["courseId"];
             this.classCode = _data["classCode"];
             this.classTypeId = _data["classTypeId"];
-            this.registrationScheduleId = _data["registrationScheduleId"];
             this.credit = _data["credit"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
             this.endPeriod = _data["endPeriod"];
             this.capacity = _data["capacity"];
+            this.canBeRegistered = _data["canBeRegistered"];
         }
     }
 
@@ -2865,12 +3170,12 @@ export class CreateClassCommand implements ICreateClassCommand {
         data["courseId"] = this.courseId;
         data["classCode"] = this.classCode;
         data["classTypeId"] = this.classTypeId;
-        data["registrationScheduleId"] = this.registrationScheduleId;
         data["credit"] = this.credit;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
         data["endPeriod"] = this.endPeriod;
         data["capacity"] = this.capacity;
+        data["canBeRegistered"] = this.canBeRegistered;
         return data;
     }
 }
@@ -2879,25 +3184,25 @@ export interface ICreateClassCommand {
     courseId?: number;
     classCode?: string;
     classTypeId?: number;
-    registrationScheduleId?: number;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    canBeRegistered?: string | undefined;
 }
 
 export class UpdateClassCommand implements IUpdateClassCommand {
     id?: number;
     courseId?: number;
     classTypeId?: number;
-    registrationScheduleId?: number;
     classCode?: string;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    canBeRegistered?: string | undefined;
 
     constructor(data?: IUpdateClassCommand) {
         if (data) {
@@ -2913,13 +3218,13 @@ export class UpdateClassCommand implements IUpdateClassCommand {
             this.id = _data["id"];
             this.courseId = _data["courseId"];
             this.classTypeId = _data["classTypeId"];
-            this.registrationScheduleId = _data["registrationScheduleId"];
             this.classCode = _data["classCode"];
             this.credit = _data["credit"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
             this.endPeriod = _data["endPeriod"];
             this.capacity = _data["capacity"];
+            this.canBeRegistered = _data["canBeRegistered"];
         }
     }
 
@@ -2935,13 +3240,13 @@ export class UpdateClassCommand implements IUpdateClassCommand {
         data["id"] = this.id;
         data["courseId"] = this.courseId;
         data["classTypeId"] = this.classTypeId;
-        data["registrationScheduleId"] = this.registrationScheduleId;
         data["classCode"] = this.classCode;
         data["credit"] = this.credit;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
         data["endPeriod"] = this.endPeriod;
         data["capacity"] = this.capacity;
+        data["canBeRegistered"] = this.canBeRegistered;
         return data;
     }
 }
@@ -2950,13 +3255,53 @@ export interface IUpdateClassCommand {
     id?: number;
     courseId?: number;
     classTypeId?: number;
-    registrationScheduleId?: number;
     classCode?: string;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
     endPeriod?: number;
     capacity?: number;
+    canBeRegistered?: string | undefined;
+}
+
+export class RegistrationResult implements IRegistrationResult {
+    result?: string;
+    classCode?: string;
+
+    constructor(data?: IRegistrationResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.result = _data["result"];
+            this.classCode = _data["classCode"];
+        }
+    }
+
+    static fromJS(data: any): RegistrationResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["result"] = this.result;
+        data["classCode"] = this.classCode;
+        return data;
+    }
+}
+
+export interface IRegistrationResult {
+    result?: string;
+    classCode?: string;
 }
 
 export class ClassTypeDto implements IClassTypeDto {
@@ -3107,62 +3452,6 @@ export interface ICourseDto {
     count?: number;
 }
 
-export class CourseResult implements ICourseResult {
-    id?: number;
-    departmentId?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department | undefined;
-
-    constructor(data?: ICourseResult) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.departmentId = _data["departmentId"];
-            this.courseCode = _data["courseCode"];
-            this.courseName = _data["courseName"];
-            this.description = _data["description"];
-            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CourseResult {
-        data = typeof data === 'object' ? data : {};
-        let result = new CourseResult();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["departmentId"] = this.departmentId;
-        data["courseCode"] = this.courseCode;
-        data["courseName"] = this.courseName;
-        data["description"] = this.description;
-        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ICourseResult {
-    id?: number;
-    departmentId?: number;
-    courseCode?: string;
-    courseName?: string;
-    description?: string | undefined;
-    department?: Department | undefined;
-}
-
 export class CreateCourseCommand implements ICreateCourseCommand {
     departmentId?: number;
     courseCode?: string;
@@ -3311,6 +3600,54 @@ export interface ICoursesFKDto {
     department?: Department | undefined;
 }
 
+export class CurrentRegScheduleDto implements ICurrentRegScheduleDto {
+    id?: number;
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+
+    constructor(data?: ICurrentRegScheduleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CurrentRegScheduleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CurrentRegScheduleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICurrentRegScheduleDto {
+    id?: number;
+    name?: string;
+    startDate?: Date;
+    endDate?: Date;
+}
+
 export class UserDto implements IUserDto {
     id?: number;
     userName?: string | undefined;
@@ -3373,6 +3710,250 @@ export interface IUserDto {
     departmentId?: number | undefined;
     department?: Department | undefined;
     roles?: string[] | undefined;
+}
+
+export class RegistrationRecordDto implements IRegistrationRecordDto {
+    result?: RegistrationRecordResult[];
+    count?: number;
+
+    constructor(data?: IRegistrationRecordDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(RegistrationRecordResult.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): RegistrationRecordDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationRecordDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IRegistrationRecordDto {
+    result?: RegistrationRecordResult[];
+    count?: number;
+}
+
+export class RegistrationRecordResult implements IRegistrationRecordResult {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    userId?: number | undefined;
+    result?: string;
+    message?: string | undefined;
+    dependency?: string | undefined;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+    user?: User | undefined;
+
+    constructor(data?: IRegistrationRecordResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.classId = _data["classId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
+            this.userId = _data["userId"];
+            this.result = _data["result"];
+            this.message = _data["message"];
+            this.dependency = _data["dependency"];
+            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
+            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): RegistrationRecordResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegistrationRecordResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["classId"] = this.classId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
+        data["userId"] = this.userId;
+        data["result"] = this.result;
+        data["message"] = this.message;
+        data["dependency"] = this.dependency;
+        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
+        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IRegistrationRecordResult {
+    classId?: number | undefined;
+    registrationScheduleId?: number | undefined;
+    userId?: number | undefined;
+    result?: string;
+    message?: string | undefined;
+    dependency?: string | undefined;
+    class?: Class | undefined;
+    registrationSchedule?: RegistrationSchedule | undefined;
+    user?: User | undefined;
+}
+
+export class UserClassDto implements IUserClassDto {
+    result?: UserClassResult[];
+    count?: number;
+
+    constructor(data?: IUserClassDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(UserClassResult.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): UserClassDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserClassDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IUserClassDto {
+    result?: UserClassResult[];
+    count?: number;
+}
+
+export class UserClassResult implements IUserClassResult {
+    id?: number;
+    classId?: number;
+    registrationScheduleId?: number | undefined;
+    courseName?: string | undefined;
+    departmentName?: string | undefined;
+    classType?: string | undefined;
+    passed?: boolean | undefined;
+    userClassCount?: number;
+    fee?: number;
+    class?: Class;
+    classResult?: ClassResult | undefined;
+    registrationSchedule?: RegistrationSchedule;
+
+    constructor(data?: IUserClassResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.classId = _data["classId"];
+            this.registrationScheduleId = _data["registrationScheduleId"];
+            this.courseName = _data["courseName"];
+            this.departmentName = _data["departmentName"];
+            this.classType = _data["classType"];
+            this.passed = _data["passed"];
+            this.userClassCount = _data["userClassCount"];
+            this.fee = _data["fee"];
+            this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
+            this.classResult = _data["classResult"] ? ClassResult.fromJS(_data["classResult"]) : <any>undefined;
+            this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UserClassResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserClassResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["classId"] = this.classId;
+        data["registrationScheduleId"] = this.registrationScheduleId;
+        data["courseName"] = this.courseName;
+        data["departmentName"] = this.departmentName;
+        data["classType"] = this.classType;
+        data["passed"] = this.passed;
+        data["userClassCount"] = this.userClassCount;
+        data["fee"] = this.fee;
+        data["class"] = this.class ? this.class.toJSON() : <any>undefined;
+        data["classResult"] = this.classResult ? this.classResult.toJSON() : <any>undefined;
+        data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUserClassResult {
+    id?: number;
+    classId?: number;
+    registrationScheduleId?: number | undefined;
+    courseName?: string | undefined;
+    departmentName?: string | undefined;
+    classType?: string | undefined;
+    passed?: boolean | undefined;
+    userClassCount?: number;
+    fee?: number;
+    class?: Class;
+    classResult?: ClassResult | undefined;
+    registrationSchedule?: RegistrationSchedule;
 }
 
 export class DepartmentDto implements IDepartmentDto {
@@ -3706,7 +4287,7 @@ export interface IPrerequisiteCoursesResult {
 export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisiteCommand {
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
-    requirePassed?: boolean;
+    requirePassed?: string | undefined;
 
     constructor(data?: ICreateCoursePrerequisiteCommand) {
         if (data) {
@@ -3744,7 +4325,7 @@ export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisit
 export interface ICreateCoursePrerequisiteCommand {
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
-    requirePassed?: boolean;
+    requirePassed?: string | undefined;
 }
 
 export class RegistrationScheduleDto implements IRegistrationScheduleDto {
@@ -4648,54 +5229,6 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
 export interface IUpdateTodoListCommand {
     id?: number;
     title?: string | undefined;
-}
-
-export class UserClassDto implements IUserClassDto {
-    id?: number;
-    classId?: number;
-    registrationScheduleId?: number | undefined;
-    passed?: boolean | undefined;
-
-    constructor(data?: IUserClassDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.classId = _data["classId"];
-            this.registrationScheduleId = _data["registrationScheduleId"];
-            this.passed = _data["passed"];
-        }
-    }
-
-    static fromJS(data: any): UserClassDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserClassDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["classId"] = this.classId;
-        data["registrationScheduleId"] = this.registrationScheduleId;
-        data["passed"] = this.passed;
-        return data;
-    }
-}
-
-export interface IUserClassDto {
-    id?: number;
-    classId?: number;
-    registrationScheduleId?: number | undefined;
-    passed?: boolean | undefined;
 }
 
 export class AddUserToClassCommand implements IAddUserToClassCommand {

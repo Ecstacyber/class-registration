@@ -317,16 +317,6 @@ const CourseGrid = () => {
                                 clipMode='EllipsisWithTooltip' />
                             <ColumnDirective field='courseCode' headerText='Mã môn học' width='60' validationRules={validationRules} clipMode='EllipsisWithTooltip' />
                             <ColumnDirective field='courseName' headerText='Tên môn học' width='120' validationRules={validationRules} clipMode='EllipsisWithTooltip' />                           
-                            <ColumnDirective field='credit' headerText='Tín chỉ' width='40' validationRules={numericValidationRules} clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='fee'
-                                headerText='Học phí'
-                                width='100'
-                                validationRules={numericValidationRules}
-                                clipMode='EllipsisWithTooltip'
-                                editType='numericedit'
-                                edit={feeParams}
-                                valueAccessor={valueAccess.bind(this)} />
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                     </GridComponent>

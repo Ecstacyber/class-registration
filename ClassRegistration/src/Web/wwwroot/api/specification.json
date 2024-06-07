@@ -245,6 +245,58 @@
         }
       }
     },
+    "/api/ClassRegister": {
+      "post": {
+        "tags": [
+          "ClassRegister"
+        ],
+        "operationId": "RegisterStudent",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "ClassId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "RegistrationScheduleId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ClassTypes": {
       "get": {
         "tags": [
@@ -483,6 +535,26 @@
         }
       }
     },
+    "/api/CurrentRegistrationScheduleInfo": {
+      "get": {
+        "tags": [
+          "CurrentRegistrationScheduleInfo"
+        ],
+        "operationId": "GetCurrentRegistrationSchedule",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentRegScheduleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CurrentUserInfo": {
       "get": {
         "tags": [
@@ -496,6 +568,70 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CurrentUserRegistrationRecord": {
+      "get": {
+        "tags": [
+          "CurrentUserRegistrationRecord"
+        ],
+        "operationId": "GetCurrentUserRegistrationRecord",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationRecordDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CurrentUserRegistrationResult": {
+      "get": {
+        "tags": [
+          "CurrentUserRegistrationResult"
+        ],
+        "operationId": "GetCurrentUserRegistrationResult",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserClassDto"
                 }
               }
             }
@@ -1425,27 +1561,6 @@
       }
     },
     "/api/UserClasses": {
-      "get": {
-        "tags": [
-          "UserClasses"
-        ],
-        "operationId": "GetUserInClass",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserClassDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "UserClasses"
@@ -1596,6 +1711,10 @@
             "type": "string",
             "nullable": true
           },
+          "credit": {
+            "type": "integer",
+            "format": "int32"
+          },
           "dayOfWeek": {
             "type": "integer",
             "format": "int32"
@@ -1609,6 +1728,10 @@
             "format": "int32"
           },
           "capacity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userClassCount": {
             "type": "integer",
             "format": "int32"
           },
@@ -1631,6 +1754,14 @@
               }
             ]
           },
+          "courseResult": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CourseResult"
+              }
+            ]
+          },
           "registrationSchedule": {
             "nullable": true,
             "oneOf": [
@@ -1638,12 +1769,6 @@
                 "$ref": "#/components/schemas/RegistrationSchedule"
               }
             ]
-          },
-          "userClasses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserClass"
-            }
           }
         }
       },
@@ -1688,11 +1813,6 @@
                 "format": "int32",
                 "nullable": true
               },
-              "registrationScheduleId": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
               "classCode": {
                 "type": "string"
               },
@@ -1725,13 +1845,16 @@
               "classType": {
                 "$ref": "#/components/schemas/ClassType"
               },
-              "registrationSchedule": {
-                "$ref": "#/components/schemas/RegistrationSchedule"
-              },
               "userClasses": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/UserClass"
+                }
+              },
+              "registrationRecords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RegistrationRecord"
                 }
               }
             }
@@ -1900,6 +2023,51 @@
           }
         ]
       },
+      "UserClass": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "classId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "registrationScheduleId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "userId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "class": {
+                "$ref": "#/components/schemas/Class"
+              },
+              "registrationSchedule": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/RegistrationSchedule"
+                  }
+                ]
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        ]
+      },
       "RegistrationSchedule": {
         "allOf": [
           {
@@ -1941,12 +2109,18 @@
                 "items": {
                   "$ref": "#/components/schemas/TuitionFee"
                 }
+              },
+              "registrationRecords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RegistrationRecord"
+                }
               }
             }
           }
         ]
       },
-      "UserClass": {
+      "TuitionFee": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -1955,31 +2129,14 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "classId": {
+              "totalFee": {
                 "type": "integer",
-                "format": "int32",
-                "nullable": true
+                "format": "int64"
               },
               "registrationScheduleId": {
                 "type": "integer",
                 "format": "int32",
                 "nullable": true
-              },
-              "userId": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "passed": {
-                "type": "boolean"
-              },
-              "class": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Class"
-                  }
-                ]
               },
               "registrationSchedule": {
                 "nullable": true,
@@ -2043,6 +2200,12 @@
                   "$ref": "#/components/schemas/TuitionFee"
                 }
               },
+              "registrationRecords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RegistrationRecord"
+                }
+              },
               "roles": {
                 "type": "array",
                 "items": {
@@ -2053,7 +2216,7 @@
           }
         ]
       },
-      "TuitionFee": {
+      "RegistrationRecord": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -2062,14 +2225,39 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "totalFee": {
+              "classId": {
                 "type": "integer",
-                "format": "int64"
+                "format": "int32",
+                "nullable": true
               },
               "registrationScheduleId": {
                 "type": "integer",
                 "format": "int32",
                 "nullable": true
+              },
+              "userId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "result": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string",
+                "nullable": true
+              },
+              "dependency": {
+                "type": "string",
+                "nullable": true
+              },
+              "class": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Class"
+                  }
+                ]
               },
               "registrationSchedule": {
                 "nullable": true,
@@ -2091,6 +2279,38 @@
           }
         ]
       },
+      "CourseResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "courseCode": {
+            "type": "string"
+          },
+          "courseName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
+          }
+        }
+      },
       "CreateClassCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -2103,10 +2323,6 @@
             "type": "string"
           },
           "classTypeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "registrationScheduleId": {
             "type": "integer",
             "format": "int32"
           },
@@ -2129,6 +2345,10 @@
           "capacity": {
             "type": "integer",
             "format": "int32"
+          },
+          "canBeRegistered": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2148,10 +2368,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "registrationScheduleId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "classCode": {
             "type": "string"
           },
@@ -2174,6 +2390,22 @@
           "capacity": {
             "type": "integer",
             "format": "int32"
+          },
+          "canBeRegistered": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RegistrationResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "string"
+          },
+          "classCode": {
+            "type": "string"
           }
         }
       },
@@ -2239,38 +2471,6 @@
           "count": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "CourseResult": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "departmentId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "courseCode": {
-            "type": "string"
-          },
-          "courseName": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "department": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Department"
-              }
-            ]
           }
         }
       },
@@ -2343,6 +2543,27 @@
           }
         }
       },
+      "CurrentRegScheduleDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "UserDto": {
         "type": "object",
         "additionalProperties": false,
@@ -2378,6 +2599,151 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "RegistrationRecordDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RegistrationRecordResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RegistrationRecordResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "classId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "registrationScheduleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "result": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "dependency": {
+            "type": "string",
+            "nullable": true
+          },
+          "class": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Class"
+              }
+            ]
+          },
+          "registrationSchedule": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RegistrationSchedule"
+              }
+            ]
+          },
+          "user": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ]
+          }
+        }
+      },
+      "UserClassDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserClassResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UserClassResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "classId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrationScheduleId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "courseName": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentName": {
+            "type": "string",
+            "nullable": true
+          },
+          "classType": {
+            "type": "string",
+            "nullable": true
+          },
+          "passed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "userClassCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "class": {
+            "$ref": "#/components/schemas/Class"
+          },
+          "classResult": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ClassResult"
+              }
+            ]
+          },
+          "registrationSchedule": {
+            "$ref": "#/components/schemas/RegistrationSchedule"
           }
         }
       },
@@ -2532,7 +2898,8 @@
             "nullable": true
           },
           "requirePassed": {
-            "type": "boolean"
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2915,29 +3282,6 @@
           },
           "title": {
             "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "UserClassDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "classId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "registrationScheduleId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "passed": {
-            "type": "boolean",
             "nullable": true
           }
         }

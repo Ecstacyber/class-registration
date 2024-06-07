@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { RegistrationSchedulesClient } from '../../../web-api-client.ts';
 
 const RegistrationSchedule = () => {
-    const [scheduleData, setScheduleData] = useState({
+        const [scheduleData, setScheduleData] = useState({
         result: [],
         count: 0
     });
@@ -74,6 +74,18 @@ const RegistrationSchedule = () => {
             ]
         }
     };
+    const numericValidationRules = {
+        required: true,
+        number: true
+    }
+    const feeParams = {
+        params: {
+            decimals: 0,
+            format: "N",
+            min: 0,
+            validateDecimalOnType: true
+        }
+    };
 
     async function getScheduleData() {
         const registrationSchedulesClient = new RegistrationSchedulesClient();
@@ -84,6 +96,21 @@ const RegistrationSchedule = () => {
     useEffect(() => {
         getScheduleData();
     }, []);
+
+    function valueAccess(field, data, column) {
+        var value = data[column.field];
+        if (data['fee'] % 2 === 0) {
+            value = '' + value;
+            var parts = value.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
+        } else {
+            value = '' + value;
+            var parts = value.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
+        }
+    }
 
     function dataStateChange(args) {
         console.log(args);
@@ -147,7 +174,6 @@ const RegistrationSchedule = () => {
                         .then((gridData) => { gridInstance.dataSource = gridData });
                     return;
                 }
-
             }
 
             if (args.action.action === 'clearFilter') {
@@ -248,6 +274,15 @@ const RegistrationSchedule = () => {
                                 headerText='Tên'
                                 width='160'
                                 validationRules={validationRules}
+                                clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective
+                                field='feePerCredit'
+                                headerText='VND/tín chỉ'
+                                width='80'
+                                validationRules={numericValidationRules}
+                                editType='numericedit'
+                                edit={feeParams}
+                                valueAccessor={valueAccess.bind(this)}
                                 clipMode='EllipsisWithTooltip' />
                             <ColumnDirective
                                 field='startDate'

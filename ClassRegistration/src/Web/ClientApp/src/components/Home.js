@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { CurrentUserInfoClient } from '../web-api-client.ts';
 import '../scss/style.scss';
-import '../components/admin/department/grid-overview.css';
+//import '../components/admin/department/grid-overview.css';
 import '../../node_modules/@syncfusion/ej2/bootstrap5.css';
 
 const Home = () => {  

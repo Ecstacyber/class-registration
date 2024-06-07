@@ -1,4 +1,5 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
+using ClassRegistration.Application.Common.Models;
 using ClassRegistration.Application.Departments.Queries.GetDepartments;
 using ClassRegistration.Domain.Entities;
 
@@ -34,6 +35,7 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, CourseDto
     public async Task<CourseDto> Handle(GetCoursesQuery request, CancellationToken cancellationToken)
     {
         var courses = _context.Courses.Include(x => x.Department).AsNoTracking();
+        int totalCount = 0;
 
         if (!string.IsNullOrEmpty(request.FilterAttribute) && !string.IsNullOrEmpty(request.FilterValue))
         {
@@ -76,20 +78,25 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, CourseDto
             courses = courses.OrderByDescending(x => x.Id);
         }
 
-        courses = courses.Skip(request.Skip);
-        if (request.Take > 0)
-        {
-            courses.Take(request.Take);
-        }
+        courses = courses.Skip(request.Skip).Take(request.Take);
 
         var result = await courses
             .ProjectTo<CourseResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
+        if (string.IsNullOrEmpty(request.FilterAttribute) && string.IsNullOrEmpty(request.FilterValue))
+        {
+            totalCount = await _context.Classes.CountAsync(cancellationToken);
+        }
+        else
+        {
+            totalCount = result.Count;
+        }
+
         return new CourseDto
         {
             Result = result,
-            Count = result.Count
+            Count = totalCount
         };
     }
 }

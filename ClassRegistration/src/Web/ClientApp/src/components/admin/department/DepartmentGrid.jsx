@@ -174,6 +174,9 @@ export class DepartmentGrid extends React.Component {
                 this.departmentClient.deleteDepartment(deleteData.id);
             });
         }
+        this.orderBy = '';
+        this.filterAttr = '';
+        this.filterText = '';
         this.departmentClient.getDepartments('allpages', state.skip, state.take)
             .then((gridData) => { this.gridInstance.dataSource = gridData });
     }

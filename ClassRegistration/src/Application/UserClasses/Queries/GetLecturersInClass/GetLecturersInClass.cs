@@ -1,10 +1,11 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
-using ClassRegistration.Application.UserClasses.Queries.GetUserInClass;
 
 namespace ClassRegistration.Application.UserClasses.Queries.GetLecturersInClass;
 
-public record GetLecturersInClassQuery : IRequest<IEnumerable<UserClassDto>>
+public record GetLecturersInClassQuery : IRequest<UserClassDto>
 {
+    public int ClassId { get; set; }
+    public int RegistrationId { get; set; }
 }
 
 public class GetLecturersInClassQueryValidator : AbstractValidator<GetLecturersInClassQuery>
@@ -14,7 +15,7 @@ public class GetLecturersInClassQueryValidator : AbstractValidator<GetLecturersI
     }
 }
 
-public class GetLecturersInClassQueryHandler : IRequestHandler<GetLecturersInClassQuery, IEnumerable<UserClassDto>>
+public class GetLecturersInClassQueryHandler : IRequestHandler<GetLecturersInClassQuery, UserClassDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -25,10 +26,18 @@ public class GetLecturersInClassQueryHandler : IRequestHandler<GetLecturersInCla
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserClassDto>> Handle(GetLecturersInClassQuery request, CancellationToken cancellationToken)
+    public async Task<UserClassDto> Handle(GetLecturersInClassQuery request, CancellationToken cancellationToken)
     {
-        return await _context.UserClasses
-            .ProjectTo<UserClassDto>(_mapper.ConfigurationProvider)
+        var result = await _context.UserClasses
+            .Include(x => x.User)
+            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId && x.User != null && x.User.Roles.Contains("lecturer"))
+            .ProjectTo<UserClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        return new UserClassDto
+        {
+            Result = result,
+            Count = result.Count
+        };
     }
 }

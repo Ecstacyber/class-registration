@@ -8,12 +8,12 @@ public record CreateClassCommand : IRequest<int>
     public int CourseId { get; init; }
     public required string ClassCode { get; init; }
     public required int ClassTypeId { get; init; }
-    public required int RegistrationScheduleId { get; init; }
     public int Credit { get; init; }
     public int DayOfWeek { get; init; }
     public int StartPeriod { get; init; }
     public int EndPeriod { get; init; }
     public int Capacity { get; init; }
+    public string? CanBeRegistered { get; init; }
 }
 
 public class CreateClassCommandValidator : AbstractValidator<CreateClassCommand>
@@ -69,12 +69,12 @@ public class CreateClassCommandHandler : IRequestHandler<CreateClassCommand, int
             CourseId = request.CourseId,
             ClassCode = request.ClassCode,
             ClassTypeId = request.ClassTypeId,
-            RegistrationScheduleId = request.RegistrationScheduleId,
             Credit = request.Credit,
             DayOfWeek = request.DayOfWeek,
             StartPeriod = request.StartPeriod,
             EndPeriod = request.EndPeriod,
-            Capacity = request.Capacity
+            Capacity = request.Capacity,
+            CanBeRegistered = request.CanBeRegistered == "true"
         };
         _context.Classes.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);

@@ -42,6 +42,7 @@ public class GetClassesByCourseIdQueryHandler : IRequestHandler<GetClassesByCour
             .Include(x => x.ClassType)
             .Where(x => x.CourseId == request.CourseId)
             .AsNoTracking();
+        int totalCount = 0;
 
         if (!string.IsNullOrEmpty(request.FilterAttribute) && !string.IsNullOrEmpty(request.FilterValue))
         {
@@ -108,15 +109,20 @@ public class GetClassesByCourseIdQueryHandler : IRequestHandler<GetClassesByCour
             classes = classes.OrderByDescending(x => x.Id);
         }
 
-        classes = classes.Skip(request.Skip);
-        if (request.Take > 0)
-        {
-            classes.Take(request.Take);
-        }
+        classes = classes.Skip(request.Skip).Take(request.Take);
 
         var result = await classes
             .ProjectTo<ClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        if (string.IsNullOrEmpty(request.FilterAttribute) && string.IsNullOrEmpty(request.FilterValue))
+        {
+            totalCount = await _context.Classes.CountAsync(cancellationToken);
+        }
+        else
+        {
+            totalCount = result.Count;
+        }
 
         return new ClassDto
         {

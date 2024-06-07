@@ -35,9 +35,20 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
    
     public async Task<ClassDto> Handle(GetClassesQuery request, CancellationToken cancellationToken)
     {      
+        var currentRegWindow = await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now, cancellationToken);
+        if (currentRegWindow == null)
+        {
+            return new ClassDto
+            {
+                Result = [],
+                Count = 0
+            };
+        }
+
+        int totalCount = 0;
+
         var classes = _context.Classes
             .Include(x => x.Course)
-            .Include(x => x.UserClasses)
             .Include(x => x.ClassType)
             .AsNoTracking();
 
@@ -78,6 +89,12 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
                         classes = classes.Where(x => x.Capacity == capacity);
                     }
                     break;
+                case "credit":
+                    if (int.TryParse(request.FilterValue, out int credit))
+                    {
+                        classes = classes.Where(x => x.Credit == credit);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -106,24 +123,32 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
                 case "capacity":
                     classes = orderBy[1] == "Ascending" ? classes.OrderBy(x => x.Capacity) : classes.OrderByDescending(x => x.Capacity);
                     break;
+                case "credit":
+                    classes = orderBy[1] == "Ascending" ? classes.OrderBy(x => x.Credit) : classes.OrderByDescending(x => x.Capacity);
+                    break;
                 default:
                     break;
             }
         }
         else
         {
-            classes = classes.OrderByDescending(x => x.Id);
+            classes = classes.OrderBy(x => x.ClassCode);
         }
 
-        classes = classes.Skip(request.Skip);
-        if (request.Take > 0)
-        {
-            classes.Take(request.Take);
-        }
+        classes = classes.Skip(request.Skip).Take(request.Take);
 
         var results = await classes
             .ProjectTo<ClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        if (string.IsNullOrEmpty(request.FilterAttribute) && string.IsNullOrEmpty(request.FilterValue))
+        {
+            totalCount = await _context.Classes.CountAsync(cancellationToken);
+        }
+        else
+        {
+            totalCount = results.Count;
+        }
 
         var departments = await _context.Departments.AsNoTracking().Include(x => x.Courses).ToListAsync(cancellationToken);
         foreach (var result in results)
@@ -139,13 +164,13 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
                     }
                 }
             }
+            result.UserClassCount = await _context.UserClasses.CountAsync(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id, cancellationToken);
         }
-
 
         return new ClassDto
         {
             Result = results,
-            Count = results.Count
+            Count = totalCount
         };
     }
 }

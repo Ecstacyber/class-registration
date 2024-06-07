@@ -7,7 +7,7 @@ public record CreateCoursePrerequisiteCommand : IRequest<int>
 {
     public int? CourseId { get; init; }
     public int? PrerequisiteCourseId { get; init; }
-    public bool RequirePassed { get; init; }
+    public string? RequirePassed { get; init; }
 }
 
 public class CreateCoursePrerequisiteCommandValidator : AbstractValidator<CreateCoursePrerequisiteCommand>
@@ -49,7 +49,7 @@ public class CreateCoursePrerequisiteCommandHandler : IRequestHandler<CreateCour
         {
             CourseId = request.CourseId,
             PrerequisiteCourseId = request.PrerequisiteCourseId,
-            RequirePassed = request.RequirePassed
+            RequirePassed = request.RequirePassed == "true"
         };
         _context.PrerequisiteCourses.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);

@@ -14,32 +14,34 @@ import {
 } from '@syncfusion/ej2-react-grids';
 import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { StudentLayout } from '../../StudentLayout';
 import {
     ClassesClient,
     UserClassesClient,
     RegistrationSchedulesClient,
-    ClassTypesClient
+    ClassTypesClient,
+    CurrentRegistrationScheduleInfoClient,
+    ClassRegisterClient,
+    CurrentUserInfoClient
 } from '../../../web-api-client.ts';
+import './class-registration.css'
 
 const ClassRegistration = () => {
+    const [currentUserInfo, setCurrentUserInfo] = useState(null);
     const [classData, setClassData] = useState({
         result: [],
         count: 0
     });
+    const [currentRegScheduleInfo, setCurrentRegScheduleInfo] = useState({});
     const [classTypes, setClassTypes] = useState(null);
     const [selectedClasses, setSelectedClasses] = useState([]);
-    //const [selectedClassesGridData, setSelectedClassesGridData] = useState({
-    //    result: [],
-    //    count: 0
-    //});
+    const [creditCount, setCreditCount] = useState(0);
     let orderBy = '';
     let filterAttr = '';
     let filterText = '';
     let gridInstance;
-    //let regGridInstance;
     const fields = { text: 'text', value: 'value' };
-    //const toolbarOptions = ['Delete'];
     const pageSettings = {
         pageSizes: true
     };
@@ -53,6 +55,31 @@ const ClassRegistration = () => {
     };
     const filter = {
         ignoreAccent: true
+    };
+    const toolbarOptions = ['Add', 'Cancel'];
+    const editSettings = {
+        allowEditing: false,
+        allowAdding: true,
+        allowDeleting: false,
+        mode: 'Dialog'
+    };
+
+    //const clickHandler = (args) => {
+    //    if (gridInstance && args.item.id === 'register') {
+    //        const classRegisterClient = new ClassRegisterClient();
+    //        for (let i = 0; i < selectedClasses.length; i++) {
+    //            classRegisterClient.registerStudent(currentUserInfo.id, selectedClasses[i].id, currentRegScheduleInfo.id);
+    //        }
+    //        gridInstance.clearSelection();
+    //        setSelectedClasses([]);
+    //        const classesClient = new ClassesClient();
+    //        classesClient.getClasses(0, 12).then((gridData) => gridInstance.dataSource = gridData);
+    //    }
+    //};
+
+    const created = () => {
+        let toolbar = gridInstance.element.querySelector('.e-toolbar');
+        gridInstance.element.appendChild(toolbar);
     };
 
     const headerTemplate = () => {
@@ -77,7 +104,7 @@ const ClassRegistration = () => {
                                 filterText = 'Lý thuyết';
                                 let classes = classesClient.getClasses(
                                     0,
-                                    30,
+                                    12,
                                     '',
                                     filterAttr,
                                     filterText
@@ -88,7 +115,7 @@ const ClassRegistration = () => {
                                 filterText = 'Thực hành';
                                 let classes = classesClient.getClasses(
                                     0,
-                                    30,
+                                    12,
                                     '',
                                     filterAttr,
                                     filterText
@@ -103,7 +130,7 @@ const ClassRegistration = () => {
                             filterText = '';
                             classesClient.getClasses(
                                 0,
-                                30,
+                                12,
                                 '',
                                 '',
                                 ''
@@ -123,6 +150,14 @@ const ClassRegistration = () => {
     };
 
     async function getData() {
+        const currentUserInfoClient = new CurrentUserInfoClient();
+        let currentUser = await currentUserInfoClient.getUserInfo();
+        setCurrentUserInfo(currentUser);
+
+        const currentRegistrationScheduleInfoClient = new CurrentRegistrationScheduleInfoClient();
+        let currentRegInfo = await currentRegistrationScheduleInfoClient.getCurrentRegistrationSchedule();
+        setCurrentRegScheduleInfo(currentRegInfo);
+
         const classesClient = new ClassesClient();
         let cl_data = await classesClient.getClasses(0, 12);
         setClassData(cl_data);
@@ -140,22 +175,14 @@ const ClassRegistration = () => {
         console.log(selectedClasses);
         console.log(args);
         setSelectedClasses([...selectedClasses, args.data]);
-        //setSelectedClassesGridData({
-        //    result: selectedClasses,
-        //    count: selectedClasses.count
-        //});
-        //regGridInstance.changeDataSource(selectedClasses);
+        setCreditCount(creditCount + args.data.credit);
     }
 
     function onRowDeselected(args) {
         console.log(selectedClasses);
         console.log(args);
         setSelectedClasses(selectedClasses.filter(x => x.id !== args.data.id));
-        //setSelectedClassesGridData({
-        //    result: selectedClasses,
-        //    count: selectedClasses.count
-        //});
-        //regGridInstance.changeDataSource(selectedClasses);
+        setCreditCount(creditCount - args.data.credit);
     }
     
 
@@ -264,12 +291,20 @@ const ClassRegistration = () => {
 
     function dataSourceChanged(args) {
         console.log(args);
-        //const classesClient = new ClassesClient();
-        //filterAttr = '';
-        //filterText = '';
-        //orderBy = '';
-        //classesClient.getClasses(0, 12)
-        //    .then((gridData) => { gridInstance.dataSource = gridData });
+        if (args.action === 'add') {
+            const classRegisterClient = new ClassRegisterClient();
+            for (let i = 0; i < selectedClasses.length; i++) {
+                classRegisterClient.registerStudent(currentUserInfo.id, selectedClasses[i].id, currentRegScheduleInfo.id);
+            }
+        }
+        gridInstance.clearSelection();
+        setSelectedClasses([]);
+        const classesClient = new ClassesClient();
+        filterAttr = '';
+        filterText = '';
+        orderBy = '';
+        classesClient.getClasses(0, 12)
+            .then((gridData) => { gridInstance.dataSource = gridData });
     }
     
     //function regDataStateChange(args) {
@@ -308,16 +343,39 @@ const ClassRegistration = () => {
         }
     }
 
-    function onRegisterClick() {
+    function CreditCounter() {
+        return (
+            <h5>Số tín chỉ đã chọn: {creditCount}</h5>
+        )
+    }
+
+    const onRegisterClick = () => {
+        const classRegisterClient = new ClassRegisterClient();
+        for (let i = 0; i < selectedClasses.length; i++) {
+            let regRes = classRegisterClient.registerStudent(currentUserInfo.id, selectedClasses[i].id, currentRegScheduleInfo.id);
+            console.log(regRes);
+        }
         gridInstance.clearSelection();
         setSelectedClasses([]);
+        window.location.reload();
+        //const classesClient = new ClassesClient();
+        //let classes = classesClient.getClasses(0, 12);
+        //setClassData(classes);
+        //let classes = classesClient.getClasses(0, 12);
+        //filterAttr = '';
+        //filterText = '';
+        //orderBy = '';
+        //setClassData(classes);
+        //gridInstance.changeDataSource(classData);
+        //gridInstance.changeDataSource(classes);       
     }
 
     if (classTypes !== null) {
         return (
             <StudentLayout>
+                <h2>{currentRegScheduleInfo.name}</h2>
                 <div className='control-pane'>
-                    <div className='control-section'>
+                    <div className='control-section'>                       
                         <div style={{ paddingBottom: '18px' }}></div>
                         <GridComponent id="overviewgrid"
                             dataSource={classData}
@@ -327,7 +385,7 @@ const ClassRegistration = () => {
                             rowRenderingMode='Horizontal'
                             pageSettings={pageSettings}
                             enableHover={true}
-                            height='600'
+                            height='456'
                             loadingIndicator={{ indicatorType: 'Shimmer' }}
                             rowHeight={38}
                             ref={(g) => { gridInstance = g; }}
@@ -347,7 +405,7 @@ const ClassRegistration = () => {
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40' headerTemplate={headerTemplate}></ColumnDirective>
                                 <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
                                 <ColumnDirective field='classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />
-                                <ColumnDirective field='course.courseName' headerText='Tên lớp' width='100' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='course.courseName' headerText='Tên lớp' width='105' clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective field='departmentName' headerText='Khoa' width='40' clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective
                                     field='classTypeId'
@@ -359,22 +417,29 @@ const ClassRegistration = () => {
                                     allowSorting={false}
                                     filterBarTemplate={filterBarTemplate}
                                     clipMode='EllipsisWithTooltip' />
-                                <ColumnDirective field='course.credit' headerText='Tín chỉ' width='40' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='credit' headerText='Tín chỉ' width='25' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='dayOfWeek' headerText='Thứ' width='25' clipMode='EllipsisWithTooltip' />
+                                {/*<ColumnDirective*/}
+                                {/*    columns={*/}
+                                {/*        [*/}
+                                {/*            { field: 'dayOfWeek', headerText: 'Thứ', width: 30 },*/}
+                                {/*            { field: 'startPeriod', headerText: 'Tiết bắt đầu', width: 40 },*/}
+                                {/*            { field: 'endPeriod', headerText: 'Tiết kết thúc', width: 40 }*/}
+                                {/*        ]*/}
+                                {/*    }*/}
+                                {/*    headerText='Thời gian học' >*/}
+                                {/*</ColumnDirective>*/}
                                 <ColumnDirective
                                     columns={
                                         [
-                                            { field: 'dayOfWeek', headerText: 'Thứ', width: 40 },
-                                            { field: 'startPeriod', headerText: 'Tiết bắt đầu', width: 40 },
-                                            { field: 'endPeriod', headerText: 'Tiết kết thúc', width: 40 }
+                                            { field: 'startPeriod', headerText: 'Bắt đầu', width: 30 },
+                                            { field: 'endPeriod', headerText: 'Kết thúc', width: 30 }
                                         ]
                                     }
-                                    headerText='Thời gian học' >
+                                    headerText='Tiết' >
                                 </ColumnDirective>
-                                <ColumnDirective
-                                    field='capacity'
-                                    headerText='Số lượng'
-                                    width='40'>
-                                </ColumnDirective>
+                                <ColumnDirective field='userClassCount' headerText='Đã đăng ký' width='40'></ColumnDirective>
+                                <ColumnDirective field='capacity' headerText='Số lượng' width='35'></ColumnDirective>                                
                             </ColumnsDirective>
                             <Inject services={[Filter, Sort, Page, ForeignKey]} />
                         </GridComponent>
@@ -383,8 +448,13 @@ const ClassRegistration = () => {
                 <br />
                 <div className='control-pane'>
                     <div className='control-section'>
-                        <div style={{ paddingBottom: '9px' }}>
-                            <h5>Các môn đã chọn</h5>
+                        <div className="row" style={{ paddingBottom: '9px' }}>
+                            <div className="col-md-6">
+                                <h5>Các môn đã chọn</h5>
+                            </div>
+                            <div className="col-md-6">
+                                <CreditCounter/>
+                            </div>
                         </div>
                         {/*<GridComponent id="overviewgrid"*/}
                         {/*    dataSource={selectedClassesGridData}*/}
@@ -413,7 +483,8 @@ const ClassRegistration = () => {
                         {/*    </ColumnsDirective>*/}
                         {/*</GridComponent>*/}
                         <SelectedClassList />
-                        <RegisterButton/>
+                        <RegisterButton />
+                        {/*<ButtonComponent cssClass='e-primary' onClick={onRegisterClick.bind(this)}>Đăng ký</ButtonComponent>*/}
                     </div>
                 </div>
             </StudentLayout>

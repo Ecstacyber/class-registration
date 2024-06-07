@@ -243,14 +243,14 @@ const CourseDetails = () => {
                 return;
             }
 
-            if (args.action.requestType === 'save') {
-                filterAttr = '';
-                filterText = '';
-                orderBy = '';
-                classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
-                    .then((gridData) => { gridInstance.dataSource = gridData });
-                return;
-            }
+            //if (args.action.requestType === 'save') {
+            //    filterAttr = '';
+            //    filterText = '';
+            //    orderBy = '';
+            //    classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
+            //        .then((gridData) => { gridInstance.dataSource = gridData });
+            //    return;
+            //}
 
             classesByCourseIdClient.getClassesByCourseId(courseId, args.skip, args.take)
                 .then((gridData) => { gridInstance.dataSource = gridData });
@@ -281,7 +281,8 @@ const CourseDetails = () => {
                 dayOfWeek: args.data.dayOfWeek,
                 startPeriod: args.data.startPeriod,
                 endPeriod: args.data.endPeriod,
-                capacity: args.data.capacity
+                capacity: args.data.capacity,
+                canBeRegistered: args.data.canBeRegistered.toString()
             };
             classesClient.createClass(newClass);
         } else if (args.action === 'edit') {
@@ -296,7 +297,8 @@ const CourseDetails = () => {
                 dayOfWeek: args.data.dayOfWeek,
                 startPeriod: args.data.startPeriod,
                 endPeriod: args.data.endPeriod,
-                capacity: args.data.capacity
+                capacity: args.data.capacity,
+                canBeRegistered: args.data.canBeRegistered.toString()
             };
             classesClient.updateClass(args.data.id, updatedClass);
         } else if (args.requestType === 'delete') {
@@ -427,7 +429,7 @@ const CourseDetails = () => {
             let newCoursePrerequisite = {
                 courseId: courseId,
                 prerequisiteCourseId: args.data.prerequisiteCourseId,
-                requirePassed: args.data.requirePassed
+                requirePassed: args.data.requirePassed === 'true' ? true : false
             };
             prerequisiteCoursesClient.createCoursePrerequisite(newCoursePrerequisite);
         } else if (args.action === 'edit') {
@@ -440,15 +442,15 @@ const CourseDetails = () => {
         } else if (args.requestType === 'delete') {
             args.data.forEach((deleteData) => {
                 prerequisiteCoursesClient.deleteCoursePrerequisite(deleteData.id);
-            });
-            const prerequisiteCoursesByCourseIdClient = new PrerequisiteCoursesByCourseIdClient();
-            pcgFilterAttr = '';
-            pcgFilterText = '';
-            pcgOrderBy = '';
-            prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-                .then((gridData) => { pcdGridInstance.dataSource = gridData });
-            return;
-        }      
+            });           
+        }
+        const prerequisiteCoursesByCourseIdClient = new PrerequisiteCoursesByCourseIdClient();
+        pcgFilterAttr = '';
+        pcgFilterText = '';
+        pcgOrderBy = '';
+        prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
+            .then((gridData) => { pcdGridInstance.dataSource = gridData });
+        return;
     }
 
     function pcd_onRecordDoubleClick(args) {
@@ -461,8 +463,6 @@ const CourseDetails = () => {
             <AdminLayout>
                 <h2>{course?.courseCode}</h2>
                 <h3>{course?.courseName}</h3>
-                <h4>Số tín chỉ: {course?.credit}</h4>
-                <h4>Học phí: {course?.fee}</h4>
                 <br />
                 <div className='control-pane'>
                     <div className='control-section'>
@@ -544,7 +544,6 @@ const CourseDetails = () => {
                             dataStateChange={dataStateChange.bind(this)}
                             dataSourceChanged={dataSourceChanged.bind(this)}
                             recordDoubleClick={onRecordDoubleClick.bind(this)}
-                            detailTemplate={template.bind(this)}
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -560,6 +559,7 @@ const CourseDetails = () => {
                                     validationRules={validationRules}
                                     allowSorting={false}
                                     clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='credit' headerText='Tín chỉ' width='40' validationRules={numericValidationRules} editType='numericedit' edit={numericParams} clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective
                                     columns={
                                         [
@@ -576,7 +576,8 @@ const CourseDetails = () => {
                                     width='50'
                                     editType='numericedit'
                                     validationRules={capacityRules}
-                                    edit={numericParams}></ColumnDirective>
+                                    edit={numericParams}>
+                                </ColumnDirective>
                                 <ColumnDirective
                                     field='canBeRegistered'
                                     headerText='Được đăng ký'

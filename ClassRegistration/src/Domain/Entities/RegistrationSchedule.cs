@@ -14,4 +14,5 @@ public class RegistrationSchedule : BaseAuditableEntity
     public IList<Class> Classes { get; set; } = new List<Class>();
     public IList<UserClass> UserClasses { get; set; } = new List<UserClass>();
     public IList<TuitionFee> TuitionFees { get; set; } = new List<TuitionFee>();
+    public IList<RegistrationRecord> RegistrationRecords { get; set; } = new List<RegistrationRecord>();
 }

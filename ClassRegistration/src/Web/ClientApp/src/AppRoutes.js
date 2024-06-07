@@ -9,6 +9,7 @@ import ClassDetails from "./components/admin/class/ClassDetails";
 import { StudentIndex } from "./components/student/StudentIndex";
 import RegistrationSchedule from './components/admin/registration-schedule/RegistrationSchedule'
 import ClassRegistration from "./components/student/class-registration/ClassRegistration";
+import RegistrationResult from "./components/student/class-registration/RegistrationResult";
 
 const AppRoutes = [
   {
@@ -58,9 +59,12 @@ const AppRoutes = [
   },
   {
     path: '/student-index/class-registration',
-    name: 'Home',
     element: <ClassRegistration />
-  }
+  },
+  {
+    path: '/student-index/registration-result',
+    element: <RegistrationResult />
+  },
 ];
 
 export default AppRoutes;

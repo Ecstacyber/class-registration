@@ -231,6 +231,56 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.ToTable("PrerequisiteCourses");
                 });
 
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Dependency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegistrationScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("RegistrationScheduleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RegistrationRecords");
+                });
+
             modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -714,15 +764,13 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                         .WithMany("Classes")
                         .HasForeignKey("CourseId");
 
-                    b.HasOne("ClassRegistration.Domain.Entities.RegistrationSchedule", "RegistrationSchedule")
+                    b.HasOne("ClassRegistration.Domain.Entities.RegistrationSchedule", null)
                         .WithMany("Classes")
                         .HasForeignKey("RegistrationScheduleId");
 
                     b.Navigation("ClassType");
 
                     b.Navigation("Course");
-
-                    b.Navigation("RegistrationSchedule");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Course", b =>
@@ -749,6 +797,27 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Prerequisite");
+                });
+
+            modelBuilder.Entity("ClassRegistration.Domain.Entities.RegistrationRecord", b =>
+                {
+                    b.HasOne("ClassRegistration.Domain.Entities.Class", "Class")
+                        .WithMany("RegistrationRecords")
+                        .HasForeignKey("ClassId");
+
+                    b.HasOne("ClassRegistration.Domain.Entities.RegistrationSchedule", "RegistrationSchedule")
+                        .WithMany("RegistrationRecords")
+                        .HasForeignKey("RegistrationScheduleId");
+
+                    b.HasOne("ClassRegistration.Domain.Entities.User", "User")
+                        .WithMany("RegistrationRecords")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("RegistrationSchedule");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.TodoItem", b =>
@@ -894,6 +963,8 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.Class", b =>
                 {
+                    b.Navigation("RegistrationRecords");
+
                     b.Navigation("UserClasses");
                 });
 
@@ -920,6 +991,8 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
                 {
                     b.Navigation("Classes");
 
+                    b.Navigation("RegistrationRecords");
+
                     b.Navigation("TuitionFees");
 
                     b.Navigation("UserClasses");
@@ -932,6 +1005,8 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("ClassRegistration.Domain.Entities.User", b =>
                 {
+                    b.Navigation("RegistrationRecords");
+
                     b.Navigation("TuitionFee");
 
                     b.Navigation("UserClasses");
