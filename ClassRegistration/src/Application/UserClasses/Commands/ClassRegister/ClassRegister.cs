@@ -89,6 +89,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                 {
                     RegistrationRecord record = new RegistrationRecord
                     {
+                        RequestType = "Đăng ký",
                         Message = "User is null",
                         Result = "Thất bại",
                         RegistrationScheduleId = request.RegistrationScheduleId,
@@ -160,6 +161,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                     {
                         RegistrationRecord record = new RegistrationRecord
                         {
+                            RequestType = "Đăng ký",
                             Message = "Chưa qua môn tiên quyết",
                             Result = "Thất bại",
                             RegistrationScheduleId = request.RegistrationScheduleId,
@@ -198,6 +200,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                         {
                             RegistrationRecord record = new RegistrationRecord
                             {
+                                RequestType = "Đăng ký",
                                 Message = "Đăng ký trùng",
                                 Result = "Thất bại",
                                 RegistrationScheduleId = request.RegistrationScheduleId,
@@ -223,6 +226,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                         {
                             RegistrationRecord record = new RegistrationRecord
                             {
+                                RequestType = "Đăng ký",
                                 Message = "Trùng lịch học",
                                 Result = "Thất bại",
                                 RegistrationScheduleId = request.RegistrationScheduleId,
@@ -244,6 +248,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                     entity.Passed = false;
                     RegistrationRecord srecord = new RegistrationRecord
                     {
+                        RequestType = "Đăng ký",
                         Message = "",
                         Result = "Thành công",
                         RegistrationScheduleId = request.RegistrationScheduleId,
@@ -263,6 +268,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                 {
                     RegistrationRecord record = new RegistrationRecord
                     {
+                        RequestType = "Đăng ký",
                         Message = "Course is null",
                         Result = "Thất bại",
                         RegistrationScheduleId = request.RegistrationScheduleId,
@@ -281,6 +287,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
             {
                 RegistrationRecord record = new RegistrationRecord
                 {
+                    RequestType = "Đăng ký",
                     Message = "Lớp đã đầy",
                     Result = "Thất bại",
                     RegistrationScheduleId = request.RegistrationScheduleId,
@@ -299,6 +306,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
 
         RegistrationRecord frecord = new RegistrationRecord
         {
+            RequestType = "Đăng ký",
             Message = "Class is null",
             Result = "Thất bại",
             RegistrationScheduleId = request.RegistrationScheduleId,

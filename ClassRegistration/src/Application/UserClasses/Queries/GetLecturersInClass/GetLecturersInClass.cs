@@ -1,4 +1,5 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
+using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.UserClasses.Queries.GetLecturersInClass;
 
@@ -19,20 +20,35 @@ public class GetLecturersInClassQueryHandler : IRequestHandler<GetLecturersInCla
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IIdentityService _identityService;
 
-    public GetLecturersInClassQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetLecturersInClassQueryHandler(IApplicationDbContext context, IMapper mapper, IIdentityService identityService)
     {
         _context = context;
         _mapper = mapper;
+        _identityService = identityService;
     }
 
     public async Task<UserClassDto> Handle(GetLecturersInClassQuery request, CancellationToken cancellationToken)
     {
-        var result = await _context.UserClasses
+        var userClasses = await _context.UserClasses
             .Include(x => x.User)
-            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId && x.User != null && x.User.Roles.Contains("lecturer"))
+            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId && x.User != null && x.User.Roles.Contains("Lecturer"))
             .ProjectTo<UserClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        List<UserClassResult> result = new List<UserClassResult>();
+        foreach (var userClass in userClasses)
+        {
+            if (userClass.User != null)
+            {
+                var role = await _identityService.GetUserRoleAsync(userClass.User.Id);
+                if (role.Contains("Lecturer"))
+                {
+                    result.Add(userClass);
+                }
+            }
+        }
 
         return new UserClassDto
         {

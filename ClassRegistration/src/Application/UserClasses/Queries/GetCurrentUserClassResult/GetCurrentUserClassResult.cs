@@ -48,6 +48,7 @@ public class GetCurrentUserClassResultQueryHandler : IRequestHandler<GetCurrentU
         }
 
         var currentUserRegResult = await _context.UserClasses
+            .AsNoTracking()
             .Include(x => x.User)
             .Include(x => x.Class)
             .Include(x => x.RegistrationSchedule)

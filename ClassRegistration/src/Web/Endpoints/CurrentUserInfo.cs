@@ -1,4 +1,5 @@
-﻿using ClassRegistration.Application.Users.Queries.GetUserInfo;
+﻿using ClassRegistration.Application.Users.Queries;
+using ClassRegistration.Application.Users.Queries.GetUserInfo;
 using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Web.Endpoints;

@@ -35,6 +35,7 @@ const RegistrationResult = () => {
         count: 0
     });
     let gridInstance;
+    let recordGridInstance;
     const fields = { text: 'text', value: 'value' };
     const toolbarOptions = ['Delete'];
     const check = {
@@ -50,6 +51,10 @@ const RegistrationResult = () => {
         allowAdding: false,
         allowDeleting: true,
         showDeleteConfirmDialog: true
+    };
+    const dateFormat = {
+        type: 'dateTime',
+        format: 'dd/MM/yyyy hh:mm a'
     };
 
     async function getData() {
@@ -85,6 +90,10 @@ const RegistrationResult = () => {
         const currentUserRegistrationResultClient = new CurrentUserRegistrationResultClient();
         currentUserRegistrationResultClient.getCurrentUserRegistrationResult(currentUserInfo.id)
             .then((gridData) => { gridInstance.dataSource = gridData });
+
+        const currentUserRegistrationRecordClient = new CurrentUserRegistrationRecordClient();
+        currentUserRegistrationRecordClient.getCurrentUserRegistrationRecord(currentUserInfo.id)
+            .then((gridData) => { recordGridInstance.dataSource = gridData });
     }
 
     function dataStateChange(args) {
@@ -101,7 +110,8 @@ const RegistrationResult = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}></div>
-                    <GridComponent id="overviewgrid"
+                    <GridComponent
+                        id="overviewgrid1"
                         dataSource={userClassData}
                         toolbar={toolbarOptions}
                         editSettings={editSettings}
@@ -140,47 +150,36 @@ const RegistrationResult = () => {
                             <ColumnDirective field='class.capacity' headerText='Số lượng' width='40'></ColumnDirective>
                         </ColumnsDirective>
                         <Inject services={[Edit, Toolbar]} />
+                    </GridComponent>                    
+                </div>
+            </div>
+            <div style={{ paddingBottom: '18px' }}></div>
+            <h2>Lịch sử đăng ký</h2>
+            <div className='control-pane'>
+                <div className='control-section'>
+                    <div style={{ paddingBottom: '18px' }}></div>
+                    <GridComponent
+                        id="overviewgrid2"
+                        dataSource={regRecord}
+                        enableStickyHeader={true}
+                        enableAdaptiveUI={true}
+                        rowRenderingMode='Horizontal'
+                        enableHover={true}
+                        height='300'
+                        loadingIndicator={{ indicatorType: 'Shimmer' }}
+                        rowHeight={38}
+                        ref={(g) => { recordGridInstance = g; }}
+                        enableHeaderFocus={true}
+                    >
+                        <ColumnsDirective>
+                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                            <ColumnDirective field='created' headerText='Thời gian' width='60' format={dateFormat} clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='class.classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='requestType' headerText='Hành động' width='40' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='result' headerText='Kết quả' width='40' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='message' headerText='Chi tiết' width='60' clipMode='EllipsisWithTooltip' />
+                        </ColumnsDirective>
                     </GridComponent>
-                    {/*<div style={{ paddingBottom: '36px' }}></div>*/}
-                    {/*<GridComponent id="overviewgrid"*/}
-                    {/*    dataSource={regRecord}*/}
-                    {/*    toolbar={toolbarOptions}*/}
-                    {/*    editSettings={editSettings}*/}
-                    {/*    enableStickyHeader={true}*/}
-                    {/*    enableAdaptiveUI={true}*/}
-                    {/*    rowRenderingMode='Horizontal'*/}
-                    {/*    enableHover={true}*/}
-                    {/*    loadingIndicator={{ indicatorType: 'Shimmer' }}*/}
-                    {/*    rowHeight={38}*/}
-                    {/*    ref={(g) => { gridInstance = g; }}*/}
-                    {/*    allowSelection={true}*/}
-                    {/*    selectionSettings={select}*/}
-                    {/*    enableHeaderFocus={true}*/}
-                    {/*    dataSourceChanged={dataSourceChanged.bind(this)}*/}
-                    {/*    dataStateChange={dataStateChange.bind(this)}*/}
-                    {/*>*/}
-                    {/*    <ColumnsDirective>*/}
-                    {/*        <ColumnDirective type='checkbox' width='40'></ColumnDirective>*/}
-                    {/*        <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>*/}
-                    {/*        <ColumnDirective field='class.classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective field='courseName' headerText='Tên lớp' width='100' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective field='departmentName' headerText='Khoa' width='40' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective field='classType' headerText='Loại lớp' width='40' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective field='class.credit' headerText='Tín chỉ' width='40' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective field='class.dayOfWeek' headerText='Thứ' width='40' clipMode='EllipsisWithTooltip' />*/}
-                    {/*        <ColumnDirective*/}
-                    {/*            columns={*/}
-                    {/*                [*/}
-                    {/*                    { field: 'class.startPeriod', headerText: 'Bắt đầu', width: 40 },*/}
-                    {/*                    { field: 'class.endPeriod', headerText: 'Kết thúc', width: 40 }*/}
-                    {/*                ]*/}
-                    {/*            }*/}
-                    {/*            headerText='Tiết' >*/}
-                    {/*        </ColumnDirective>*/}
-                    {/*        <ColumnDirective field='userClassCount' headerText='Đã đăng ký' width='40'></ColumnDirective>*/}
-                    {/*        <ColumnDirective field='class.capacity' headerText='Số lượng' width='40'></ColumnDirective>*/}
-                    {/*    </ColumnsDirective>*/}
-                    {/*</GridComponent>*/}
                 </div>
             </div>
         </StudentLayout>

@@ -11,9 +11,9 @@ namespace ClassRegistration.Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropForeignKey(
-            //    name: "FK_AspNetUsers_Departments_DepartmentId",
-            //    table: "AspNetUsers");
+            migrationBuilder.DropForeignKey(
+                name: "FK_AspNetUsers_Departments_DepartmentId",
+                table: "AspNetUsers");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_RegistrationSchedules_Semesters_SemesterId",

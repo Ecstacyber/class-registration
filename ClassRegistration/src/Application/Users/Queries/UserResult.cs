@@ -1,12 +1,16 @@
-﻿using ClassRegistration.Application.Departments.Queries.GetDepartments;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ClassRegistration.Domain.Entities;
 
-namespace ClassRegistration.Application.Users.Queries.GetUserInfo;
-
-public class UserDto
+namespace ClassRegistration.Application.Users.Queries;
+public class UserResult
 {
     public int Id { get; set; }
     public string? UserName { get; set; }
+    public string? UserCode { get; set; }
     public string? Email { get; set; }
     public int? DepartmentId { get; set; }
     public Department? Department { get; set; }
@@ -15,7 +19,7 @@ public class UserDto
     {
         public Mapping()
         {
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserResult>();
         }
     }
 }

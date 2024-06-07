@@ -15,8 +15,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { RegistrationSchedulesClient } from '../../../web-api-client.ts';
 
-const RegistrationSchedule = () => {
-        const [scheduleData, setScheduleData] = useState({
+const ClassRegistrationWindows = () => {
+    const [scheduleData, setScheduleData] = useState({
         result: [],
         count: 0
     });
@@ -26,14 +26,6 @@ const RegistrationSchedule = () => {
     let filterText = '';
     let gridInstance;
     const fields = { text: 'text', value: 'value' };
-    const toolbarOptions = ['Add', 'Edit', 'Delete'];
-    const editSettings = {
-        allowEditing: true,
-        allowAdding: true,
-        allowDeleting: true,
-        showDeleteConfirmDialog: true,
-        mode: 'Dialog'
-    };
     const dateFormat = {
         type: 'dateTime',
         format: 'dd/MM/yyyy hh:mm a'
@@ -50,7 +42,6 @@ const RegistrationSchedule = () => {
     };
     const select = {
         persistSelection: true,
-        type: 'Multiple',
         checkboxOnly: true
     };
     const filter = {
@@ -213,22 +204,22 @@ const RegistrationSchedule = () => {
 
     function dataSourceChanged(args) {
         console.log(args);
-        const registrationSchedulesClient = new RegistrationSchedulesClient();
-        if (args.action === 'add') {
-            registrationSchedulesClient.createRegistrationSchedule(args.data);
-        } else if (args.action === 'edit') {
-            registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
-        } else if (args.requestType === 'delete') {
-            args.data.forEach((deleteData) => {
-                registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
-            });            
-        }
-        filterAttr = '';
-        filterText = '';
-        orderBy = '';
-        registrationSchedulesClient.getRegistrationSchedules(0, 12)
-            .then((gridData) => { gridInstance.dataSource = gridData });
-        return;
+        //const registrationSchedulesClient = new RegistrationSchedulesClient();
+        //if (args.action === 'add') {
+        //    registrationSchedulesClient.createRegistrationSchedule(args.data);
+        //} else if (args.action === 'edit') {
+        //    registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
+        //} else if (args.requestType === 'delete') {
+        //    args.data.forEach((deleteData) => {
+        //        registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
+        //    });
+        //}
+        //filterAttr = '';
+        //filterText = '';
+        //orderBy = '';
+        //registrationSchedulesClient.getRegistrationSchedules(0, 12)
+        //    .then((gridData) => { gridInstance.dataSource = gridData });
+        //return;
     }
 
     function onRecordDoubleClick(args) {
@@ -241,13 +232,11 @@ const RegistrationSchedule = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}>
-                        <h2>Danh sách đợt đăng ký</h2>
+                        <h2>Các đợt đăng ký</h2>
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
                         dataSource={scheduleData}
-                        toolbar={toolbarOptions}
-                        editSettings={editSettings}
                         allowPaging={true}
                         pageSettings={pageSettings}
                         enableHover={true}
@@ -273,15 +262,11 @@ const RegistrationSchedule = () => {
                                 field='name'
                                 headerText='Tên'
                                 width='160'
-                                validationRules={validationRules}
                                 clipMode='EllipsisWithTooltip' />
                             <ColumnDirective
                                 field='feePerCredit'
                                 headerText='VND/tín chỉ'
                                 width='80'
-                                validationRules={numericValidationRules}
-                                editType='numericedit'
-                                edit={feeParams}
                                 valueAccessor={valueAccess.bind(this)}
                                 clipMode='EllipsisWithTooltip' />
                             <ColumnDirective
@@ -308,7 +293,7 @@ const RegistrationSchedule = () => {
                                 edit={dateTimePickerParams}
                                 clipMode='EllipsisWithTooltip' />
                         </ColumnsDirective>
-                        <Inject services={[Filter, Sort, Toolbar, Edit, Page]} />
+                        <Inject services={[Filter, Sort, Page]} />
                     </GridComponent>
                 </div>
             </div>
@@ -316,4 +301,4 @@ const RegistrationSchedule = () => {
     );
 }
 
-export default RegistrationSchedule;
+export default ClassRegistrationWindows;

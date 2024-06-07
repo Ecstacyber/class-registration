@@ -16,6 +16,7 @@ public class UserClassResult
     public long Fee { get; set; }
     public Class Class { get; set; } = null!;
     public ClassResult? ClassResult { get; set; }
+    public User? User { get; set; }
     public RegistrationSchedule RegistrationSchedule { get; set; } = null!;
     public class Mapping : Profile
     {

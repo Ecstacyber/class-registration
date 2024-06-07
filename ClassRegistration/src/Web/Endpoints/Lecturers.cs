@@ -1,20 +1,19 @@
 ﻿using ClassRegistration.Application.Users.Queries;
-using ClassRegistration.Application.Users.Queries.GetUserList;
+using ClassRegistration.Application.Users.Queries.GetLecturers;
 
 namespace ClassRegistration.Web.Endpoints;
 
-public class Users : EndpointGroupBase
+public class Lecturers : EndpointGroupBase
 {
     public override void Map(WebApplication app)
     {
         app.MapGroup(this)
             .RequireAuthorization()
-            .MapGet(GetUserList);
+            .MapGet(GetLecturers);
     }
 
-    public Task<IEnumerable<UserDto>> GetUserList(ISender sender, [AsParameters] GetUserListQuery query)
+    public Task<UserTableDataDto> GetLecturers(ISender sender, [AsParameters] GetLecturersQuery query)
     {
         return sender.Send(query);
     }
-
 }

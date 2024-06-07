@@ -25,7 +25,6 @@ import {
     ClassRegisterClient,
     CurrentUserInfoClient
 } from '../../../web-api-client.ts';
-import './class-registration.css'
 
 const ClassRegistration = () => {
     const [currentUserInfo, setCurrentUserInfo] = useState(null);

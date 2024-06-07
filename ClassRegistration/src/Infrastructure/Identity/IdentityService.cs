@@ -33,6 +33,14 @@ public class IdentityService : IIdentityService
         return user?.UserName;
     }
 
+    public async Task<List<string>> GetUserRoleAsync(int humanId)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(x => x.HumanId == humanId);
+        if (user == null) return new List<string>();
+
+        return (await _userManager.GetRolesAsync(user)).ToList();
+    }
+
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
         var human = new User

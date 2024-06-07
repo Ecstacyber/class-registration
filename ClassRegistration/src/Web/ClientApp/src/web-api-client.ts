@@ -1041,6 +1041,106 @@ export class DepartmentsFKRefClient {
     }
 }
 
+export class LecturersClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getLecturers(): Promise<UserTableDataDto> {
+        let url_ = this.baseUrl + "/api/Lecturers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLecturers(_response);
+        });
+    }
+
+    protected processGetLecturers(response: Response): Promise<UserTableDataDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserTableDataDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserTableDataDto>(null as any);
+    }
+}
+
+export class LecturersInClassClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getLecturersInClass(classId: number, registrationId: number): Promise<UserClassDto> {
+        let url_ = this.baseUrl + "/api/LecturersInClass?";
+        if (classId === undefined || classId === null)
+            throw new Error("The parameter 'classId' must be defined and cannot be null.");
+        else
+            url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
+        if (registrationId === undefined || registrationId === null)
+            throw new Error("The parameter 'registrationId' must be defined and cannot be null.");
+        else
+            url_ += "RegistrationId=" + encodeURIComponent("" + registrationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetLecturersInClass(_response);
+        });
+    }
+
+    protected processGetLecturersInClass(response: Response): Promise<UserClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto>(null as any);
+    }
+}
+
 export class PrerequisiteCoursesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -1561,6 +1661,106 @@ export class SemestersClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class StudentsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getStudents(): Promise<UserTableDataDto> {
+        let url_ = this.baseUrl + "/api/Students";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetStudents(_response);
+        });
+    }
+
+    protected processGetStudents(response: Response): Promise<UserTableDataDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserTableDataDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserTableDataDto>(null as any);
+    }
+}
+
+export class StudentsInClassClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getStudentsInClass(classId: number, registrationId: number): Promise<UserClassDto> {
+        let url_ = this.baseUrl + "/api/StudentsInClass?";
+        if (classId === undefined || classId === null)
+            throw new Error("The parameter 'classId' must be defined and cannot be null.");
+        else
+            url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
+        if (registrationId === undefined || registrationId === null)
+            throw new Error("The parameter 'registrationId' must be defined and cannot be null.");
+        else
+            url_ += "RegistrationId=" + encodeURIComponent("" + registrationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetStudentsInClass(_response);
+        });
+    }
+
+    protected processGetStudentsInClass(response: Response): Promise<UserClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto>(null as any);
     }
 }
 
@@ -2176,6 +2376,7 @@ export class ClassResult implements IClassResult {
     registrationScheduleId?: number;
     classCode?: string | undefined;
     departmentName?: string | undefined;
+    lecturerName?: string | undefined;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
@@ -2205,6 +2406,7 @@ export class ClassResult implements IClassResult {
             this.registrationScheduleId = _data["registrationScheduleId"];
             this.classCode = _data["classCode"];
             this.departmentName = _data["departmentName"];
+            this.lecturerName = _data["lecturerName"];
             this.credit = _data["credit"];
             this.dayOfWeek = _data["dayOfWeek"];
             this.startPeriod = _data["startPeriod"];
@@ -2234,6 +2436,7 @@ export class ClassResult implements IClassResult {
         data["registrationScheduleId"] = this.registrationScheduleId;
         data["classCode"] = this.classCode;
         data["departmentName"] = this.departmentName;
+        data["lecturerName"] = this.lecturerName;
         data["credit"] = this.credit;
         data["dayOfWeek"] = this.dayOfWeek;
         data["startPeriod"] = this.startPeriod;
@@ -2256,6 +2459,7 @@ export interface IClassResult {
     registrationScheduleId?: number;
     classCode?: string | undefined;
     departmentName?: string | undefined;
+    lecturerName?: string | undefined;
     credit?: number;
     dayOfWeek?: number;
     startPeriod?: number;
@@ -2776,6 +2980,7 @@ export class RegistrationSchedule extends BaseAuditableEntity implements IRegist
     name?: string;
     startDate?: Date;
     endDate?: Date;
+    maximumCredit?: number;
     feePerCredit?: number;
     classes?: Class[];
     userClasses?: UserClass[];
@@ -2792,6 +2997,7 @@ export class RegistrationSchedule extends BaseAuditableEntity implements IRegist
             this.name = _data["name"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.maximumCredit = _data["maximumCredit"];
             this.feePerCredit = _data["feePerCredit"];
             if (Array.isArray(_data["classes"])) {
                 this.classes = [] as any;
@@ -2828,6 +3034,7 @@ export class RegistrationSchedule extends BaseAuditableEntity implements IRegist
         data["name"] = this.name;
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["maximumCredit"] = this.maximumCredit;
         data["feePerCredit"] = this.feePerCredit;
         if (Array.isArray(this.classes)) {
             data["classes"] = [];
@@ -2858,6 +3065,7 @@ export interface IRegistrationSchedule extends IBaseAuditableEntity {
     name?: string;
     startDate?: Date;
     endDate?: Date;
+    maximumCredit?: number;
     feePerCredit?: number;
     classes?: Class[];
     userClasses?: UserClass[];
@@ -3007,6 +3215,7 @@ export class RegistrationRecord extends BaseAuditableEntity implements IRegistra
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
+    requestType?: string | undefined;
     result?: string;
     message?: string | undefined;
     dependency?: string | undefined;
@@ -3024,6 +3233,7 @@ export class RegistrationRecord extends BaseAuditableEntity implements IRegistra
             this.classId = _data["classId"];
             this.registrationScheduleId = _data["registrationScheduleId"];
             this.userId = _data["userId"];
+            this.requestType = _data["requestType"];
             this.result = _data["result"];
             this.message = _data["message"];
             this.dependency = _data["dependency"];
@@ -3045,6 +3255,7 @@ export class RegistrationRecord extends BaseAuditableEntity implements IRegistra
         data["classId"] = this.classId;
         data["registrationScheduleId"] = this.registrationScheduleId;
         data["userId"] = this.userId;
+        data["requestType"] = this.requestType;
         data["result"] = this.result;
         data["message"] = this.message;
         data["dependency"] = this.dependency;
@@ -3060,6 +3271,7 @@ export interface IRegistrationRecord extends IBaseAuditableEntity {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
+    requestType?: string | undefined;
     result?: string;
     message?: string | undefined;
     dependency?: string | undefined;
@@ -3764,9 +3976,12 @@ export class RegistrationRecordResult implements IRegistrationRecordResult {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
+    courseName?: string | undefined;
+    requestType?: string | undefined;
     result?: string;
     message?: string | undefined;
     dependency?: string | undefined;
+    created?: Date | undefined;
     class?: Class | undefined;
     registrationSchedule?: RegistrationSchedule | undefined;
     user?: User | undefined;
@@ -3785,9 +4000,12 @@ export class RegistrationRecordResult implements IRegistrationRecordResult {
             this.classId = _data["classId"];
             this.registrationScheduleId = _data["registrationScheduleId"];
             this.userId = _data["userId"];
+            this.courseName = _data["courseName"];
+            this.requestType = _data["requestType"];
             this.result = _data["result"];
             this.message = _data["message"];
             this.dependency = _data["dependency"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
             this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
             this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
@@ -3806,9 +4024,12 @@ export class RegistrationRecordResult implements IRegistrationRecordResult {
         data["classId"] = this.classId;
         data["registrationScheduleId"] = this.registrationScheduleId;
         data["userId"] = this.userId;
+        data["courseName"] = this.courseName;
+        data["requestType"] = this.requestType;
         data["result"] = this.result;
         data["message"] = this.message;
         data["dependency"] = this.dependency;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         data["class"] = this.class ? this.class.toJSON() : <any>undefined;
         data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
         data["user"] = this.user ? this.user.toJSON() : <any>undefined;
@@ -3820,9 +4041,12 @@ export interface IRegistrationRecordResult {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
     userId?: number | undefined;
+    courseName?: string | undefined;
+    requestType?: string | undefined;
     result?: string;
     message?: string | undefined;
     dependency?: string | undefined;
+    created?: Date | undefined;
     class?: Class | undefined;
     registrationSchedule?: RegistrationSchedule | undefined;
     user?: User | undefined;
@@ -3888,6 +4112,7 @@ export class UserClassResult implements IUserClassResult {
     fee?: number;
     class?: Class;
     classResult?: ClassResult | undefined;
+    user?: User | undefined;
     registrationSchedule?: RegistrationSchedule;
 
     constructor(data?: IUserClassResult) {
@@ -3912,6 +4137,7 @@ export class UserClassResult implements IUserClassResult {
             this.fee = _data["fee"];
             this.class = _data["class"] ? Class.fromJS(_data["class"]) : <any>undefined;
             this.classResult = _data["classResult"] ? ClassResult.fromJS(_data["classResult"]) : <any>undefined;
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
             this.registrationSchedule = _data["registrationSchedule"] ? RegistrationSchedule.fromJS(_data["registrationSchedule"]) : <any>undefined;
         }
     }
@@ -3936,6 +4162,7 @@ export class UserClassResult implements IUserClassResult {
         data["fee"] = this.fee;
         data["class"] = this.class ? this.class.toJSON() : <any>undefined;
         data["classResult"] = this.classResult ? this.classResult.toJSON() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         data["registrationSchedule"] = this.registrationSchedule ? this.registrationSchedule.toJSON() : <any>undefined;
         return data;
     }
@@ -3953,6 +4180,7 @@ export interface IUserClassResult {
     fee?: number;
     class?: Class;
     classResult?: ClassResult | undefined;
+    user?: User | undefined;
     registrationSchedule?: RegistrationSchedule;
 }
 
@@ -4178,6 +4406,122 @@ export class DepartmentDtoForFKRef implements IDepartmentDtoForFKRef {
 export interface IDepartmentDtoForFKRef {
     departmentId?: number;
     departmentName?: string;
+}
+
+export class UserTableDataDto implements IUserTableDataDto {
+    result?: UserResult[];
+    count?: number;
+
+    constructor(data?: IUserTableDataDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(UserResult.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): UserTableDataDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserTableDataDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IUserTableDataDto {
+    result?: UserResult[];
+    count?: number;
+}
+
+export class UserResult implements IUserResult {
+    id?: number;
+    userName?: string | undefined;
+    userCode?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    roles?: string[] | undefined;
+
+    constructor(data?: IUserResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.userCode = _data["userCode"];
+            this.email = _data["email"];
+            this.departmentId = _data["departmentId"];
+            this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UserResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["userCode"] = this.userCode;
+        data["email"] = this.email;
+        data["departmentId"] = this.departmentId;
+        data["department"] = this.department ? this.department.toJSON() : <any>undefined;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IUserResult {
+    id?: number;
+    userName?: string | undefined;
+    userCode?: string | undefined;
+    email?: string | undefined;
+    departmentId?: number | undefined;
+    department?: Department | undefined;
+    roles?: string[] | undefined;
 }
 
 export class PrerequisiteCourseDto implements IPrerequisiteCourseDto {
@@ -4456,6 +4800,8 @@ export class CreateRegistrationScheduleCommand implements ICreateRegistrationSch
     name?: string;
     startDate?: string;
     endDate?: string;
+    maximumCredit?: number;
+    feePerCredit?: number;
 
     constructor(data?: ICreateRegistrationScheduleCommand) {
         if (data) {
@@ -4471,6 +4817,8 @@ export class CreateRegistrationScheduleCommand implements ICreateRegistrationSch
             this.name = _data["name"];
             this.startDate = _data["startDate"];
             this.endDate = _data["endDate"];
+            this.maximumCredit = _data["maximumCredit"];
+            this.feePerCredit = _data["feePerCredit"];
         }
     }
 
@@ -4486,6 +4834,8 @@ export class CreateRegistrationScheduleCommand implements ICreateRegistrationSch
         data["name"] = this.name;
         data["startDate"] = this.startDate;
         data["endDate"] = this.endDate;
+        data["maximumCredit"] = this.maximumCredit;
+        data["feePerCredit"] = this.feePerCredit;
         return data;
     }
 }
@@ -4494,6 +4844,8 @@ export interface ICreateRegistrationScheduleCommand {
     name?: string;
     startDate?: string;
     endDate?: string;
+    maximumCredit?: number;
+    feePerCredit?: number;
 }
 
 export class UpdateRegistrationScheduleCommand implements IUpdateRegistrationScheduleCommand {
@@ -4501,6 +4853,8 @@ export class UpdateRegistrationScheduleCommand implements IUpdateRegistrationSch
     name?: string;
     startDate?: string;
     endDate?: string;
+    maximumCredit?: number;
+    feePerCredit?: number;
 
     constructor(data?: IUpdateRegistrationScheduleCommand) {
         if (data) {
@@ -4517,6 +4871,8 @@ export class UpdateRegistrationScheduleCommand implements IUpdateRegistrationSch
             this.name = _data["name"];
             this.startDate = _data["startDate"];
             this.endDate = _data["endDate"];
+            this.maximumCredit = _data["maximumCredit"];
+            this.feePerCredit = _data["feePerCredit"];
         }
     }
 
@@ -4533,6 +4889,8 @@ export class UpdateRegistrationScheduleCommand implements IUpdateRegistrationSch
         data["name"] = this.name;
         data["startDate"] = this.startDate;
         data["endDate"] = this.endDate;
+        data["maximumCredit"] = this.maximumCredit;
+        data["feePerCredit"] = this.feePerCredit;
         return data;
     }
 }
@@ -4542,6 +4900,8 @@ export interface IUpdateRegistrationScheduleCommand {
     name?: string;
     startDate?: string;
     endDate?: string;
+    maximumCredit?: number;
+    feePerCredit?: number;
 }
 
 export class SemesterDto implements ISemesterDto {

@@ -15,44 +15,39 @@ import {
 import { AdminLayout } from '../../AdminLayout';
 import {
     ClassesClient,
-    UserClassesClient
+    UserClassesClient,
+    StudentsInClassClient,
+    LecturersInClassClient
 } from '../../../web-api-client.ts';
 
 const ClassDetails = () => {
     const [classData, setClassData] = useState(null);
-    const [lecturerData, setLecturerData] = useState({
-        result: [],
-        count: 0
-    });
     const [studentData, setStudentData] = useState({
         result: [],
         count: 0
     });
-    const { courseId, classId } = useParams();
+    const [lecturerData, setLecturerData] = useState({
+        result: [],
+        count: 0
+    });
+    const { courseId, classId, registrationScheduleId } = useParams();
     const location = useLocation();
     const navigationType = useNavigationType();
     const navigate = useNavigate();
     const [coursesFKData, setCoursesFKData] = useState(null);
     const [classTypes, setClassTypes] = useState(null);
     const [pcId, setPcId] = useState();
-    let orderBy = '';
-    let filterAttr = '';
-    let filterText = '';
-    let pcgOrderBy = '';
-    let pcgFilterAttr = '';
-    let pcgFilterText = '';
-    let gridInstance;
-    let pcdGridInstance;
+    let studentOrderBy = '';
+    let studentFilterAttr = '';
+    let studentFilterText = '';
+    let lecturerOrderBy = '';
+    let lecturerFilterAttr = '';
+    let lecturerFilterText = '';
+    let studentGridInstance;
+    let lecturerGridInstance;
     const fields = { text: 'text', value: 'value' };
-    const toolbarOptions = ['Add', 'Edit', 'Delete'];
+    const toolbarOptions = ['Add', 'Delete'];
     const editSettings = {
-        allowEditing: true,
-        allowAdding: true,
-        allowDeleting: true,
-        showDeleteConfirmDialog: true,
-        mode: 'Dialog'
-    };
-    const pc_editSettings = {
         allowEditing: false,
         allowAdding: true,
         allowDeleting: true,
@@ -68,9 +63,6 @@ const ClassDetails = () => {
             validateDecimalOnType: true
         }
     }
-    const dowRules = { required: true, min: 2, max: 7 };
-    const periodRules = { required: true, min: 1, max: 10 };
-    const capacityRules = { required: true, min: 1 }
     const pageSettings = { pageSizes: true };
     const check = {
         type: 'CheckBox'
@@ -90,38 +82,27 @@ const ClassDetails = () => {
     }
 
     async function getData() {
-        
+        const studentsInClassClient = new StudentsInClassClient();
+        let students = await studentsInClassClient.getStudentsInClass(classId, registrationScheduleId);
+        setStudentData(students);
+
+        const lecturersInClassClient = new LecturersInClassClient();
+        let lecturers = await lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId);
+        setLecturerData(lecturers);
     }
 
     useEffect(() => {
         getData();
-        const handleNavigation = () => {
-            const reloadFlag = sessionStorage.getItem('reloadFlag');
-
-            if ((navigationType === 'POP' || navigationType === 'PUSH') && !reloadFlag) {
-                sessionStorage.setItem('reloadFlag', 'true');
-                window.location.reload();
-            } else {
-                sessionStorage.removeItem('reloadFlag');
-            }
-        };
-        handleNavigation();
-    }, [location, navigationType])
+    }, [])
 
     function dataStateChange(args) {
         console.log(args);
-        //const classesByCourseIdClient = new ClassesByCourseIdClient();
+        //const studentsInClassClient = new StudentsInClassClient();
+        //const lecturersInClassClient = new LecturersInClassClient();
         //if (args.action) {
         //    if (args.action.requestType === 'paging') {
-        //        classesByCourseIdClient.getClassesByCourseId(
-        //            courseId,
-        //            args.skip,
-        //            args.take,
-        //            orderBy,
-        //            filterAttr,
-        //            filterText
-        //        )
-        //            .then((gridData) => { gridInstance.dataSource = gridData });
+        //        studentsInClassClient.getStudentsInClass(classId, registrationScheduleId.then((gridData) => { studentGridInstance.dataSource = gridData }));
+        //        lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId.then((gridData) => { lecturerGridInstance.dataSource = gridData }));
         //        return;
         //    }
 
@@ -401,7 +382,7 @@ const ClassDetails = () => {
 
     function pcd_onRecordDoubleClick(args) {
         console.log(args);
-        navigate('/admin-index/course/' + args.rowData.prerequisiteCourseId);
+        //navigate('/admin-index/course/' + args.rowData.prerequisiteCourseId);
     }
     
     return (

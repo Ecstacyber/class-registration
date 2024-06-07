@@ -165,6 +165,25 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
                 }
             }
             result.UserClassCount = await _context.UserClasses.CountAsync(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id, cancellationToken);
+            result.LecturerName = "";
+            var lecturers = await _context.UserClasses
+                .Include(x => x.User)
+                .Where(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id && x.User.Roles.Contains("Lecturer"))
+                .ToListAsync(cancellationToken);
+            if (lecturers.Count > 0)
+            {
+                foreach (var lecturer in lecturers)
+                {
+                    if (string.IsNullOrEmpty(result.LecturerName))
+                    {
+                        result.LecturerName += lecturer.User.UserName;
+                    }
+                    else
+                    {
+                        result.LecturerName = result.LecturerName + ", " + lecturer.User.UserName;
+                    }
+                }                             
+            }
         }
 
         return new ClassDto

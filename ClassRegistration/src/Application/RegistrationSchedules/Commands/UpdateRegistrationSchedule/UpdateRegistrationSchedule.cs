@@ -8,6 +8,8 @@ public record UpdateRegistrationScheduleCommand : IRequest
     public required string Name { get; init; }
     public required string StartDate { get; init; }
     public required string EndDate { get; init; }
+    public int MaximumCredit { get; set; }
+    public int FeePerCredit { get; set; }
 }
 
 public class UpdateRegistrationScheduleCommandValidator : AbstractValidator<UpdateRegistrationScheduleCommand>
@@ -51,6 +53,8 @@ public class UpdateRegistrationScheduleCommandHandler : IRequestHandler<UpdateRe
         entity.Name = request.Name;
         entity.StartDate = DateTime.Parse(request.StartDate);
         entity.EndDate = DateTime.Parse(request.EndDate);
+        entity.MaximumCredit = request.MaximumCredit;
+        entity.FeePerCredit = request.FeePerCredit;
 
         await _context.SaveChangesAsync(cancellationToken);
     }

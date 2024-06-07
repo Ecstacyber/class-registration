@@ -6,6 +6,7 @@ import { Department } from "./components/admin/department/Department";
 import { Course } from "./components/admin/course/Course";
 import CourseDetails from "./components/admin/course/CourseDetails";
 import ClassDetails from "./components/admin/class/ClassDetails";
+import ClassRegistrationWindows from "./components/admin/class/ClassRegistrationWindows";
 import { StudentIndex } from "./components/student/StudentIndex";
 import RegistrationSchedule from './components/admin/registration-schedule/RegistrationSchedule'
 import ClassRegistration from "./components/student/class-registration/ClassRegistration";
@@ -50,6 +51,10 @@ const AppRoutes = [
   },
   {
     path: 'admin-index/course/:courseId/class/:classId',
+    element: <ClassRegistrationWindows />
+  },
+  {
+    path: 'admin-index/course/:courseId/class/:classId/window/:registrationScheduleId',
     element: <ClassDetails />
   },
   {

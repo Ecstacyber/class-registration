@@ -27,7 +27,7 @@ public class GetCurrentUserRegistrationRecordQueryHandler : IRequestHandler<GetC
 
     public async Task<RegistrationRecordDto> Handle(GetCurrentUserRegistrationRecordQuery request, CancellationToken cancellationToken)
     {
-        var currentRegWindow = await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now);
+        var currentRegWindow = await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now, cancellationToken);
         if (currentRegWindow != null)
         {
             var regRecords = await _context.RegistrationRecords
@@ -36,8 +36,21 @@ public class GetCurrentUserRegistrationRecordQueryHandler : IRequestHandler<GetC
                 .Include(x => x.Class)
                 .Include(x => x.RegistrationSchedule)
                 .Where(x => x.RegistrationScheduleId == currentRegWindow.Id && x.UserId == request.UserId)
+                .OrderByDescending(x => x.Created)
                 .ProjectTo<RegistrationRecordResult>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
+
+            foreach (var record in regRecords)
+            {
+                if (record.Class != null)
+                {
+                    var course = _context.Courses.Include(x => x.Classes).FirstOrDefault(x => x.Classes.Contains(record.Class));
+                    if (course != null)
+                    {
+                        record.CourseName = course.CourseName;
+                    }
+                }
+            }
 
             return new RegistrationRecordDto
             {

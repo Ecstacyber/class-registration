@@ -12,6 +12,7 @@ public class ClassResult
     public int RegistrationScheduleId { get; set; }
     public string? ClassCode { get; set; }
     public string? DepartmentName { get; set; }
+    public string? LecturerName { get; set; }
     public int Credit { get; set; }
     public int DayOfWeek { get; set; }
     public int StartPeriod { get; set; }

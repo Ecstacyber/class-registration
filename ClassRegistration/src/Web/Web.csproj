@@ -49,7 +49,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\src\assets\brand\" />
-    <Folder Include="ClientApp\src\components\admin\class\" />
     <Folder Include="ClientApp\src\components\admin\registration-schedule\" />
     <Folder Include="ClientApp\src\store\" />
   </ItemGroup>

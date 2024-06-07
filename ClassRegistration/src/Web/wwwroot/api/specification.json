@@ -831,6 +831,68 @@
         }
       }
     },
+    "/api/Lecturers": {
+      "get": {
+        "tags": [
+          "Lecturers"
+        ],
+        "operationId": "GetLecturers",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTableDataDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/LecturersInClass": {
+      "get": {
+        "tags": [
+          "LecturersInClass"
+        ],
+        "operationId": "GetLecturersInClass",
+        "parameters": [
+          {
+            "name": "ClassId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "RegistrationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/PrerequisiteCourses": {
       "get": {
         "tags": [
@@ -1265,6 +1327,68 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/Students": {
+      "get": {
+        "tags": [
+          "Students"
+        ],
+        "operationId": "GetStudents",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTableDataDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StudentsInClass": {
+      "get": {
+        "tags": [
+          "StudentsInClass"
+        ],
+        "operationId": "GetStudentsInClass",
+        "parameters": [
+          {
+            "name": "ClassId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "RegistrationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserClassDto"
+                }
+              }
+            }
           }
         }
       }
@@ -1711,6 +1835,10 @@
             "type": "string",
             "nullable": true
           },
+          "lecturerName": {
+            "type": "string",
+            "nullable": true
+          },
           "credit": {
             "type": "integer",
             "format": "int32"
@@ -2088,6 +2216,10 @@
                 "type": "string",
                 "format": "date-time"
               },
+              "maximumCredit": {
+                "type": "integer",
+                "format": "int32"
+              },
               "feePerCredit": {
                 "type": "integer",
                 "format": "int32"
@@ -2238,6 +2370,10 @@
               "userId": {
                 "type": "integer",
                 "format": "int32",
+                "nullable": true
+              },
+              "requestType": {
+                "type": "string",
                 "nullable": true
               },
               "result": {
@@ -2637,6 +2773,14 @@
             "format": "int32",
             "nullable": true
           },
+          "courseName": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestType": {
+            "type": "string",
+            "nullable": true
+          },
           "result": {
             "type": "string"
           },
@@ -2646,6 +2790,11 @@
           },
           "dependency": {
             "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "class": {
@@ -2742,6 +2891,14 @@
               }
             ]
           },
+          "user": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ]
+          },
           "registrationSchedule": {
             "$ref": "#/components/schemas/RegistrationSchedule"
           }
@@ -2827,6 +2984,64 @@
           },
           "departmentName": {
             "type": "string"
+          }
+        }
+      },
+      "UserTableDataDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UserResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Department"
+              }
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -2968,6 +3183,14 @@
           },
           "endDate": {
             "type": "string"
+          },
+          "maximumCredit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "feePerCredit": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -2987,6 +3210,14 @@
           },
           "endDate": {
             "type": "string"
+          },
+          "maximumCredit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "feePerCredit": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
