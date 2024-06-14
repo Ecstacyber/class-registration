@@ -241,6 +241,25 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                                 Result = "ScheduleOccupied"
                             };
                         }
+                        if (currentRegResult.Sum(x => x.Class.Credit) + currentClass.Credit > currentRegSchedule.MaximumCredit)
+                        {
+                            RegistrationRecord record = new RegistrationRecord
+                            {
+                                RequestType = "Đăng ký",
+                                Message = "Quá giới hạn tín chỉ",
+                                Result = "Thất bại",
+                                RegistrationScheduleId = request.RegistrationScheduleId,
+                                UserId = request.UserId,
+                                ClassId = request.ClassId
+                            };
+                            _context.RegistrationRecords.Add(record);
+                            await _context.SaveChangesAsync(cancellationToken);
+                            return new RegistrationResult
+                            {
+                                ClassCode = currentClass.ClassCode,
+                                Result = "MaximumCreditReached"
+                            };
+                        }
                     }
                     entity.User = user;
                     entity.ClassId = request.ClassId;

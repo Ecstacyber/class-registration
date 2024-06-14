@@ -1,5 +1,7 @@
-﻿import { useEffect, useState } from 'react';
-import { AdminLayout } from '../../AdminLayout';
+﻿import React, { Component } from 'react';
+import followIfLoginRedirect from '../api-authorization/followIfLoginRedirect';
+import { LecturerLayout } from '../lecturer/LecturerLayout';
+import { useEffect, useState } from 'react';
 import {
     GridComponent,
     ColumnsDirective,
@@ -14,33 +16,9 @@ import {
 } from '@syncfusion/ej2-react-grids';
 import { L10n } from '@syncfusion/ej2-base';
 import { useNavigate } from 'react-router-dom';
-import { RegistrationSchedulesClient } from '../../../web-api-client.ts';
+import { RegistrationSchedulesClient } from '../../web-api-client.ts';
 
-L10n.load({
-    'vi-VN': {
-        grid: {
-            'EmptyRecord': 'Không có dữ liệu',
-            'FilterbarTitle': '- thanh tìm kiếm',
-            'Matches': 'Không có kết quả'
-        },
-        'pager': {
-            'currentPageInfo': '{0} trên {1} trang ',
-            'totalItemsInfo': '({0} dòng)',
-            'firstPageTooltip': 'Đầu',
-            'lastPageTooltip': 'Cuối',
-            'nextPageTooltip': 'Tiếp',
-            'previousPageTooltip': 'Trước',
-            'nextPagerTooltip': 'Đi đến trang tiếp theo',
-            'previousPagerTooltip': 'Trở về trang trước',
-            'pagerDropDown': 'Số dòng trên 1 trang',
-            'pagerAllDropDown': 'Các dòng',
-            'All': 'Tất cả',
-            'totalItemInfo': '({0} dòng)'
-        }
-    }
-});
-
-const ClassRegistrationWindows = () => {
+const LecturerIndex = () => {
     const [scheduleData, setScheduleData] = useState({
         result: [],
         count: 0
@@ -60,15 +38,7 @@ const ClassRegistrationWindows = () => {
             format: 'dd/MM/yyyy hh:mm a'
         }
     };
-    const validationRules = { required: true };
     const pageSettings = { pageSizes: true };
-    const check = {
-        type: 'CheckBox'
-    };
-    const select = {
-        persistSelection: true,
-        checkboxOnly: true
-    };
     const filter = {
         type: 'Menu',
         operators: {
@@ -102,7 +72,23 @@ const ClassRegistrationWindows = () => {
             validateDecimalOnType: true
         }
     };
-
+    const tempPrevReg = {
+        "result": [
+            {
+                "id": 1,
+                "name": "Học kỳ 1, 2022-2023"
+            },
+            {
+                "id": 1,
+                "name": "Học kỳ 2, 2022-2023"
+            },
+            {
+                "id": 1,
+                "name": "Học kỳ 1, 2023-2024"
+            },
+        ],
+        "count": 3
+    }
     async function getScheduleData() {
         const registrationSchedulesClient = new RegistrationSchedulesClient();
         let registrationSchedulesData = await registrationSchedulesClient.getRegistrationSchedules(0, 12);
@@ -229,39 +215,39 @@ const ClassRegistrationWindows = () => {
 
     function dataSourceChanged(args) {
         console.log(args);
-        //const registrationSchedulesClient = new RegistrationSchedulesClient();
-        //if (args.action === 'add') {
-        //    registrationSchedulesClient.createRegistrationSchedule(args.data);
-        //} else if (args.action === 'edit') {
-        //    registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
-        //} else if (args.requestType === 'delete') {
-        //    args.data.forEach((deleteData) => {
-        //        registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
-        //    });
-        //}
-        //filterAttr = '';
-        //filterText = '';
-        //orderBy = '';
-        //registrationSchedulesClient.getRegistrationSchedules(0, 12)
-        //    .then((gridData) => { gridInstance.dataSource = gridData });
-        //return;
+        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        if (args.action === 'add') {
+            registrationSchedulesClient.createRegistrationSchedule(args.data);
+        } else if (args.action === 'edit') {
+            registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
+        } else if (args.requestType === 'delete') {
+            args.data.forEach((deleteData) => {
+                registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
+            });
+        }
+        filterAttr = '';
+        filterText = '';
+        orderBy = '';
+        registrationSchedulesClient.getRegistrationSchedules(0, 12)
+            .then((gridData) => { gridInstance.dataSource = gridData });
+        return;
     }
 
     function onRecordDoubleClick(args) {
         console.log(args);
-        navigate('./window/' + args.rowData.id);
+        //navigate('/admin-index/registration-schedule/' + args.rowData.id);
     }
 
     return (
-        <AdminLayout>
+        <LecturerLayout>
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}>
-                        <h2>Các đợt đăng ký</h2>
+                        <h2>Danh sách đợt đăng ký</h2>
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
-                        dataSource={scheduleData}
+                        dataSource={tempPrevReg}
                         allowPaging={true}
                         pageSettings={pageSettings}
                         enableHover={true}
@@ -273,58 +259,43 @@ const ClassRegistrationWindows = () => {
                         filterSettings={filter}
                         allowSorting={true}
                         allowMultiSorting={true}
-                        allowSelection={true}
-                        selectionSettings={select}
                         enableHeaderFocus={true}
-                        dataStateChange={dataStateChange.bind(this)}
-                        dataSourceChanged={dataSourceChanged.bind(this)}
                         recordDoubleClick={onRecordDoubleClick.bind(this)}
                         locale='vi-VN'
                     >
                         <ColumnsDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                            <ColumnDirective width='30'></ColumnDirective>
                             <ColumnDirective
                                 field='name'
-                                textAlign='Right'
                                 headerText='Tên'
-                                width='120'
+                                width='160'
                                 clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='feePerCredit'
-                                headerText='VND/tín chỉ'
-                                width='100'
-                                valueAccessor={valueAccess.bind(this)}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='maximumCredit'
-                                headerText='Giới hạn tín chỉ'
-                                width='60'
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='startDate'
-                                headerText='Ngày bắt đầu'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='endDate'
-                                headerText='Ngày kết thúc'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
-                                clipMode='EllipsisWithTooltip' />
+                            {/*<ColumnDirective*/}
+                            {/*    field='startDate'*/}
+                            {/*    headerText='Ngày bắt đầu'*/}
+                            {/*    width='60'*/}
+                            {/*    validationRules={validationRules}*/}
+                            {/*    format={dateFormat}*/}
+                            {/*    editType='datetimepickeredit'*/}
+                            {/*    edit={dateTimePickerParams}*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
+                            {/*<ColumnDirective*/}
+                            {/*    field='endDate'*/}
+                            {/*    headerText='Ngày kết thúc'*/}
+                            {/*    width='60'*/}
+                            {/*    validationRules={validationRules}*/}
+                            {/*    format={dateFormat}*/}
+                            {/*    editType='datetimepickeredit'*/}
+                            {/*    edit={dateTimePickerParams}*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Page]} />
                     </GridComponent>
                 </div>
             </div>
-        </AdminLayout>
+        </LecturerLayout>
     );
 }
 
-export default ClassRegistrationWindows;
+export default LecturerIndex;

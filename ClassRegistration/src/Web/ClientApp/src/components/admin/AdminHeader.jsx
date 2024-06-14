@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+﻿import React, { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -96,7 +96,7 @@ const AdminHeader = () => {
                     {/*    <div className="vr h-100 mx-2 text-body text-opacity-75"></div>*/}
                     {/*</li>*/}
                     <CNavItem>
-                        <CNavLink href="/Identity/Account/Manage">Account</CNavLink>
+                        <CNavLink href="/Identity/Account/Manage">Tài khoản</CNavLink>
                     </CNavItem>
                 </CHeaderNav>
             </CContainer>

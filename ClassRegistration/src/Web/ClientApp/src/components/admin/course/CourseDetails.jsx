@@ -13,6 +13,7 @@ import {
     ForeignKey,
     DetailRow
 } from '@syncfusion/ej2-react-grids';
+import { L10n } from '@syncfusion/ej2-base';
 import { AdminLayout } from '../../AdminLayout';
 import {
     CoursesClient,
@@ -24,6 +25,76 @@ import {
     CoursesFKClient,
     ClassTypesClient
 } from '../../../web-api-client.ts';
+
+L10n.load({
+    'vi-VN-1': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin môn tiên quyết - ID: ',
+            'AddFormTitle': 'Thêm môn tiên quyết',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả'
+        }
+    },
+    'vi-VN-2': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin lớp - ID: ',
+            'AddFormTitle': 'Thêm lớp',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả',
+            'totalItemInfo': '({0} dòng)'
+        }
+    },
+});
 
 const CourseDetails = () => {
     const { courseId } = useParams();
@@ -97,29 +168,77 @@ const CourseDetails = () => {
             allowFiltering: true
         }
     }
+    //const tempClassData = {
+    //    "result": [
+    //        {
+    //            "id": 21,
+    //            "courseId": 12,
+    //            "classTypeId": 1,
+    //            "registrationScheduleId": 0,
+    //            "classCode": "SE122.O21",
+    //            "departmentName": null,
+    //            "lecturerName": null,
+    //            "credit": 2,
+    //            "dayOfWeek": null,
+    //            "startPeriod": null,
+    //            "endPeriod": null,
+    //            "capacity": 100,
+    //            "userClassCount": 0,
+    //            "canBeRegistered": true,
+    //            "classType": {
+    //                "type": "LT",
+    //                "id": 1
+    //            },
+    //            "course": {
+    //                "departmentId": 2,
+    //                "courseCode": "SE122",
+    //                "courseName": "Đồ án 2",
+    //                "description": null,
+    //                "department": null,
+    //                "classes": [],
+    //                "current": [],
+    //                "prerequisites": [],
+    //                "id": 12,
+    //            },
+    //            "courseResult": null,
+    //            "registrationSchedule": null
+    //        }
+    //    ],
+    //    "count": 1
+    //};
+    //const tempPreCourseData = {
+    //    "result": [
+    //        {
+    //            "courseName": "SE121 - Đồ án 1",
+    //            "requiredPassed": false
+    //        }
+    //    ],
+    //    "count": 1
+    //};
 
-    function gridTemplate(props) {
-        var src = 'src/grid/images/' + props.EmployeeID + '.png';
-        return (
-            <table className="detailtable" style={{ width: "100%" }}>
-                <colgroup>
-                    <col style={{ width: "50%" }} />
-                    <col style={{ width: "50%" }} />
-                </colgroup>
-                <tbody>
-                    <tr>
-                        <td>
-                            <span style={{ fontWeight: 500 }}>Tiết bắt đầu: </span> {props.startPeriod}
-                        </td>
-                        <td>
-                            <span style={{ fontWeight: 500 }}>Tiết kết thúc: </span> {props.endPeriod}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        );
-    }
-    const template = gridTemplate;
+
+    //function gridTemplate(props) {
+    //    var src = 'src/grid/images/' + props.EmployeeID + '.png';
+    //    return (
+    //        <table className="detailtable" style={{ width: "100%" }}>
+    //            <colgroup>
+    //                <col style={{ width: "50%" }} />
+    //                <col style={{ width: "50%" }} />
+    //            </colgroup>
+    //            <tbody>
+    //                <tr>
+    //                    <td>
+    //                        <span style={{ fontWeight: 500 }}>Tiết bắt đầu: </span> {props.startPeriod}
+    //                    </td>
+    //                    <td>
+    //                        <span style={{ fontWeight: 500 }}>Tiết kết thúc: </span> {props.endPeriod}
+    //                    </td>
+    //                </tr>
+    //            </tbody>
+    //        </table>
+    //    );
+    //}
+    //const template = gridTemplate;
 
     async function getData() {
         const courseClient = new CourseByIdClient();
@@ -261,13 +380,13 @@ const CourseDetails = () => {
         }
     }
 
-    function onActionBegin(args) {
-        if ((args.action === 'add' || args.action === 'edit') && args.requestType === 'save') {
-            if (args.data.endPeriod <= args.data.startPeriod) {
-                args.cancel = true;
-            }
-        }
-    }
+    //function onActionBegin(args) {
+    //    if ((args.action === 'add' || args.action === 'edit') && args.requestType === 'save') {
+    //        if (args.data.endPeriod <= args.data.startPeriod) {
+    //            args.cancel = true;
+    //        }
+    //    }
+    //}
 
     function dataSourceChanged(args) {
         console.log(args);
@@ -490,6 +609,7 @@ const CourseDetails = () => {
                             dataStateChange={pcd_dataStateChange.bind(this)}
                             dataSourceChanged={pcd_dataSourceChanged.bind(this)}
                             recordDoubleClick={pcd_onRecordDoubleClick.bind(this)}
+                            locale='vi-VN-1'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -503,7 +623,7 @@ const CourseDetails = () => {
                                     width='100'
                                     validationRules={validationRules}
                                     edit={prerequisiteCourseParams}
-                                    clipMode='EllipsisWithTooltip' />
+                                    clipMode='EllipsisWithTooltip' />                                
                                 <ColumnDirective
                                     field='requiredPassed'
                                     displayAsCheckBox="true"
@@ -544,6 +664,7 @@ const CourseDetails = () => {
                             dataStateChange={dataStateChange.bind(this)}
                             dataSourceChanged={dataSourceChanged.bind(this)}
                             recordDoubleClick={onRecordDoubleClick.bind(this)}
+                            locale='vi-VN-2'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -558,7 +679,7 @@ const CourseDetails = () => {
                                     width='60'
                                     validationRules={validationRules}
                                     allowSorting={false}
-                                    clipMode='EllipsisWithTooltip' />
+                                    clipMode='EllipsisWithTooltip' />                               
                                 <ColumnDirective field='credit' headerText='Tín chỉ' width='40' validationRules={numericValidationRules} editType='numericedit' edit={numericParams} clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective
                                     columns={

@@ -26,6 +26,31 @@ import {
     CurrentUserInfoClient
 } from '../../../web-api-client.ts';
 
+L10n.load({
+    'vi-VN': {
+        grid: {
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả',
+            'Search': 'Tìm kiếm'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả',
+            'totalItemInfo': '({0} dòng)'
+        }
+    }
+});
+
 const ClassRegistration = () => {
     const [currentUserInfo, setCurrentUserInfo] = useState(null);
     const [classData, setClassData] = useState({
@@ -99,28 +124,37 @@ const ClassRegistration = () => {
                             console.log(arg);
                             orderBy = '';
                             filterAttr = 'classType';
-                            if (arg.value === 'Lý thuyết') {
-                                filterText = 'Lý thuyết';
-                                let classes = classesClient.getClasses(
-                                    0,
-                                    12,
-                                    '',
-                                    filterAttr,
-                                    filterText
-                                )
-                                    .then((gridData) => { gridInstance.dataSource = gridData });
-                            }
-                            if (arg.value === 'Thực hành') {
-                                filterText = 'Thực hành';
-                                let classes = classesClient.getClasses(
-                                    0,
-                                    12,
-                                    '',
-                                    filterAttr,
-                                    filterText
-                                )
-                                    .then((gridData) => { gridInstance.dataSource = gridData });
-                            }                          
+                            //if (arg.value === 'Lý thuyết') {
+                            //    filterText = 'Lý thuyết';
+                            //    classesClient.getClasses(
+                            //        0,
+                            //        12,
+                            //        '',
+                            //        filterAttr,
+                            //        filterText
+                            //    )
+                            //        .then((gridData) => { gridInstance.dataSource = gridData });
+                            //}
+                            //if (arg.value === 'Thực hành') {
+                            //    filterText = 'Thực hành';
+                            //    classesClient.getClasses(
+                            //        0,
+                            //        12,
+                            //        '',
+                            //        filterAttr,
+                            //        filterText
+                            //    )
+                            //        .then((gridData) => { gridInstance.dataSource = gridData });
+                            //}
+                            filterText = arg.value
+                            classesClient.getClasses(
+                                0,
+                                12,
+                                '',
+                                filterAttr,
+                                filterText
+                            )
+                                .then((gridData) => { gridInstance.dataSource = gridData });
                         }
                         else {
                             console.log(arg);
@@ -356,17 +390,7 @@ const ClassRegistration = () => {
         }
         gridInstance.clearSelection();
         setSelectedClasses([]);
-        window.location.reload();
-        //const classesClient = new ClassesClient();
-        //let classes = classesClient.getClasses(0, 12);
-        //setClassData(classes);
-        //let classes = classesClient.getClasses(0, 12);
-        //filterAttr = '';
-        //filterText = '';
-        //orderBy = '';
-        //setClassData(classes);
-        //gridInstance.changeDataSource(classData);
-        //gridInstance.changeDataSource(classes);       
+        window.location.reload();  
     }
 
     if (classTypes !== null) {
@@ -399,24 +423,26 @@ const ClassRegistration = () => {
                             dataSourceChanged={dataSourceChanged.bind(this)}
                             rowSelected={onRowSelected.bind(this)}
                             rowDeselected={onRowDeselected.bind(this)}
+                            locale='vi-VN'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40' headerTemplate={headerTemplate}></ColumnDirective>
                                 <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
                                 <ColumnDirective field='classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective field='course.courseName' headerText='Tên lớp' width='105' clipMode='EllipsisWithTooltip' />
-                                <ColumnDirective field='departmentName' headerText='Khoa' width='40' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='departmentName' headerText='Khoa' width='20' clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective
                                     field='classTypeId'
                                     foreignKeyValue="type"
                                     foreignKeyField="classTypeId"
                                     dataSource={classTypes}
                                     headerText='Loại lớp'
-                                    width='40'
+                                    width='20'
                                     allowSorting={false}
                                     filterBarTemplate={filterBarTemplate}
                                     clipMode='EllipsisWithTooltip' />
-                                <ColumnDirective field='credit' headerText='Tín chỉ' width='25' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='lecturerName' headerText='Giảng viên' width='40' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='credit' headerText='Tín chỉ' width='20' clipMode='EllipsisWithTooltip' />
                                 <ColumnDirective field='dayOfWeek' headerText='Thứ' width='25' clipMode='EllipsisWithTooltip' />
                                 {/*<ColumnDirective*/}
                                 {/*    columns={*/}
@@ -437,8 +463,8 @@ const ClassRegistration = () => {
                                     }
                                     headerText='Tiết' >
                                 </ColumnDirective>
-                                <ColumnDirective field='userClassCount' headerText='Đã đăng ký' width='40'></ColumnDirective>
-                                <ColumnDirective field='capacity' headerText='Số lượng' width='35'></ColumnDirective>                                
+                                <ColumnDirective field='userClassCount' headerText='Đã đăng ký' width='30'></ColumnDirective>
+                                <ColumnDirective field='capacity' headerText='Số lượng' width='30'></ColumnDirective>                                
                             </ColumnsDirective>
                             <Inject services={[Filter, Sort, Page, ForeignKey]} />
                         </GridComponent>

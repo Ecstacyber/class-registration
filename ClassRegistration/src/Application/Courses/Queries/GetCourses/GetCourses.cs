@@ -86,7 +86,7 @@ public class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, CourseDto
 
         if (string.IsNullOrEmpty(request.FilterAttribute) && string.IsNullOrEmpty(request.FilterValue))
         {
-            totalCount = await _context.Classes.CountAsync(cancellationToken);
+            totalCount = await _context.Courses.CountAsync(cancellationToken);
         }
         else
         {

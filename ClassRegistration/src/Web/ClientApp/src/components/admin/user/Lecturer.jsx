@@ -1,5 +1,4 @@
 ﻿import { useEffect, useState } from 'react';
-import { AdminLayout } from '../../AdminLayout';
 import {
     GridComponent,
     ColumnsDirective,
@@ -12,9 +11,11 @@ import {
     Edit,
     ForeignKey
 } from '@syncfusion/ej2-react-grids';
-import { L10n } from '@syncfusion/ej2-base';
+import { createElement, L10n } from '@syncfusion/ej2-base';
+import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { useNavigate } from 'react-router-dom';
-import { RegistrationSchedulesClient } from '../../../web-api-client.ts';
+import { AdminLayout } from '../../AdminLayout';
+import { CoursesClient, DepartmentsFKRefClient, LecturersClient } from '../../../web-api-client.ts';
 
 L10n.load({
     'vi-VN': {
@@ -29,8 +30,8 @@ L10n.load({
             'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
             'SaveButton': 'Lưu',
             'CancelButton': 'Huỷ',
-            'EditFormTitle': 'Thông tin đợt đăng ký - ID: ',
-            'AddFormTitle': 'Thêm đợt đăng ký',
+            'EditFormTitle': 'Thông tin sinh viên - ID: ',
+            'AddFormTitle': 'Thêm sinh viên',
             'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
             'EmptyRecord': 'Không có dữ liệu',
             'FilterbarTitle': '- thanh tìm kiếm',
@@ -47,16 +48,18 @@ L10n.load({
             'previousPagerTooltip': 'Trở về trang trước',
             'pagerDropDown': 'Số dòng trên 1 trang',
             'pagerAllDropDown': 'Các dòng',
+            'totalItemInfo': '({0} dòng)',
             'All': 'Tất cả'
         }
     }
 });
 
-const RegistrationSchedule = () => {
-    const [scheduleData, setScheduleData] = useState({
+const Lecturer = () => {
+    const [lecturers, setLecturers] = useState({
         result: [],
         count: 0
     });
+    const [departments, setDepartments] = useState([{}]);
     const navigate = useNavigate();
     let orderBy = '';
     let filterAttr = '';
@@ -71,46 +74,7 @@ const RegistrationSchedule = () => {
         showDeleteConfirmDialog: true,
         mode: 'Dialog'
     };
-    const dateFormat = {
-        type: 'dateTime',
-        format: 'dd/MM/yyyy hh:mm a'
-    };
-    const dateTimePickerParams = {
-        params: {
-            format: 'dd/MM/yyyy hh:mm a'
-        }
-    };
     const validationRules = { required: true };
-    const pageSettings = { pageSizes: true };
-    const check = {
-        type: 'CheckBox'
-    };
-    const select = {
-        persistSelection: true,
-        type: 'Multiple',
-        checkboxOnly: true
-    };
-    const filter = {
-        type: 'Menu',
-        operators: {
-            stringOperator: [
-                { value: 'contains', text: 'Chứa' }
-            ],
-            numberOperator: [
-                { value: 'equal', text: 'Bằng' }
-            ],
-            dateOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' },
-                { value: 'greaterThan', text: 'Sau' },
-                { value: 'lessThan', text: 'Trước' }
-            ],
-            booleanOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' }
-            ]
-        }
-    };
     const numericValidationRules = {
         required: true,
         number: true
@@ -123,38 +87,130 @@ const RegistrationSchedule = () => {
             validateDecimalOnType: true
         }
     };
+    const departmentParams = {
+        params: {
+            allowFiltering: true
+        }
+    };
+    const pageSettings = { pageSizes: true };
+    const check = {
+        type: 'CheckBox'
+    };
+    const select = {
+        persistSelection: true,
+        type: 'Multiple',
+        checkboxOnly: true
+    };
+    const filter = {
+        ignoreAccent: true
+    };
+    //const tempLecturer = {
+    //    "result": [
+    //        {
+    //            "id": 1,
+    //            "userName": "Dương Minh Thái",
+    //            "userCode": "DMT",
+    //            "email": "dmt@gm.uit.edu.vn",
+    //            "password": null,
+    //            "departmentId": 1,
+    //            "department": {
+    //                "shortName": "CNPM",
+    //                "fullName": "Công nghệ phần mềm",
+    //                "id": 1
+    //            },
+    //            "roles": []
+    //        }
+    //    ],
+    //    "count": 1
+    //};
+    //const tempDapartment = [
+    //    {
+    //        "departmentId": 1,
+    //        "departmentName": "CNPM"
+    //    }
+    //];
 
-    async function getScheduleData() {
-        const registrationSchedulesClient = new RegistrationSchedulesClient();
-        let registrationSchedulesData = await registrationSchedulesClient.getRegistrationSchedules(0, 12);
-        setScheduleData(registrationSchedulesData);
+    async function getData() {
+        const lecturersClient = new LecturersClient();
+        let lecturersData = await lecturersClient.getLecturers(0, 12);
+        setLecturers(lecturersData);
+
+        const departmentsClient = new DepartmentsFKRefClient();
+        let departmentsData = await departmentsClient.getDepartmentsForFKRef();
+        setDepartments(departmentsData);
     }
 
     useEffect(() => {
-        getScheduleData();
-    }, []);
+        getData();
+    }, [])
 
-    function valueAccess(field, data, column) {
-        var value = data[column.field];
-        if (data['fee'] % 2 === 0) {
-            value = '' + value;
-            var parts = value.toString().split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            return parts.join('.');
-        } else {
-            value = '' + value;
-            var parts = value.toString().split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return parts.join(',');
+    const actionBegin = (args) => {
+        console.log(args);
+        if (gridInstance && (args.requestType === 'beginEdit' || args.requestType === 'add')) {
+            const cols = gridInstance.columns;
+            for (const col of cols) {
+                if (col.field === "password") {
+                    col.visible = true;
+                }
+            }
         }
-    }
+    };
+
+    const filterBarTemplate = {
+        create: (args) => {
+            return createElement('input', { className: 'flm-input' });
+        },
+        write: (args) => {
+            departments.splice(0, 0, { 'type': 'All' }); // for clear filtering
+            const lecturersClient = new LecturersClient();
+            const dropInstance = new DropDownList({
+                change: (arg) => {
+                    if (gridInstance) {
+                        if (arg.value !== 'All') {
+                            console.log(arg);
+                            orderBy = '';
+                            filterAttr = 'departmentId';
+                            lecturersClient.getLecturers(
+                                0,
+                                12,
+                                '',
+                                filterAttr,
+                                filterText
+                            )
+                                .then((gridData) => { gridInstance.dataSource = gridData });
+                        }
+                        else {
+                            console.log(arg);
+                            orderBy = '';
+                            filterAttr = '';
+                            filterText = '';
+                            lecturersClient.getLecturers(
+                                0,
+                                12,
+                                '',
+                                '',
+                                ''
+                            )
+                                .then((gridData) => { gridInstance.dataSource = gridData });
+                        }
+                    }
+                },
+                dataSource: departments,
+                fields: { text: 'departmentName' },
+                index: 0,
+                placeholder: 'Chọn khoa',
+                popupHeight: '200px'
+            });
+            dropInstance.appendTo(args.element);
+        }
+    };
 
     function dataStateChange(args) {
         console.log(args);
-        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        const lecturersClient = new LecturersClient();
         if (args.action) {
             if (args.action.requestType === 'paging') {
-                registrationSchedulesClient.getRegistrationSchedules(
+                lecturersClient.getLecturers(
                     args.skip,
                     args.take,
                     orderBy,
@@ -168,7 +224,7 @@ const RegistrationSchedule = () => {
             if (args.action.requestType === 'sorting') {
                 if (args.action.columnName && args.action.direction) {
                     orderBy = args.action.columnName + '-' + args.action.direction;
-                    registrationSchedulesClient.getRegistrationSchedules(
+                    lecturersClient.getLecturers(
                         args.skip,
                         args.take,
                         orderBy,
@@ -180,7 +236,7 @@ const RegistrationSchedule = () => {
                 }
                 else {
                     orderBy = '';
-                    registrationSchedulesClient.getRegistrationSchedules(
+                    lecturersClient.getLecturers(
                         args.skip,
                         args.take,
                         '',
@@ -195,28 +251,28 @@ const RegistrationSchedule = () => {
             if (args.action.action === 'filter') {
                 if (args.action.currentFilterObject.value && args.action.currentFilterObject.value !== '') {
                     filterAttr = args.action.currentFilterObject.field;
-                    filterText = args.action.currentFilterObject.value.toString().substring(0, 24);
-                    registrationSchedulesClient.getRegistrationSchedules(
+                    filterText = args.action.currentFilterObject.value;
+                    lecturersClient.getLecturers(
                         args.skip,
                         args.take,
                         orderBy,
                         filterAttr,
-                        filterText,
-                        args.action.currentFilterObject.operator
+                        filterText
                     )
                         .then((gridData) => { gridInstance.dataSource = gridData });
                     return;
                 } else {
-                    registrationSchedulesClient.getRegistrationSchedules(args.skip, args.take)
+                    lecturersClient.getLecturers(args.skip, args.take)
                         .then((gridData) => { gridInstance.dataSource = gridData });
                     return;
                 }
+
             }
 
             if (args.action.action === 'clearFilter') {
                 filterAttr = '';
                 filterText = '';
-                registrationSchedulesClient.getRegistrationSchedules(args.skip, args.take)
+                lecturersClient.getLecturers(args.skip, args.take)
                     .then((gridData) => { gridInstance.dataSource = gridData });
                 return;
             }
@@ -225,52 +281,59 @@ const RegistrationSchedule = () => {
                 filterAttr = '';
                 filterText = '';
                 orderBy = '';
-                registrationSchedulesClient.getRegistrationSchedules(0, 12)
+                lecturersClient.getLecturers(0, 12)
                     .then((gridData) => { gridInstance.dataSource = gridData });
                 return;
             }
 
-            if (args.action.requestType === 'save') {
-                filterAttr = '';
-                filterText = '';
-                orderBy = '';
-                registrationSchedulesClient.getRegistrationSchedules(0, 12)
-                    .then((gridData) => { gridInstance.dataSource = gridData });
-                return;
-            }
+            //if (args.action.requestType === 'save') {
+            //    filterAttr = '';
+            //    filterText = '';
+            //    orderBy = '';
+            //    classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
+            //        .then((gridData) => { gridInstance.dataSource = gridData });
+            //    return;
+            //}
 
-            registrationSchedulesClient.getRegistrationSchedules(0, 12)
+            lecturersClient.getLecturers(args.skip, args.take)
                 .then((gridData) => { gridInstance.dataSource = gridData });
 
         } else {
-            registrationSchedulesClient.getRegistrationSchedules(0, 12)
+            lecturersClient.getLecturers(args.skip, args.take)
                 .then((gridData) => { gridInstance.dataSource = gridData });
         }
     }
 
     function dataSourceChanged(args) {
         console.log(args);
-        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        const lecturersClient = new LecturersClient();
         if (args.action === 'add') {
-            registrationSchedulesClient.createRegistrationSchedule(args.data);
+            lecturersClient.createLecturer(args.data);
         } else if (args.action === 'edit') {
-            registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
+            lecturersClient.updateLecturer(args.data.id, args.data);
         } else if (args.requestType === 'delete') {
             args.data.forEach((deleteData) => {
-                registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
-            });            
+                lecturersClient.deleteLecturer(deleteData.id);
+            });
+            filterAttr = '';
+            filterText = '';
+            orderBy = '';
+            lecturersClient.getLecturers(0, 12)
+                .then((gridData) => { gridInstance.dataSource = gridData });
+            return;
         }
         filterAttr = '';
         filterText = '';
         orderBy = '';
-        registrationSchedulesClient.getRegistrationSchedules(0, 12)
+        lecturersClient.getLecturers(0, 12)
             .then((gridData) => { gridInstance.dataSource = gridData });
-        return;
     }
 
     function onRecordDoubleClick(args) {
         console.log(args);
-        //navigate('/admin-index/registration-schedule/' + args.rowData.id);
+        //if (args.rowData) {
+        //    navigate('./class/' + args.rowData.id);
+        //}
     }
 
     return (
@@ -278,11 +341,11 @@ const RegistrationSchedule = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}>
-                        <h2>Danh sách đợt đăng ký</h2>
+                        <h2>Danh sách giảng viên</h2>
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
-                        dataSource={scheduleData}
+                        dataSource={lecturers}
                         toolbar={toolbarOptions}
                         editSettings={editSettings}
                         allowPaging={true}
@@ -302,56 +365,34 @@ const RegistrationSchedule = () => {
                         dataStateChange={dataStateChange.bind(this)}
                         dataSourceChanged={dataSourceChanged.bind(this)}
                         recordDoubleClick={onRecordDoubleClick.bind(this)}
+                        actionBegin={actionBegin.bind(this)}
                         locale='vi-VN'
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                            <ColumnDirective field='userCode' headerText='ID' width='100' validationRules={validationRules}></ColumnDirective>
+                            <ColumnDirective field='userName' headerText='Tên' width='150' validationRules={validationRules}></ColumnDirective>
+                            <ColumnDirective field='email' headerText='Email' width='100' type='email' validationRules={validationRules}></ColumnDirective>
+                            <ColumnDirective field='password' headerText='Mật khẩu' type="password" width='80' type='password' visible={false} validationRules={validationRules}></ColumnDirective>
                             <ColumnDirective
-                                field='name'
-                                headerText='Tên'
-                                width='160'
+                                field='departmentId'
+                                foreignKeyValue='departmentName'
+                                foreignKeyField='departmentId'
+                                dataSource={departments}
+                                headerText='Khoa'
+                                width='50'
                                 validationRules={validationRules}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='feePerCredit'
-                                headerText='VND/tín chỉ'
-                                width='80'
-                                validationRules={numericValidationRules}
-                                editType='numericedit'
-                                edit={feeParams}
-                                valueAccessor={valueAccess.bind(this)}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='maximumCredit'
-                                headerText='Giới hạn tín chỉ'
-                                width='60'
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='startDate'
-                                headerText='Ngày bắt đầu'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='endDate'
-                                headerText='Ngày kết thúc'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
+                                edit={departmentParams}
+                                filterBarTemplate={filterBarTemplate}
                                 clipMode='EllipsisWithTooltip' />
                         </ColumnsDirective>
-                        <Inject services={[Filter, Sort, Toolbar, Edit, Page]} />
+                        <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                     </GridComponent>
                 </div>
             </div>
         </AdminLayout>
-    );
+    )
 }
 
-export default RegistrationSchedule;
+export default Lecturer;

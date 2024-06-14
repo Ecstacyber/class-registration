@@ -33,7 +33,7 @@ public class GetLecturersInClassQueryHandler : IRequestHandler<GetLecturersInCla
     {
         var userClasses = await _context.UserClasses
             .Include(x => x.User)
-            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId && x.User != null && x.User.Roles.Contains("Lecturer"))
+            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId)
             .ProjectTo<UserClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 

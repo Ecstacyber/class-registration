@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useNavigationType, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     GridComponent,
     ColumnsDirective,
@@ -10,18 +10,95 @@ import {
     Page,
     Toolbar,
     Edit,
-    ForeignKey
+    ForeignKey,
+    ExcelExport
 } from '@syncfusion/ej2-react-grids';
+import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
+import { Browser, L10n } from '@syncfusion/ej2-base';
+import Button from 'react-bootstrap/Button';
+//import Modal from 'react-bootstrap/Modal';
 import { AdminLayout } from '../../AdminLayout';
 import {
-    ClassesClient,
     UserClassesClient,
     StudentsInClassClient,
-    LecturersInClassClient
+    LecturersInClassClient,
+    ClassByIdClient,
+    StudentsClient
 } from '../../../web-api-client.ts';
 
+L10n.load({
+    'vi-VN-1': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin giảng viên - ID: ',
+            'AddFormTitle': 'Thêm khoa',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên một trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả'
+        }
+    },
+    'vi-VN-2': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin sinh viên - ID: ',
+            'AddFormTitle': 'Thêm khoa',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả',
+            'totalItemInfo': '({0} dòng)'
+        }
+    }
+});
+
 const ClassDetails = () => {
-    const [classData, setClassData] = useState(null);
+    const { courseId, classId, registrationScheduleId } = useParams();
+    const [classData, setClassData] = useState({});
     const [studentData, setStudentData] = useState({
         result: [],
         count: 0
@@ -30,13 +107,9 @@ const ClassDetails = () => {
         result: [],
         count: 0
     });
-    const { courseId, classId, registrationScheduleId } = useParams();
+    const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
-    const navigationType = useNavigationType();
     const navigate = useNavigate();
-    const [coursesFKData, setCoursesFKData] = useState(null);
-    const [classTypes, setClassTypes] = useState(null);
-    const [pcId, setPcId] = useState();
     let studentOrderBy = '';
     let studentFilterAttr = '';
     let studentFilterText = '';
@@ -46,10 +119,18 @@ const ClassDetails = () => {
     let studentGridInstance;
     let lecturerGridInstance;
     const fields = { text: 'text', value: 'value' };
-    const toolbarOptions = ['Add', 'Delete'];
-    const editSettings = {
+    const studentToolbarOptions = ['Add', 'Edit', 'Delete', 'ExcelExport'];
+    const lecturerToolbarOptions = ['Add', 'Delete'];
+    const studentEditSettings = {
+        allowEditing: true,
+        allowAdding: false,
+        allowDeleting: true,
+        showDeleteConfirmDialog: true,
+        mode: 'Dialog'
+    };
+    const lecturerEditSettings = {
         allowEditing: false,
-        allowAdding: true,
+        allowAdding: false,
         allowDeleting: true,
         showDeleteConfirmDialog: true,
         mode: 'Dialog'
@@ -79,6 +160,26 @@ const ClassDetails = () => {
         params: {
             allowFiltering: true
         }
+    };
+    const tempStudent = {
+        "result": [
+            {
+                "id": 1,
+                "userCode": "20520716",
+                "user": {
+                    "userName": "Cấn Đức Quang"
+                }
+            }
+        ],
+        "count": 1
+    };
+    const tempLecturer = {
+        "result": [
+            {
+                "userName": "Dương Minh Thái"
+            }
+        ],
+        count: 1
     }
 
     async function getData() {
@@ -89,6 +190,10 @@ const ClassDetails = () => {
         const lecturersInClassClient = new LecturersInClassClient();
         let lecturers = await lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId);
         setLecturerData(lecturers);
+
+        const classByIdClient = new ClassByIdClient();
+        let currentClass = await classByIdClient.getClassById(classId);
+        setClassData(currentClass);
     }
 
     useEffect(() => {
@@ -382,147 +487,182 @@ const ClassDetails = () => {
 
     function pcd_onRecordDoubleClick(args) {
         console.log(args);
-        //navigate('/admin-index/course/' + args.rowData.prerequisiteCourseId);
+    }
+
+    //function studentDialogTemplate(props) {
+    //    return (<StudentDialogTemplate {...props} />);
+    //}
+
+    //function actionComplete(args) {
+    //    if ((args.requestType === 'beginEdit' || args.requestType === 'add')) {
+    //        if (Browser.isDevice) {
+    //            args.dialog.height = window.innerHeight - 90 + 'px';
+    //            args.dialog.dataBind();
+    //        }
+    //    }
+    //}
+
+    function onAddLecturerClick() {
+        navigate('./add-lecturer', { state: { from: location.pathname } });
     }
     
     return (
         <AdminLayout>
-            <h1>{courseId}</h1>
-            <h1>{classId}</h1>
-            {/*<h2>{course?.courseCode}</h2>*/}
-            {/*<h3>{course?.courseName}</h3>*/}
-            {/*<h4>Số tín chỉ: {course?.credit}</h4>*/}
-            {/*<h4>Học phí: {course?.fee}</h4>*/}
-            {/*<br />*/}
-            {/*<div className='control-pane'>*/}
-            {/*    <div className='control-section'>*/}
-            {/*        <div style={{ paddingBottom: '18px' }}>*/}
-            {/*            <h3>Danh sách môn tiên quyết</h3>*/}
-            {/*        </div>*/}
-            {/*        <GridComponent id="overviewgrid"*/}
-            {/*            dataSource={prerequisiteCourseData}*/}
-            {/*            toolbar={pcgToolbarOptions}*/}
-            {/*            editSettings={pc_editSettings}*/}
-            {/*            allowPaging={true}*/}
-            {/*            pageSettings={pageSettings}*/}
-            {/*            enableHover={true}*/}
-            {/*            height='150'*/}
-            {/*            loadingIndicator={{ indicatorType: 'Shimmer' }}*/}
-            {/*            rowHeight={38}*/}
-            {/*            ref={(g) => { pcdGridInstance = g; }}*/}
-            {/*            allowFiltering={true}*/}
-            {/*            filterSettings={filter}*/}
-            {/*            allowSorting={true}*/}
-            {/*            allowMultiSorting={true}*/}
-            {/*            allowSelection={true}*/}
-            {/*            selectionSettings={select}*/}
-            {/*            enableHeaderFocus={true}*/}
-            {/*            dataStateChange={pcd_dataStateChange.bind(this)}*/}
-            {/*            dataSourceChanged={pcd_dataSourceChanged.bind(this)}*/}
-            {/*            recordDoubleClick={pcd_onRecordDoubleClick.bind(this)}*/}
-            {/*        >*/}
-            {/*            <ColumnsDirective>*/}
-            {/*                <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>*/}
-            {/*                <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>*/}
-            {/*                <ColumnDirective*/}
-            {/*                    field='prerequisiteCourseId'*/}
-            {/*                    foreignKeyValue='courseName'*/}
-            {/*                    foreignKeyField='prerequisiteCourseId'*/}
-            {/*                    dataSource={coursesFKData}*/}
-            {/*                    headerText='Tên lớp'*/}
-            {/*                    width='100'*/}
-            {/*                    validationRules={validationRules}*/}
-            {/*                    edit={prerequisiteCourseParams}*/}
-            {/*                    clipMode='EllipsisWithTooltip' />*/}
-            {/*                <ColumnDirective*/}
-            {/*                    field='requiredPassed'*/}
-            {/*                    displayAsCheckBox="true"*/}
-            {/*                    editType="booleanedit"*/}
-            {/*                    type="boolean"*/}
-            {/*                    headerText='Cần qua môn'*/}
-            {/*                    width='40'*/}
-            {/*                    clipMode='EllipsisWithTooltip' />*/}
-            {/*            </ColumnsDirective>*/}
-            {/*            <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />*/}
-            {/*        </GridComponent>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-            {/*<br />*/}
-            {/*<div className='control-pane'>*/}
-            {/*    <div className='control-section'>*/}
-            {/*        <div style={{ paddingBottom: '18px' }}>*/}
-            {/*            <h3>Danh sách lớp học</h3>*/}
-            {/*        </div>*/}
-            {/*        <GridComponent id="overviewgrid"*/}
-            {/*            dataSource={classData}*/}
-            {/*            toolbar={toolbarOptions}*/}
-            {/*            editSettings={editSettings}*/}
-            {/*            allowPaging={true}*/}
-            {/*            pageSettings={pageSettings}*/}
-            {/*            enableHover={true}*/}
-            {/*            height='250'*/}
-            {/*            loadingIndicator={{ indicatorType: 'Shimmer' }}*/}
-            {/*            rowHeight={38}*/}
-            {/*            ref={(g) => { gridInstance = g; }}*/}
-            {/*            allowFiltering={true}*/}
-            {/*            filterSettings={filter}*/}
-            {/*            allowSorting={true}*/}
-            {/*            allowMultiSorting={true}*/}
-            {/*            allowSelection={true}*/}
-            {/*            selectionSettings={select}*/}
-            {/*            enableHeaderFocus={true}*/}
-            {/*            dataStateChange={dataStateChange.bind(this)}*/}
-            {/*            dataSourceChanged={dataSourceChanged.bind(this)}*/}
-            {/*            recordDoubleClick={onRecordDoubleClick.bind(this)}*/}
-            {/*        >*/}
-            {/*            <ColumnsDirective>*/}
-            {/*                <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>*/}
-            {/*                <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>*/}
-            {/*                <ColumnDirective field='classCode' headerText='Mã lớp' width='60' validationRules={validationRules} clipMode='EllipsisWithTooltip' />*/}
-            {/*                <ColumnDirective*/}
-            {/*                    field='classTypeId'*/}
-            {/*                    foreignKeyValue='type'*/}
-            {/*                    foreignKeyField='classTypeId'*/}
-            {/*                    dataSource={classTypes}*/}
-            {/*                    headerText='Loại lớp'*/}
-            {/*                    width='60'*/}
-            {/*                    validationRules={validationRules}*/}
-            {/*                    allowSorting={false}*/}
-            {/*                    clipMode='EllipsisWithTooltip' />*/}
-            {/*                <ColumnDirective*/}
-            {/*                    columns={*/}
-            {/*                        [*/}
-            {/*                            { field: 'dayOfWeek', headerText: 'Thứ', width: 50, validationRules: dowRules, editType: 'numericedit', edit: numericParams },*/}
-            {/*                            { field: 'startPeriod', headerText: 'Tiết bắt đầu', width: 50, validationRules: periodRules, editType: 'numericedit', edit: numericParams },*/}
-            {/*                            { field: 'endPeriod', headerText: 'Tiết kết thúc', width: 50, validationRules: periodRules, editType: 'numericedit', edit: numericParams }*/}
-            {/*                        ]*/}
-            {/*                    }*/}
-            {/*                    headerText='Thời gian học' >*/}
-            {/*                </ColumnDirective>*/}
-            {/*                <ColumnDirective*/}
-            {/*                    field='capacity'*/}
-            {/*                    headerText='Sĩ số'*/}
-            {/*                    width='50'*/}
-            {/*                    editType='numericedit'*/}
-            {/*                    validationRules={capacityRules}*/}
-            {/*                    edit={numericParams}></ColumnDirective>*/}
-            {/*                <ColumnDirective*/}
-            {/*                    field='canBeRegistered'*/}
-            {/*                    headerText='Được đăng ký'*/}
-            {/*                    width='50'*/}
-            {/*                    displayAsCheckBox="true"*/}
-            {/*                    editType="booleanedit"*/}
-            {/*                    type="boolean"*/}
-            {/*                    validationRules={validationRules}>*/}
-            {/*                </ColumnDirective>*/}
-            {/*            </ColumnsDirective>*/}
-            {/*            <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />*/}
-            {/*        </GridComponent>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-            {/*<br />*/}
+            <h2>{classData?.classCode}</h2>
+            <h3>{classData?.course?.courseName}</h3>
+            <br />
+            <div className='control-pane'>
+                <div className='control-section'>
+                    <div style={{ paddingBottom: '18px' }}>
+                        <h3>Giảng viên</h3>
+                    </div>
+                    <div style={{ paddingBottom: '18px' }}>
+                        <Button variant="primary" onClick={onAddLecturerClick}>+ Thêm giảng viên</Button>
+                    </div>
+                    <GridComponent
+                        id="lecturerGrid"
+                        dataSource={lecturerData}
+                        toolbar={lecturerToolbarOptions}
+                        editSettings={lecturerEditSettings}
+                        pageSettings={pageSettings}
+                        enableHover={true}
+                        height='100'
+                        loadingIndicator={{ indicatorType: 'Shimmer' }}
+                        rowHeight={38}
+                        ref={(g) => { lecturerGridInstance = g; }}
+                        allowSelection={true}
+                        selectionSettings={select}
+                        enableHeaderFocus={true}
+                        dataStateChange={pcd_dataStateChange.bind(this)}
+                        dataSourceChanged={pcd_dataSourceChanged.bind(this)}
+                        recordDoubleClick={pcd_onRecordDoubleClick.bind(this)}
+                        locale='vi-VN-1'
+                    >
+                        <ColumnsDirective>
+                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
+                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                            <ColumnDirective
+                                field='user.userName'
+                                headerText='Tên'
+                                width='150'
+                                clipMode='EllipsisWithTooltip' />
+                        </ColumnsDirective>
+                        <Inject services={[Toolbar, Edit]} />
+                    </GridComponent>
+                </div>
+            </div>
+            <br />
+            <div className='control-pane'>
+                <div className='control-section'>
+                    <div style={{ paddingBottom: '18px' }}>
+                        <h3>Danh sách sinh viên</h3>
+                    </div>
+                    <GridComponent
+                        id="studentGrid"
+                        dataSource={studentData}
+                        toolbar={studentToolbarOptions}
+                        editSettings={studentEditSettings}
+                        allowPaging={true}
+                        pageSettings={pageSettings}
+                        enableHover={true}
+                        height='500'
+                        loadingIndicator={{ indicatorType: 'Shimmer' }}
+                        rowHeight={38}
+                        ref={(g) => { studentGridInstance = g; }}
+                        allowFiltering={true}
+                        filterSettings={filter}
+                        allowSorting={true}
+                        allowMultiSorting={true}
+                        allowSelection={true}
+                        selectionSettings={select}
+                        enableHeaderFocus={true}
+                        dataStateChange={dataStateChange.bind(this)}
+                        dataSourceChanged={dataSourceChanged.bind(this)}
+                        recordDoubleClick={onRecordDoubleClick.bind(this)}
+                        locale='vi-VN-2'
+                    >
+                        <ColumnsDirective>
+                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
+                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                            <ColumnDirective field='userCode' allowEditing={false} headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />                           
+                            <ColumnDirective field='user.userName' headerText='Tên' allowEditing={false} width='200' clipMode='EllipsisWithTooltip'></ColumnDirective>
+                            <ColumnDirective
+                                field='passed'
+                                headerText='Qua môn'
+                                width='40'
+                                displayAsCheckBox="true"
+                                editType="booleanedit"
+                                type="boolean" clipMode='EllipsisWithTooltip' />
+                        </ColumnsDirective>
+                        <Inject services={[Filter, Sort, Page, ExcelExport]} />
+                    </GridComponent>
+                </div>
+            </div>
+            {/*<AddStudentModal*/}
+            {/*    show={modalShow}*/}
+            {/*    onHide={() => setModalShow(false)}*/}
+            {/*/>*/}
         </AdminLayout>
     )  
 }
+
+//function AddStudentModal(props) {
+//    const [selectedUser, setSelectedUser] = useState([]);
+
+//    return (
+//        <Modal
+//            {...props}
+//            size="lg"
+//            aria-labelledby="contained-modal-title-vcenter"
+//            centered
+//        >
+//            <Modal.Header closeButton>
+//                <Modal.Title id="contained-modal-title-vcenter">
+//                    Thêm sinh viên
+//                </Modal.Title>
+//            </Modal.Header>
+//            <Modal.Body>
+//                <h4>Centered Modal</h4>
+//                <p>
+//                    Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+//                    dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+//                    consectetur ac, vestibulum at eros.
+//                </p>
+//            </Modal.Body>
+//            <Modal.Footer>
+//                <Button onClick={props.onHide}>Close</Button>
+//            </Modal.Footer>
+//        </Modal>
+//    );
+//}
+
+//function StudentDialogTemplate(props) {
+//    const [students, setStudents] = useState({});
+
+//    async function getStudentData() {
+//        const studentClient = new StudentsClient();
+//        let allStudent = studentClient.getStudents();
+//        setStudents(allStudent);
+//    }
+
+//    useEffect(() => {
+//        getStudentData();
+//    }, [])
+    
+//    return (        
+//        <div className="form-row">
+//            <div className="form-group">
+//                <DropDownListComponent
+//                    id="userName"
+//                    dataSource={students}
+//                    fields={{ text: 'user.userName', value: 'user.userName' }}
+//                    placeholder="Tên sinh viên"
+//                    popupHeight='300px'
+//                    floatLabelType='Always'>
+//                </DropDownListComponent>
+//            </div>
+//        </div>
+//    );
+//}
 
 export default ClassDetails;

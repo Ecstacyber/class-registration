@@ -1,11 +1,12 @@
 ﻿import React from 'react'
-import { CNavItem, CNavTitle } from '@coreui/react'
+import { CNavItem, CNavTitle, CNavGroup } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
     cilHouse,
     cilNewspaper,
     cilSchool,
-    cilCalendar
+    cilCalendar,
+    cilPeople
 } from '@coreui/icons'
 
 const AdminNav = [
@@ -36,7 +37,24 @@ const AdminNav = [
         name: 'Lịch đăng ký',
         to: '/admin-index/registration-schedule',
         icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />
-    }
+    },
+    {
+        component: CNavGroup,
+        name: 'Người dùng',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+        items: [
+            {
+                component: CNavItem,
+                name: 'Sinh viên',
+                to: '/admin-index/users/students',
+            },
+            {
+                component: CNavItem,
+                name: 'Giảng viên',
+                to: '/admin-index/users/lecturers',
+            }
+        ]
+    },
 ]
 
 export default AdminNav

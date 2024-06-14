@@ -6,6 +6,38 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/ClassById": {
+      "get": {
+        "tags": [
+          "ClassById"
+        ],
+        "operationId": "GetClassById",
+        "parameters": [
+          {
+            "name": "ClassId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Classes": {
       "get": {
         "tags": [
@@ -837,6 +869,55 @@
           "Lecturers"
         ],
         "operationId": "GetLecturers",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1337,6 +1418,55 @@
           "Students"
         ],
         "operationId": "GetStudents",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1684,6 +1814,38 @@
         }
       }
     },
+    "/api/UserClassByUserId": {
+      "get": {
+        "tags": [
+          "UserClassByUserId"
+        ],
+        "operationId": "GetUserClassByUserId",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/UserClasses": {
       "post": {
         "tags": [
@@ -1791,22 +1953,6 @@
   },
   "components": {
     "schemas": {
-      "ClassDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "result": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ClassResult"
-            }
-          },
-          "count": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
       "ClassResult": {
         "type": "object",
         "additionalProperties": false,
@@ -2300,8 +2446,7 @@
             "additionalProperties": false,
             "properties": {
               "userName": {
-                "type": "string",
-                "nullable": true
+                "type": "string"
               },
               "email": {
                 "type": "string",
@@ -2313,12 +2458,7 @@
                 "nullable": true
               },
               "department": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Department"
-                  }
-                ]
+                "$ref": "#/components/schemas/Department"
               },
               "userClasses": {
                 "type": "array",
@@ -2447,6 +2587,22 @@
           }
         }
       },
+      "ClassDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassResult"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "CreateClassCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -2571,14 +2727,6 @@
           },
           "courseName": {
             "type": "string"
-          },
-          "credit": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "fee": {
-            "type": "integer",
-            "format": "int64"
           },
           "description": {
             "type": "string",
@@ -3020,6 +3168,10 @@
             "nullable": true
           },
           "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
             "type": "string",
             "nullable": true
           },
@@ -3531,8 +3683,14 @@
             "format": "int32",
             "nullable": true
           },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "passed": {
-            "type": "boolean"
+            "type": "string",
+            "nullable": true
           }
         }
       },

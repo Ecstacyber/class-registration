@@ -10,8 +10,46 @@ import {
     Toolbar,
     Edit
 } from '@syncfusion/ej2-react-grids';
+import { L10n } from '@syncfusion/ej2-base';
 import { DepartmentsClient } from '../../../web-api-client.ts';
 import '../department/grid-overview.css';
+
+L10n.load({
+    'vi-VN': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin của khoa - ID: ',
+            'AddFormTitle': 'Thêm khoa',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'totalItemInfo': '({0} dòng)',
+            'All': 'Tất cả'
+        }
+    }
+});
 
 export class DepartmentGrid extends React.Component {
     static displayName = DepartmentGrid.name;
@@ -53,6 +91,31 @@ export class DepartmentGrid extends React.Component {
             }
         ]
     };
+    //tempData = {
+    //    "result": [
+    //        {
+    //            "id": 2,
+    //            "shortName": "CNTT",
+    //            "fullName": "Công nghệ Thông tin"
+    //        },
+    //        {
+    //            "id": 3,
+    //            "shortName": "KTPM",
+    //            "fullName": "Kỹ thuật Phần mềm"
+    //        },
+    //        {
+    //            "id": 4,
+    //            "shortName": "HTTT",
+    //            "fullName": "Hệ thống Thông tin"
+    //        },
+    //        {
+    //            "id": 6,
+    //            "shortName": "KHMT",
+    //            "fullName": "Khoa học máy tính"
+    //        }
+    //    ],
+    //    "count": 4
+    //}
 
     actionComplete(args) {
         //console.log(args);
@@ -190,7 +253,7 @@ export class DepartmentGrid extends React.Component {
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
-                        dataSource={this.data}
+                        dataSource={this.tempData}
                         toolbar={this.toolbarOptions}
                         editSettings={this.editSettings}
                         allowPaging={true}
@@ -211,6 +274,7 @@ export class DepartmentGrid extends React.Component {
                         dataSourceChanged={this.dataSourceChanged.bind(this)}
                         actionBegin={this.actionBegin.bind(this)}
                         actionComplete={this.actionComplete.bind(this)}
+                        locale='vi-VN'
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='20'></ColumnDirective>

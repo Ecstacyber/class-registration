@@ -7,7 +7,8 @@ public record AddUserToClassCommand : IRequest<int>
 {
     public int? ClassId { get; init; }
     public int? RegistrationScheduleId { get; init; }
-    public bool Passed { get; init; }
+    public int? UserId { get; init; }
+    public string? Passed { get; init; }
 }
 
 public class AddUserToClassCommandValidator : AbstractValidator<AddUserToClassCommand>
@@ -51,11 +52,16 @@ public class AddUserToClassCommandHandler : IRequestHandler<AddUserToClassComman
 
     public async Task<int> Handle(AddUserToClassCommand request, CancellationToken cancellationToken)
     {
+        if (_context.UserClasses.Any(x => x.UserId == request.UserId && x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationScheduleId))
+        {
+            return 0;
+        }
         var entity = new UserClass
         {
             ClassId = request.ClassId,
             RegistrationScheduleId = request.RegistrationScheduleId,
-            Passed = request.Passed,
+            UserId = request.UserId,
+            Passed = request.Passed == "true",
         };
         _context.UserClasses.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);

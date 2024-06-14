@@ -10,6 +10,56 @@
 
 import followIfLoginRedirect from './components/api-authorization/followIfLoginRedirect';
 
+export class ClassByIdClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getClassById(classId: number): Promise<ClassResult> {
+        let url_ = this.baseUrl + "/api/ClassById?";
+        if (classId === undefined || classId === null)
+            throw new Error("The parameter 'classId' must be defined and cannot be null.");
+        else
+            url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetClassById(_response);
+        });
+    }
+
+    protected processGetClassById(response: Response): Promise<ClassResult> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ClassResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ClassResult>(null as any);
+    }
+}
+
 export class ClassesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -1051,8 +1101,22 @@ export class LecturersClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getLecturers(): Promise<UserTableDataDto> {
-        let url_ = this.baseUrl + "/api/Lecturers";
+    getLecturers(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined): Promise<UserTableDataDto> {
+        let url_ = this.baseUrl + "/api/Lecturers?";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1674,8 +1738,22 @@ export class StudentsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getStudents(): Promise<UserTableDataDto> {
-        let url_ = this.baseUrl + "/api/Students";
+    getStudents(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined): Promise<UserTableDataDto> {
+        let url_ = this.baseUrl + "/api/Students?";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2130,6 +2208,56 @@ export class TodoListsClient {
     }
 }
 
+export class UserClassByUserIdClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getUserClassByUserId(userId: number): Promise<UserClassDto> {
+        let url_ = this.baseUrl + "/api/UserClassByUserId?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUserClassByUserId(_response);
+        });
+    }
+
+    protected processGetUserClassByUserId(response: Response): Promise<UserClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto>(null as any);
+    }
+}
+
 export class UserClassesClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -2319,54 +2447,6 @@ export class WeatherForecastsClient {
         }
         return Promise.resolve<WeatherForecast[]>(null as any);
     }
-}
-
-export class ClassDto implements IClassDto {
-    result?: ClassResult[];
-    count?: number;
-
-    constructor(data?: IClassDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["result"])) {
-                this.result = [] as any;
-                for (let item of _data["result"])
-                    this.result!.push(ClassResult.fromJS(item));
-            }
-            this.count = _data["count"];
-        }
-    }
-
-    static fromJS(data: any): ClassDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ClassDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.result)) {
-            data["result"] = [];
-            for (let item of this.result)
-                data["result"].push(item.toJSON());
-        }
-        data["count"] = this.count;
-        return data;
-    }
-}
-
-export interface IClassDto {
-    result?: ClassResult[];
-    count?: number;
 }
 
 export class ClassResult implements IClassResult {
@@ -3119,10 +3199,10 @@ export interface ITuitionFee extends IBaseAuditableEntity {
 }
 
 export class User extends BaseAuditableEntity implements IUser {
-    userName?: string | undefined;
+    userName?: string;
     email?: string | undefined;
     departmentId?: number | undefined;
-    department?: Department | undefined;
+    department?: Department;
     userClasses?: UserClass[];
     tuitionFee?: TuitionFee[];
     registrationRecords?: RegistrationRecord[];
@@ -3201,10 +3281,10 @@ export class User extends BaseAuditableEntity implements IUser {
 }
 
 export interface IUser extends IBaseAuditableEntity {
-    userName?: string | undefined;
+    userName?: string;
     email?: string | undefined;
     departmentId?: number | undefined;
-    department?: Department | undefined;
+    department?: Department;
     userClasses?: UserClass[];
     tuitionFee?: TuitionFee[];
     registrationRecords?: RegistrationRecord[];
@@ -3334,6 +3414,54 @@ export interface ICourseResult {
     courseName?: string;
     description?: string | undefined;
     department?: Department | undefined;
+}
+
+export class ClassDto implements IClassDto {
+    result?: ClassResult[];
+    count?: number;
+
+    constructor(data?: IClassDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["result"])) {
+                this.result = [] as any;
+                for (let item of _data["result"])
+                    this.result!.push(ClassResult.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): ClassDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClassDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.result)) {
+            data["result"] = [];
+            for (let item of this.result)
+                data["result"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IClassDto {
+    result?: ClassResult[];
+    count?: number;
 }
 
 export class CreateClassCommand implements ICreateClassCommand {
@@ -3560,8 +3688,6 @@ export class CourseByIdDto implements ICourseByIdDto {
     id?: number;
     courseCode?: string;
     courseName?: string;
-    credit?: number;
-    fee?: number;
     description?: string | undefined;
     department?: Department | undefined;
 
@@ -3579,8 +3705,6 @@ export class CourseByIdDto implements ICourseByIdDto {
             this.id = _data["id"];
             this.courseCode = _data["courseCode"];
             this.courseName = _data["courseName"];
-            this.credit = _data["credit"];
-            this.fee = _data["fee"];
             this.description = _data["description"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
         }
@@ -3598,8 +3722,6 @@ export class CourseByIdDto implements ICourseByIdDto {
         data["id"] = this.id;
         data["courseCode"] = this.courseCode;
         data["courseName"] = this.courseName;
-        data["credit"] = this.credit;
-        data["fee"] = this.fee;
         data["description"] = this.description;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
         return data;
@@ -3610,8 +3732,6 @@ export interface ICourseByIdDto {
     id?: number;
     courseCode?: string;
     courseName?: string;
-    credit?: number;
-    fee?: number;
     description?: string | undefined;
     department?: Department | undefined;
 }
@@ -4461,6 +4581,7 @@ export class UserResult implements IUserResult {
     userName?: string | undefined;
     userCode?: string | undefined;
     email?: string | undefined;
+    password?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
     roles?: string[] | undefined;
@@ -4480,6 +4601,7 @@ export class UserResult implements IUserResult {
             this.userName = _data["userName"];
             this.userCode = _data["userCode"];
             this.email = _data["email"];
+            this.password = _data["password"];
             this.departmentId = _data["departmentId"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
             if (Array.isArray(_data["roles"])) {
@@ -4503,6 +4625,7 @@ export class UserResult implements IUserResult {
         data["userName"] = this.userName;
         data["userCode"] = this.userCode;
         data["email"] = this.email;
+        data["password"] = this.password;
         data["departmentId"] = this.departmentId;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
         if (Array.isArray(this.roles)) {
@@ -4519,6 +4642,7 @@ export interface IUserResult {
     userName?: string | undefined;
     userCode?: string | undefined;
     email?: string | undefined;
+    password?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
     roles?: string[] | undefined;
@@ -5594,7 +5718,8 @@ export interface IUpdateTodoListCommand {
 export class AddUserToClassCommand implements IAddUserToClassCommand {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
-    passed?: boolean;
+    userId?: number | undefined;
+    passed?: string | undefined;
 
     constructor(data?: IAddUserToClassCommand) {
         if (data) {
@@ -5609,6 +5734,7 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
         if (_data) {
             this.classId = _data["classId"];
             this.registrationScheduleId = _data["registrationScheduleId"];
+            this.userId = _data["userId"];
             this.passed = _data["passed"];
         }
     }
@@ -5624,6 +5750,7 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
         data = typeof data === 'object' ? data : {};
         data["classId"] = this.classId;
         data["registrationScheduleId"] = this.registrationScheduleId;
+        data["userId"] = this.userId;
         data["passed"] = this.passed;
         return data;
     }
@@ -5632,7 +5759,8 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
 export interface IAddUserToClassCommand {
     classId?: number | undefined;
     registrationScheduleId?: number | undefined;
-    passed?: boolean;
+    userId?: number | undefined;
+    passed?: string | undefined;
 }
 
 export class WeatherForecast implements IWeatherForecast {

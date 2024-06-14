@@ -1,10 +1,5 @@
-﻿using ClassRegistration.Application.Classes.Commands.CreateClass;
-using ClassRegistration.Application.Classes.Commands.DeleteClass;
-using ClassRegistration.Application.Classes.Commands.UpdateClass;
-using ClassRegistration.Application.Classes.Queries.GetClasses;
-using ClassRegistration.Application.UserClasses.Commands.AddUserToClass;
+﻿using ClassRegistration.Application.UserClasses.Commands.AddUserToClass;
 using ClassRegistration.Application.UserClasses.Commands.RemoveUserFromClass;
-using ClassRegistration.Application.UserClasses.Queries;
 
 namespace ClassRegistration.Web.Endpoints;
 

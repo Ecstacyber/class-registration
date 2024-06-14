@@ -17,6 +17,43 @@ import { useNavigate } from 'react-router-dom';
 import { CoursesClient, DepartmentsFKRefClient } from '../../../web-api-client.ts';
 import '../../../custom.css'
 
+L10n.load({
+    'vi-VN': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin của khoa - ID: ',
+            'AddFormTitle': 'Thêm khoa',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': '- thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'All': 'Tất cả',
+            'totalItemInfo': '({0} dòng)'
+        }
+    }
+});
+
 const CourseGrid = () => {
     const [courseData, setCourseData] = useState({
         result: [],
@@ -67,6 +104,62 @@ const CourseGrid = () => {
     const filter = {
         ignoreAccent: true
     };
+    //const tempData = {
+    //    "result": [
+    //        {
+    //            "id": 15,
+    //            "departmentId": 3,
+    //            "courseCode": "IT001",
+    //            "courseName": "Nhập môn lập trình",
+    //            "description": null,
+    //            "department": {
+    //                "shortName": "KHMT",
+    //                "fullName": "Khoa học máy tính",
+    //                "id": 3,
+    //                "domainEvents": []
+    //            }
+    //        },
+    //        {
+    //            "id": 12,
+    //            "departmentId": 2,
+    //            "courseCode": "SE313",
+    //            "courseName": "Công nghệ Web và Ứng dụng",
+    //            "description": null,
+    //            "department": {
+    //                "shortName": "KTPM",
+    //                "fullName": "Kỹ thuật phần mềm",
+    //                "id": 2
+    //            }
+    //        },
+    //        {
+    //            "id": 11,
+    //            "departmentId": 4,
+    //            "courseCode": "IE103",
+    //            "courseName": "Quản lý thông tin",
+    //            "description": null,
+    //            "department": {
+    //                "shortName": "HTTT",
+    //                "fullName": "Hệ thống thông tin",
+    //                "id": 4
+    //            }
+    //        }
+    //    ],
+    //    "count": 3
+    //};
+    //const tempDepartmentData = [
+    //    {
+    //        "departmentId": 2,
+    //        "departmentName": "KTPM"
+    //    },
+    //    {
+    //        "departmentId": 3,
+    //        "departmentName": "KHMT"
+    //    },
+    //    {
+    //        "departmentId": 4,
+    //        "departmentName": "HTTT"
+    //    }
+    //];
 
     //const filterBarTemplate = {
     //    create: (args) => {
@@ -81,7 +174,7 @@ const CourseGrid = () => {
     //                    if (arg.value !== 'All') {
     //                        console.log(arg);
     //                        orderBy = '';
-    //                        filterAttr = 'classType';
+    //                        filterAttr = 'departmentName';
     //                        filterText = arg.value;
     //                        coursesClient.getCourses(
     //                            0,
@@ -234,8 +327,7 @@ const CourseGrid = () => {
             coursesClient.getCourses(0, 12)
                 .then((gridData) => { gridInstance.dataSource = gridData });
             return;
-        }
-        
+        }       
     }
 
     function onRecordDoubleClick(args) {
@@ -300,7 +392,8 @@ const CourseGrid = () => {
                         enableHeaderFocus={true}
                         dataStateChange={dataStateChange.bind(this)}
                         dataSourceChanged={dataSourceChanged.bind(this)}
-                        recordDoubleClick={onRecordDoubleClick.bind(this)}                        
+                        recordDoubleClick={onRecordDoubleClick.bind(this)}
+                        locale='vi-VN'
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
