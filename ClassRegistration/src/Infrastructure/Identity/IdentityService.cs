@@ -3,6 +3,7 @@ using ClassRegistration.Application.Common.Models;
 using ClassRegistration.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassRegistration.Infrastructure.Identity;
@@ -13,17 +14,20 @@ public class IdentityService : IIdentityService
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
     private readonly IApplicationDbContext _context;
+    private readonly RoleStore<IdentityRole> _roleStore;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
-        IApplicationDbContext context)
+        IApplicationDbContext context,
+        RoleStore<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _context = context;
+        _roleStore = roleManager;
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -41,19 +45,13 @@ public class IdentityService : IIdentityService
         return (await _userManager.GetRolesAsync(user)).ToList();
     }
 
-    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
+    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, int humanId)
     {
-        var human = new User
-        {
-            UserName = userName,
-            Email = userName
-        };
-
         var user = new ApplicationUser
         {
             UserName = userName,
             Email = userName,
-            HumanId = human.Id,
+            HumanId = humanId,
         };
 
         var result = await _userManager.CreateAsync(user, password);
@@ -123,5 +121,55 @@ public class IdentityService : IIdentityService
         }
 
         return users.Select(x => x.Human);
+    }
+
+    public async Task<bool> BlockUserAsync(int humanId)
+    {
+        var user = await _userManager.Users.Include(x => x.Human).FirstOrDefaultAsync(x => x.HumanId == humanId);
+        if (user == null) return false;
+        await _userManager.SetLockoutEnabledAsync(user, true);
+        return true;
+    }
+
+    public async Task<bool> RemoveAllRolesFromUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+        await _userManager.RemoveFromRolesAsync(user, _userManager.GetRolesAsync(user).Result.ToList());
+        return true;
+    }
+
+    public async Task<bool> AddRolesToUserAsync(string userId, List<string> roles)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        foreach (var role in roles)
+        {
+            await _userManager.AddToRoleAsync(user, role);
+        }
+        return true;
+    }
+
+    public async Task<Result> EditUserAsync(int humanId, string userName, string password, string email, List<string> roles)
+    {
+        var user = _userManager.Users.Include(x => x.Human).FirstOrDefault(x => x.HumanId == humanId);
+        if (user == null)
+        {
+            return Result.Failure(["User not found"]);
+        }
+        user.Email = email;
+        user.UserName = userName;
+
+        await _userManager.UpdateNormalizedEmailAsync(user);
+        await _userManager.UpdateNormalizedUserNameAsync(user);
+
+        var pwToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        await _userManager.ResetPasswordAsync(user, pwToken, password);
+
+        await RemoveAllRolesFromUserAsync(user.Id);
+        await AddRolesToUserAsync(user.Id, roles);
+
+        return Result.Success();
     }
 }
