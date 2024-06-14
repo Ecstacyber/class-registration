@@ -2299,6 +2299,10 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
+              "userCode": {
+                "type": "string",
+                "nullable": true
+              },
               "userName": {
                 "type": "string",
                 "nullable": true
@@ -2709,6 +2713,10 @@
             "format": "int32"
           },
           "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userCode": {
             "type": "string",
             "nullable": true
           },

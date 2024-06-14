@@ -1,5 +1,4 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
-using ClassRegistration.Application.Common.Models;
 using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.Users.Commands.CreateUser;

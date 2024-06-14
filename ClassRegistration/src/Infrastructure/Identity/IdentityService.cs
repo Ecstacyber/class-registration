@@ -14,20 +14,17 @@ public class IdentityService : IIdentityService
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
     private readonly IApplicationDbContext _context;
-    private readonly RoleStore<IdentityRole> _roleStore;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
-        IApplicationDbContext context,
-        RoleStore<IdentityRole> roleManager)
+        IApplicationDbContext context)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _context = context;
-        _roleStore = roleManager;
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -139,7 +136,7 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    public async Task<bool> AddRolesToUserAsync(string userId, List<string> roles)
+    public async Task<bool> AddToRoleAsync(string userId, List<string> roles)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return false;
@@ -168,7 +165,7 @@ public class IdentityService : IIdentityService
         await _userManager.ResetPasswordAsync(user, pwToken, password);
 
         await RemoveAllRolesFromUserAsync(user.Id);
-        await AddRolesToUserAsync(user.Id, roles);
+        await AddToRoleAsync(user.Id, roles);
 
         return Result.Success();
     }

@@ -3119,6 +3119,7 @@ export interface ITuitionFee extends IBaseAuditableEntity {
 }
 
 export class User extends BaseAuditableEntity implements IUser {
+    userCode?: string | undefined;
     userName?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
@@ -3135,6 +3136,7 @@ export class User extends BaseAuditableEntity implements IUser {
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.userCode = _data["userCode"];
             this.userName = _data["userName"];
             this.email = _data["email"];
             this.departmentId = _data["departmentId"];
@@ -3171,6 +3173,7 @@ export class User extends BaseAuditableEntity implements IUser {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["userCode"] = this.userCode;
         data["userName"] = this.userName;
         data["email"] = this.email;
         data["departmentId"] = this.departmentId;
@@ -3201,6 +3204,7 @@ export class User extends BaseAuditableEntity implements IUser {
 }
 
 export interface IUser extends IBaseAuditableEntity {
+    userCode?: string | undefined;
     userName?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
@@ -3863,6 +3867,7 @@ export interface ICurrentRegScheduleDto {
 export class UserDto implements IUserDto {
     id?: number;
     userName?: string | undefined;
+    userCode?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
@@ -3881,6 +3886,7 @@ export class UserDto implements IUserDto {
         if (_data) {
             this.id = _data["id"];
             this.userName = _data["userName"];
+            this.userCode = _data["userCode"];
             this.email = _data["email"];
             this.departmentId = _data["departmentId"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
@@ -3903,6 +3909,7 @@ export class UserDto implements IUserDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["userName"] = this.userName;
+        data["userCode"] = this.userCode;
         data["email"] = this.email;
         data["departmentId"] = this.departmentId;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
@@ -3918,6 +3925,7 @@ export class UserDto implements IUserDto {
 export interface IUserDto {
     id?: number;
     userName?: string | undefined;
+    userCode?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
