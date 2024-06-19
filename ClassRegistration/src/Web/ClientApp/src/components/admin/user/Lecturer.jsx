@@ -15,7 +15,14 @@ import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../AdminLayout';
-import { CoursesClient, DepartmentsFKRefClient, LecturersClient } from '../../../web-api-client.ts';
+import {
+    CoursesClient,
+    DepartmentsFKRefClient,
+    StudentsClient,
+    LecturersClient,
+    UsersClient
+} from '../../../web-api-client.ts';
+import '../../../custom.css'
 
 L10n.load({
     'vi-VN': {
@@ -54,12 +61,13 @@ L10n.load({
     }
 });
 
-const Lecturer = () => {
+
+const Student = () => {
     const [lecturers, setLecturers] = useState({
         result: [],
         count: 0
     });
-    const [departments, setDepartments] = useState([{}]);
+    const [departments, setDepartments] = useState(null);
     const navigate = useNavigate();
     let orderBy = '';
     let filterAttr = '';
@@ -104,13 +112,13 @@ const Lecturer = () => {
     const filter = {
         ignoreAccent: true
     };
-    //const tempLecturer = {
+    //const tempStudent = {
     //    "result": [
     //        {
     //            "id": 1,
-    //            "userName": "Dương Minh Thái",
-    //            "userCode": "DMT",
-    //            "email": "dmt@gm.uit.edu.vn",
+    //            "userName": "Châu Vĩnh Sinh",
+    //            "userCode": "20520470",
+    //            "email": "20520470@gm.uit.edu.vn",
     //            "password": null,
     //            "departmentId": 1,
     //            "department": {
@@ -132,8 +140,8 @@ const Lecturer = () => {
 
     async function getData() {
         const lecturersClient = new LecturersClient();
-        let lecturersData = await lecturersClient.getLecturers(0, 12);
-        setLecturers(lecturersData);
+        let lecturerData = await lecturersClient.getLecturers(0, 12);
+        setLecturers(lecturerData);
 
         const departmentsClient = new DepartmentsFKRefClient();
         let departmentsData = await departmentsClient.getDepartmentsForFKRef();
@@ -162,7 +170,7 @@ const Lecturer = () => {
         },
         write: (args) => {
             departments.splice(0, 0, { 'type': 'All' }); // for clear filtering
-            const lecturersClient = new LecturersClient();
+            const studentsClient = new StudentsClient();
             const dropInstance = new DropDownList({
                 change: (arg) => {
                     if (gridInstance) {
@@ -170,7 +178,7 @@ const Lecturer = () => {
                             console.log(arg);
                             orderBy = '';
                             filterAttr = 'departmentId';
-                            lecturersClient.getLecturers(
+                            studentsClient.getStudents(); (
                                 0,
                                 12,
                                 '',
@@ -184,7 +192,7 @@ const Lecturer = () => {
                             orderBy = '';
                             filterAttr = '';
                             filterText = '';
-                            lecturersClient.getLecturers(
+                            studentsClient.getStudents(
                                 0,
                                 12,
                                 '',
@@ -306,93 +314,91 @@ const Lecturer = () => {
 
     function dataSourceChanged(args) {
         console.log(args);
-        const lecturersClient = new LecturersClient();
+        const usersClient = new UsersClient();
+        const studentsClient = new StudentsClient();
         if (args.action === 'add') {
-            lecturersClient.createLecturer(args.data);
+            usersClient.createUser(args.data);
         } else if (args.action === 'edit') {
-            lecturersClient.updateLecturer(args.data.id, args.data);
+            usersClient.editUser(args.data.id, args.data);
         } else if (args.requestType === 'delete') {
             args.data.forEach((deleteData) => {
-                lecturersClient.deleteLecturer(deleteData.id);
+                usersClient.blockUser(deleteData.id);
             });
-            filterAttr = '';
-            filterText = '';
-            orderBy = '';
-            lecturersClient.getLecturers(0, 12)
-                .then((gridData) => { gridInstance.dataSource = gridData });
-            return;
         }
         filterAttr = '';
         filterText = '';
         orderBy = '';
+        const lecturersClient = new LecturersClient();
         lecturersClient.getLecturers(0, 12)
             .then((gridData) => { gridInstance.dataSource = gridData });
     }
 
     function onRecordDoubleClick(args) {
         console.log(args);
-        //if (args.rowData) {
-        //    navigate('./class/' + args.rowData.id);
-        //}
+        if (args.rowData) {
+            navigate('./' + args.rowData.id);
+        }
     }
 
-    return (
-        <AdminLayout>
-            <div className='control-pane'>
-                <div className='control-section'>
-                    <div style={{ paddingBottom: '18px' }}>
-                        <h2>Danh sách giảng viên</h2>
-                        <br />
+    if (departments != null) {
+        return (
+            <AdminLayout>
+                <div className='control-pane'>
+                    <div className='control-section'>
+                        <div style={{ paddingBottom: '18px' }}>
+                            <h2>Danh sách giảng viên</h2>
+                            <br />
+                        </div>
+                        <GridComponent id="overviewgrid"
+                            dataSource={lecturers}
+                            toolbar={toolbarOptions}
+                            editSettings={editSettings}
+                            allowPaging={true}
+                            pageSettings={pageSettings}
+                            enableHover={true}
+                            height='456'
+                            loadingIndicator={{ indicatorType: 'Shimmer' }}
+                            rowHeight={38}
+                            ref={(g) => { gridInstance = g; }}
+                            allowFiltering={true}
+                            filterSettings={filter}
+                            allowSorting={true}
+                            allowMultiSorting={true}
+                            allowSelection={true}
+                            selectionSettings={select}
+                            enableHeaderFocus={true}
+                            dataStateChange={dataStateChange.bind(this)}
+                            dataSourceChanged={dataSourceChanged.bind(this)}
+                            actionBegin={actionBegin.bind(this)}
+                            recordDoubleClick={onRecordDoubleClick.bind(this)}
+                            locale='vi-VN'
+                        >
+                            <ColumnsDirective>
+                                <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
+                                <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                                {/*<ColumnDirective field='userCode' headerText='Mã số' width='50' validationRules={validationRules}></ColumnDirective>*/}
+                                <ColumnDirective field='userName' headerText='Tên' width='150' validationRules={validationRules}></ColumnDirective>
+                                <ColumnDirective field='email' headerText='Email' width='100' type='email' validationRules={validationRules}></ColumnDirective>
+                                <ColumnDirective field='password' headerText='Mật khẩu' type="password" width='80' visible={false} validationRules={validationRules}></ColumnDirective>
+                                <ColumnDirective
+                                    field='departmentId'
+                                    foreignKeyValue='departmentName'
+                                    foreignKeyField='departmentId'
+                                    dataSource={departments}
+                                    headerText='Khoa'
+                                    width='80'
+                                    validationRules={validationRules}
+                                    edit={departmentParams}
+                                    filterBarTemplate={filterBarTemplate}
+                                    clipMode='EllipsisWithTooltip' />
+                            </ColumnsDirective>
+                            <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
+                        </GridComponent>
                     </div>
-                    <GridComponent id="overviewgrid"
-                        dataSource={lecturers}
-                        toolbar={toolbarOptions}
-                        editSettings={editSettings}
-                        allowPaging={true}
-                        pageSettings={pageSettings}
-                        enableHover={true}
-                        height='456'
-                        loadingIndicator={{ indicatorType: 'Shimmer' }}
-                        rowHeight={38}
-                        ref={(g) => { gridInstance = g; }}
-                        allowFiltering={true}
-                        filterSettings={filter}
-                        allowSorting={true}
-                        allowMultiSorting={true}
-                        allowSelection={true}
-                        selectionSettings={select}
-                        enableHeaderFocus={true}
-                        dataStateChange={dataStateChange.bind(this)}
-                        dataSourceChanged={dataSourceChanged.bind(this)}
-                        recordDoubleClick={onRecordDoubleClick.bind(this)}
-                        actionBegin={actionBegin.bind(this)}
-                        locale='vi-VN'
-                    >
-                        <ColumnsDirective>
-                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
-                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective field='userCode' headerText='ID' width='100' validationRules={validationRules}></ColumnDirective>
-                            <ColumnDirective field='userName' headerText='Tên' width='150' validationRules={validationRules}></ColumnDirective>
-                            <ColumnDirective field='email' headerText='Email' width='100' type='email' validationRules={validationRules}></ColumnDirective>
-                            <ColumnDirective field='password' headerText='Mật khẩu' type="password" width='80' type='password' visible={false} validationRules={validationRules}></ColumnDirective>
-                            <ColumnDirective
-                                field='departmentId'
-                                foreignKeyValue='departmentName'
-                                foreignKeyField='departmentId'
-                                dataSource={departments}
-                                headerText='Khoa'
-                                width='50'
-                                validationRules={validationRules}
-                                edit={departmentParams}
-                                filterBarTemplate={filterBarTemplate}
-                                clipMode='EllipsisWithTooltip' />
-                        </ColumnsDirective>
-                        <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
-                    </GridComponent>
                 </div>
-            </div>
-        </AdminLayout>
-    )
+            </AdminLayout>
+        )
+    }
 }
 
-export default Lecturer;
+export default Student;

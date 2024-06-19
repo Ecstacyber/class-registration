@@ -31,7 +31,7 @@ L10n.load({
             'AddFormTitle': 'Thêm khoa',
             'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
             'EmptyRecord': 'Không có dữ liệu',
-            'FilterbarTitle': '- thanh tìm kiếm',
+            'FilterbarTitle': ' - thanh tìm kiếm',
             'Matches': 'Không có kết quả'
         },
         'pager': {

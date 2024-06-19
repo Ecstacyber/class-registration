@@ -311,7 +311,7 @@ const AddLecturerToClass = () => {
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective field='userCode' headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />
+                            {/*<ColumnDirective field='userCode' headerText='Mã số' width='60' clipMode='EllipsisWithTooltip' />*/}
                             <ColumnDirective field='userName' headerText='Tên' width='200' clipMode='EllipsisWithTooltip'></ColumnDirective>
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Page, Toolbar]} />

@@ -69,26 +69,29 @@ const ClassRegistrationWindows = () => {
         persistSelection: true,
         checkboxOnly: true
     };
+    //const filter = {
+    //    type: 'Menu',
+    //    operators: {
+    //        stringOperator: [
+    //            { value: 'contains', text: 'Chứa' }
+    //        ],
+    //        numberOperator: [
+    //            { value: 'equal', text: 'Bằng' }
+    //        ],
+    //        dateOperator: [
+    //            { value: 'equal', text: 'Bằng' },
+    //            { value: 'notEqual', text: 'Khác' },
+    //            { value: 'greaterThan', text: 'Sau' },
+    //            { value: 'lessThan', text: 'Trước' }
+    //        ],
+    //        booleanOperator: [
+    //            { value: 'equal', text: 'Bằng' },
+    //            { value: 'notEqual', text: 'Khác' }
+    //        ]
+    //    }
+    //};
     const filter = {
-        type: 'Menu',
-        operators: {
-            stringOperator: [
-                { value: 'contains', text: 'Chứa' }
-            ],
-            numberOperator: [
-                { value: 'equal', text: 'Bằng' }
-            ],
-            dateOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' },
-                { value: 'greaterThan', text: 'Sau' },
-                { value: 'lessThan', text: 'Trước' }
-            ],
-            booleanOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' }
-            ]
-        }
+        ignoreAccent: true
     };
     const numericValidationRules = {
         required: true,
@@ -285,39 +288,38 @@ const ClassRegistrationWindows = () => {
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
                             <ColumnDirective
                                 field='name'
-                                textAlign='Right'
                                 headerText='Tên'
                                 width='120'
                                 clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='feePerCredit'
-                                headerText='VND/tín chỉ'
-                                width='100'
-                                valueAccessor={valueAccess.bind(this)}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='maximumCredit'
-                                headerText='Giới hạn tín chỉ'
-                                width='60'
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='startDate'
-                                headerText='Ngày bắt đầu'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
-                                clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective
-                                field='endDate'
-                                headerText='Ngày kết thúc'
-                                width='60'
-                                validationRules={validationRules}
-                                format={dateFormat}
-                                editType='datetimepickeredit'
-                                edit={dateTimePickerParams}
-                                clipMode='EllipsisWithTooltip' />
+                            {/*<ColumnDirective*/}
+                            {/*    field='feePerCredit'*/}
+                            {/*    headerText='VND/tín chỉ'*/}
+                            {/*    width='100'*/}
+                            {/*    valueAccessor={valueAccess.bind(this)}*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
+                            {/*<ColumnDirective*/}
+                            {/*    field='maximumCredit'*/}
+                            {/*    headerText='Giới hạn tín chỉ'*/}
+                            {/*    width='60'*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
+                            {/*<ColumnDirective*/}
+                            {/*    field='startDate'*/}
+                            {/*    headerText='Ngày bắt đầu'*/}
+                            {/*    width='60'*/}
+                            {/*    validationRules={validationRules}*/}
+                            {/*    format={dateFormat}*/}
+                            {/*    editType='datetimepickeredit'*/}
+                            {/*    edit={dateTimePickerParams}*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
+                            {/*<ColumnDirective*/}
+                            {/*    field='endDate'*/}
+                            {/*    headerText='Ngày kết thúc'*/}
+                            {/*    width='60'*/}
+                            {/*    validationRules={validationRules}*/}
+                            {/*    format={dateFormat}*/}
+                            {/*    editType='datetimepickeredit'*/}
+                            {/*    edit={dateTimePickerParams}*/}
+                            {/*    clipMode='EllipsisWithTooltip' />*/}
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Page]} />
                     </GridComponent>

@@ -1,10 +1,9 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
-using ClassRegistration.Application.Common.Models;
 using ClassRegistration.Domain.Entities;
 
 namespace ClassRegistration.Application.Users.Commands.CreateUser;
 
-public record CreateUserCommand : IRequest<int>
+public record CreateUserCommand : IRequest<List<string>>
 {
     public required string UserName { get; init; }
     public required string Password { get; init; }
@@ -45,7 +44,7 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     }
 }
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, List<string>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IIdentityService _identityService;
@@ -56,20 +55,33 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
         _identityService = identityService;
     }
 
-    public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<List<string>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var human = new User
         {
             UserName = request.UserName,
             UserCode = request.UserCode,
             Email = request.Email,
-            DepartmentId = request.DepartmentId
+            DepartmentId = request.DepartmentId,
+            Enabled = true
         };
         await _context.Humans.AddAsync(human);
         await _context.SaveChangesAsync(cancellationToken);
-        var (result, userId) = await _identityService.CreateUserAsync(request.UserName, request.Password, human.Id);
-        if (result.Succeeded) return 0;
-        await _identityService.AddToRoleAsync(userId, request.Roles);
-        return human.Id;
+        var (result, userId) = await _identityService.CreateUserAsync(request.Email, request.Password, human.Id);
+        if (result.Errors.Length > 0)
+        {
+            _context.Humans.Remove(human);
+            await _context.SaveChangesAsync(cancellationToken);
+            return [.. result.Errors];
+        }
+        else
+        {
+            await _identityService.AddToRoleAsync(userId, request.Roles);
+            await _context.SaveChangesAsync(cancellationToken);
+            return new List<string>()
+            {
+                human.Id.ToString()
+            };
+        }
     }
 }

@@ -18,11 +18,13 @@ public class GetCurrentUserClassResultQueryHandler : IRequestHandler<GetCurrentU
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IIdentityService _identityService;
 
-    public GetCurrentUserClassResultQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetCurrentUserClassResultQueryHandler(IApplicationDbContext context, IMapper mapper, IIdentityService identityService)
     {
         _context = context;
         _mapper = mapper;
+        _identityService = identityService;
     }
 
     public async Task<UserClassDto> Handle(GetCurrentUserClassResultQuery request, CancellationToken cancellationToken)
@@ -77,7 +79,23 @@ public class GetCurrentUserClassResultQueryHandler : IRequestHandler<GetCurrentU
                     item.ClassType = classType.Type;
                 }
             }
-            item.UserClassCount = await _context.UserClasses.CountAsync(x => x.ClassId == item.ClassId && x.RegistrationScheduleId == currentRegSchedule.Id, cancellationToken);
+
+            item.UserClassCount = 0;
+            var userClasses = await _context.UserClasses
+                .Where(x => x.ClassId == item.ClassId && x.RegistrationScheduleId == currentRegSchedule.Id)
+                .ToListAsync(cancellationToken);
+            if (userClasses.Count > 0)
+            {
+                foreach (var userClass in userClasses)
+                {
+                    var roles = await _identityService.GetUserRoleAsync(userClass.UserId);
+                    if (roles.Contains("Student"))
+                    {
+                        item.UserClassCount++;
+                    }
+                }
+            }
+            
             item.Fee = item.RegistrationSchedule.FeePerCredit * item.Class.Credit;
         }
 

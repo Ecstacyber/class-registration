@@ -16,7 +16,7 @@ import {
 } from '@syncfusion/ej2-react-grids';
 import { L10n } from '@syncfusion/ej2-base';
 import { useNavigate } from 'react-router-dom';
-import { RegistrationSchedulesClient } from '../../web-api-client.ts';
+import { RegistrationSchedulesClient, UserClassesClient } from '../../web-api-client.ts';
 
 const LecturerIndex = () => {
     const [scheduleData, setScheduleData] = useState({
@@ -39,26 +39,29 @@ const LecturerIndex = () => {
         }
     };
     const pageSettings = { pageSizes: true };
+    //const filter = {
+    //    type: 'Menu',
+    //    operators: {
+    //        stringOperator: [
+    //            { value: 'contains', text: 'Chứa' }
+    //        ],
+    //        numberOperator: [
+    //            { value: 'equal', text: 'Bằng' }
+    //        ],
+    //        dateOperator: [
+    //            { value: 'equal', text: 'Bằng' },
+    //            { value: 'notEqual', text: 'Khác' },
+    //            { value: 'greaterThan', text: 'Sau' },
+    //            { value: 'lessThan', text: 'Trước' }
+    //        ],
+    //        booleanOperator: [
+    //            { value: 'equal', text: 'Bằng' },
+    //            { value: 'notEqual', text: 'Khác' }
+    //        ]
+    //    }
+    //};
     const filter = {
-        type: 'Menu',
-        operators: {
-            stringOperator: [
-                { value: 'contains', text: 'Chứa' }
-            ],
-            numberOperator: [
-                { value: 'equal', text: 'Bằng' }
-            ],
-            dateOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' },
-                { value: 'greaterThan', text: 'Sau' },
-                { value: 'lessThan', text: 'Trước' }
-            ],
-            booleanOperator: [
-                { value: 'equal', text: 'Bằng' },
-                { value: 'notEqual', text: 'Khác' }
-            ]
-        }
+        ignoreAccent: true
     };
     const numericValidationRules = {
         required: true,
@@ -72,23 +75,24 @@ const LecturerIndex = () => {
             validateDecimalOnType: true
         }
     };
-    const tempPrevReg = {
-        "result": [
-            {
-                "id": 1,
-                "name": "Học kỳ 1, 2022-2023"
-            },
-            {
-                "id": 1,
-                "name": "Học kỳ 2, 2022-2023"
-            },
-            {
-                "id": 1,
-                "name": "Học kỳ 1, 2023-2024"
-            },
-        ],
-        "count": 3
-    }
+    //const tempPrevReg = {
+    //    "result": [
+    //        {
+    //            "id": 1,
+    //            "name": "Học kỳ 1, 2022-2023"
+    //        },
+    //        {
+    //            "id": 1,
+    //            "name": "Học kỳ 2, 2022-2023"
+    //        },
+    //        {
+    //            "id": 1,
+    //            "name": "Học kỳ 1, 2023-2024"
+    //        },
+    //    ],
+    //    "count": 3
+    //}
+
     async function getScheduleData() {
         const registrationSchedulesClient = new RegistrationSchedulesClient();
         let registrationSchedulesData = await registrationSchedulesClient.getRegistrationSchedules(0, 12);
@@ -99,20 +103,20 @@ const LecturerIndex = () => {
         getScheduleData();
     }, []);
 
-    function valueAccess(field, data, column) {
-        var value = data[column.field];
-        if (data['fee'] % 2 === 0) {
-            value = '' + value;
-            var parts = value.toString().split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            return parts.join('.');
-        } else {
-            value = '' + value;
-            var parts = value.toString().split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return parts.join(',');
-        }
-    }
+    //function valueAccess(field, data, column) {
+    //    var value = data[column.field];
+    //    if (data['fee'] % 2 === 0) {
+    //        value = '' + value;
+    //        var parts = value.toString().split('.');
+    //        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    //        return parts.join('.');
+    //    } else {
+    //        value = '' + value;
+    //        var parts = value.toString().split('.');
+    //        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    //        return parts.join(',');
+    //    }
+    //}
 
     function dataStateChange(args) {
         console.log(args);
@@ -213,29 +217,9 @@ const LecturerIndex = () => {
         }
     }
 
-    function dataSourceChanged(args) {
-        console.log(args);
-        const registrationSchedulesClient = new RegistrationSchedulesClient();
-        if (args.action === 'add') {
-            registrationSchedulesClient.createRegistrationSchedule(args.data);
-        } else if (args.action === 'edit') {
-            registrationSchedulesClient.updateRegistrationSchedule(args.data.id, args.data);
-        } else if (args.requestType === 'delete') {
-            args.data.forEach((deleteData) => {
-                registrationSchedulesClient.deleteRegistrationSchedule(deleteData.id);
-            });
-        }
-        filterAttr = '';
-        filterText = '';
-        orderBy = '';
-        registrationSchedulesClient.getRegistrationSchedules(0, 12)
-            .then((gridData) => { gridInstance.dataSource = gridData });
-        return;
-    }
-
     function onRecordDoubleClick(args) {
         console.log(args);
-        //navigate('/admin-index/registration-schedule/' + args.rowData.id);
+        navigate('./' + args.rowData.id);
     }
 
     return (
@@ -247,7 +231,7 @@ const LecturerIndex = () => {
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
-                        dataSource={tempPrevReg}
+                        dataSource={scheduleData}
                         allowPaging={true}
                         pageSettings={pageSettings}
                         enableHover={true}
@@ -261,6 +245,7 @@ const LecturerIndex = () => {
                         allowMultiSorting={true}
                         enableHeaderFocus={true}
                         recordDoubleClick={onRecordDoubleClick.bind(this)}
+                        dataStateChange={dataStateChange.bind(this)}
                         locale='vi-VN'
                     >
                         <ColumnsDirective>

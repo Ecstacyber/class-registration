@@ -5,9 +5,9 @@ namespace ClassRegistration.Application.UserClasses.Commands.AddUserToClass;
 
 public record AddUserToClassCommand : IRequest<int>
 {
-    public int? ClassId { get; init; }
-    public int? RegistrationScheduleId { get; init; }
-    public int? UserId { get; init; }
+    public int ClassId { get; init; }
+    public int RegistrationScheduleId { get; init; }
+    public int UserId { get; init; }
     public string? Passed { get; init; }
 }
 

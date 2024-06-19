@@ -23,11 +23,12 @@ import {
     StudentsInClassClient,
     LecturersInClassClient,
     ClassByIdClient,
-    StudentsClient
+    StudentsClient,
+    RegistrationSchedulesClient
 } from '../../../web-api-client.ts';
 
 L10n.load({
-    'vi-VN-1': {
+    'vi-VN-lecturer': {
         grid: {
             'Add': 'Thêm',
             'Edit': 'Sửa',
@@ -44,7 +45,8 @@ L10n.load({
             'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
             'EmptyRecord': 'Không có dữ liệu',
             'FilterbarTitle': '- thanh tìm kiếm',
-            'Matches': 'Không có kết quả'
+            'Matches': 'Không có kết quả',
+            'Excelexport': 'Xuất ra file excel'
         },
         'pager': {
             'currentPageInfo': '{0} trên {1} trang ',
@@ -60,7 +62,7 @@ L10n.load({
             'All': 'Tất cả'
         }
     },
-    'vi-VN-2': {
+    'vi-VN-student': {
         grid: {
             'Add': 'Thêm',
             'Edit': 'Sửa',
@@ -77,7 +79,8 @@ L10n.load({
             'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
             'EmptyRecord': 'Không có dữ liệu',
             'FilterbarTitle': '- thanh tìm kiếm',
-            'Matches': 'Không có kết quả'
+            'Matches': 'Không có kết quả',
+            'Excelexport': 'Xuất ra file excel'
         },
         'pager': {
             'currentPageInfo': '{0} trên {1} trang ',
@@ -99,6 +102,7 @@ L10n.load({
 const ClassDetails = () => {
     const { courseId, classId, registrationScheduleId } = useParams();
     const [classData, setClassData] = useState({});
+    const [currentRegSchedule, setCurrentRegSchedule] = useState({});
     const [studentData, setStudentData] = useState({
         result: [],
         count: 0
@@ -119,18 +123,18 @@ const ClassDetails = () => {
     let studentGridInstance;
     let lecturerGridInstance;
     const fields = { text: 'text', value: 'value' };
-    const studentToolbarOptions = ['Add', 'Edit', 'Delete', 'ExcelExport'];
-    const lecturerToolbarOptions = ['Add', 'Delete'];
+    const studentToolbarOptions = ['Add', 'Edit', 'Delete'];
+    const lecturerToolbarOptions = ['Add', 'Delete', 'ExcelExport'];
     const studentEditSettings = {
         allowEditing: true,
-        allowAdding: false,
+        allowAdding: true,
         allowDeleting: true,
         showDeleteConfirmDialog: true,
         mode: 'Dialog'
     };
     const lecturerEditSettings = {
-        allowEditing: false,
-        allowAdding: false,
+        allowEditing: true,
+        allowAdding: true,
         allowDeleting: true,
         showDeleteConfirmDialog: true,
         mode: 'Dialog'
@@ -156,33 +160,38 @@ const ClassDetails = () => {
     const filter = {
         ignoreAccent: true
     };
-    const prerequisiteCourseParams = {
-        params: {
-            allowFiltering: true
-        }
-    };
-    const tempStudent = {
-        "result": [
-            {
-                "id": 1,
-                "userCode": "20520716",
-                "user": {
-                    "userName": "Cấn Đức Quang"
-                }
-            }
-        ],
-        "count": 1
-    };
-    const tempLecturer = {
-        "result": [
-            {
-                "userName": "Dương Minh Thái"
-            }
-        ],
-        count: 1
-    }
+    const gridsToExport = ['lecturerGrid', 'studentGrid'];
+    //const prerequisiteCourseParams = {
+    //    params: {
+    //        allowFiltering: true
+    //    }
+    //};
+    //const tempStudent = {
+    //    "result": [
+    //        {
+    //            "id": 1,
+    //            "userCode": "20520716",
+    //            "user": {
+    //                "userName": "Cấn Đức Quang"
+    //            }
+    //        }
+    //    ],
+    //    "count": 1
+    //};
+    //const tempLecturer = {
+    //    "result": [
+    //        {
+    //            "userName": "Dương Minh Thái"
+    //        }
+    //    ],
+    //    count: 1
+    //}
 
     async function getData() {
+        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        let reg = await registrationSchedulesClient.getScheduleById(registrationScheduleId);
+        setCurrentRegSchedule(reg);
+
         const studentsInClassClient = new StudentsInClassClient();
         let students = await studentsInClassClient.getStudentsInClass(classId, registrationScheduleId);
         setStudentData(students);
@@ -349,7 +358,6 @@ const ClassDetails = () => {
 
     function onRecordDoubleClick(args) {
         console.log(args);
-
     }
 
     function pcd_dataStateChange(args) {
@@ -502,8 +510,163 @@ const ClassDetails = () => {
     //    }
     //}
 
-    function onAddLecturerClick() {
-        navigate('./add-lecturer', { state: { from: location.pathname } });
+    //function onAddLecturerClick() {
+    //    navigate('./add-lecturer', { state: { from: location.pathname } });
+    //}
+
+    function getExcelExportProperties() {
+        let excelExportProperties = {
+            multipleExport: {
+                type: 'AppendToSheet',
+                    blankRows: 2
+            },
+            header: {
+                headerRows: 6,
+                rows: [
+                    {
+                        index: 1,
+                        cells: [
+                            {
+                                index: 1,
+                                colSpan: 3,
+                                value: 'DANH SÁCH LỚP',
+                                style: { fontSize: 18, hAlign: 'Center', bold: true }
+                            }
+                        ]
+                    },
+                    {
+                        index: 3,
+                        cells: [
+                            {
+                                index: 1,
+                                colSpan: 1,
+                                value: 'Mã lớp',
+                                style: { fontSize: 13, bold: true }
+                            },
+                            {
+                                index: 2,
+                                colSpan: 1,
+                                value: classData.classCode,
+                                style: { fontSize: 13 }
+                            }
+                        ]
+                    },
+                    {
+                        index: 4,
+                        cells: [
+                            {
+                                index: 1,
+                                colSpan: 1,
+                                value: 'Tên lớp',
+                                style: { fontSize: 13, bold: true }
+                            },
+                            {
+                                index: 2,
+                                colSpan: 2,
+                                value: classData.course.courseName,
+                                style: { fontSize: 13 }
+                            }
+                        ]
+                    },
+                    {
+                        index: 5,
+                        cells: [
+                            {
+                                index: 1,
+                                colSpan: 1,
+                                value: 'Đợt đăng ký',
+                                style: { fontSize: 13, bold: true }
+                            },
+                            {
+                                index: 2,
+                                colSpan: 2,
+                                value: currentRegSchedule.name,
+                                style: { fontSize: 13 }
+                            }
+                        ]
+                    },
+                    {
+                        index: 6,
+                        cells: [
+                            {
+                                index: 1,
+                                colSpan: 1,
+                                value: 'Giảng viên',
+                                style: { fontSize: 13, bold: true }
+                            }
+                        ]
+                    }
+                ]
+            },
+            fileName: classData.classCode + ' - ' + classData.course.courseName + ' - ' + currentRegSchedule.name + '.xlsx'
+        };
+
+        //if (lecturerData.result.length > 0) {
+        //    excelExportProperties.header.rows.push({
+        //        index: 6,
+        //        cells: [
+        //            {
+        //                index: 1,
+        //                colSpan: 1,
+        //                value: 'Giảng viên',
+        //                style: { fontSize: 13, bold: true }
+        //            }
+        //        ]
+        //    });
+        //    for (let i = 6; i < 6 + lecturerData.result.length; i++) {
+        //        excelExportProperties.header.rows.push({
+        //            index: i,
+        //            cells: [
+        //                {
+        //                    index: 2,
+        //                    colSpan: 2,
+        //                    value: lecturerData.result[i - 6].user.userName,
+        //                    style: { fontSize: 13 }
+        //                }
+        //            ]
+        //        });
+        //    }
+        //}
+
+        return excelExportProperties;
+    }
+
+    function lecturerToolbarClick(args) {
+        console.log(args);
+        if (lecturerGridInstance && args.item.id === 'lecturerGrid_add') {
+            navigate('./add-lecturer', { state: { from: location.pathname } });
+        }
+        if (studentGridInstance && lecturerGridInstance && args.item.id === 'lecturerGrid_excelexport') {            
+            const cols = studentGridInstance.columns;
+            for (const col of cols) {
+                if (col.field === "passed") {
+                    col.visible = false;
+                }
+            }
+            lecturerGridInstance.excelExport(getExcelExportProperties(), true).then((lecData) => {
+                studentGridInstance.excelExport(getExcelExportProperties(), true, lecData);
+            });
+        }
+    }
+
+    function studentToolbarClick(args) {
+        if (studentGridInstance && args.item.id === 'studentGrid_add') {
+            navigate('./add-student', { state: { from: location.pathname } });
+        }
+        //if (studentGridInstance && lecturerGridInstance && args.item.id === 'studentGrid_excelexport') {
+        //    console.log(studentGridInstance);
+        //    studentGridInstance.excelExport(getExcelExportProperties(), true);
+        //}
+    }
+
+    function onExcelExportComplete(args) {
+        console.log(args);
+        const cols = studentGridInstance.columns;
+        for (const col of cols) {
+            if (col.field === "passed") {
+                col.visible = true;
+            }
+        }
     }
     
     return (
@@ -514,10 +677,7 @@ const ClassDetails = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}>
-                        <h3>Giảng viên</h3>
-                    </div>
-                    <div style={{ paddingBottom: '18px' }}>
-                        <Button variant="primary" onClick={onAddLecturerClick}>+ Thêm giảng viên</Button>
+                        <h4>Giảng viên</h4>
                     </div>
                     <GridComponent
                         id="lecturerGrid"
@@ -533,21 +693,22 @@ const ClassDetails = () => {
                         allowSelection={true}
                         selectionSettings={select}
                         enableHeaderFocus={true}
+                        allowExcelExport={true}
+                        exportGrids={gridsToExport}
                         dataStateChange={pcd_dataStateChange.bind(this)}
                         dataSourceChanged={pcd_dataSourceChanged.bind(this)}
                         recordDoubleClick={pcd_onRecordDoubleClick.bind(this)}
-                        locale='vi-VN-1'
+                        toolbarClick={lecturerToolbarClick.bind(this)}
+                        excelExportComplete={onExcelExportComplete.bind(this)}
+                        locale='vi-VN-lecturer'
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective
-                                field='user.userName'
-                                headerText='Tên'
-                                width='150'
-                                clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='user.userName' headerText='Tên' width='150' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='user.email' headerText='Email' width='100' clipMode='EllipsisWithTooltip' />
                         </ColumnsDirective>
-                        <Inject services={[Toolbar, Edit]} />
+                        <Inject services={[Toolbar, Edit, ExcelExport]} />
                     </GridComponent>
                 </div>
             </div>
@@ -555,7 +716,7 @@ const ClassDetails = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}>
-                        <h3>Danh sách sinh viên</h3>
+                        <h4>Sinh viên</h4>
                     </div>
                     <GridComponent
                         id="studentGrid"
@@ -576,93 +737,33 @@ const ClassDetails = () => {
                         allowSelection={true}
                         selectionSettings={select}
                         enableHeaderFocus={true}
+                        allowExcelExport={true}
                         dataStateChange={dataStateChange.bind(this)}
                         dataSourceChanged={dataSourceChanged.bind(this)}
                         recordDoubleClick={onRecordDoubleClick.bind(this)}
-                        locale='vi-VN-2'
+                        toolbarClick={studentToolbarClick.bind(this)}
+                        locale='vi-VN-student'
                     >
                         <ColumnsDirective>
                             <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective field='userCode' allowEditing={false} headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />                           
-                            <ColumnDirective field='user.userName' headerText='Tên' allowEditing={false} width='200' clipMode='EllipsisWithTooltip'></ColumnDirective>
-                            <ColumnDirective
-                                field='passed'
-                                headerText='Qua môn'
-                                width='40'
-                                displayAsCheckBox="true"
-                                editType="booleanedit"
-                                type="boolean" clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='user.userCode' allowEditing={false} headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='user.userName' headerText='Tên' allowEditing={false} width='150' clipMode='EllipsisWithTooltip'></ColumnDirective>
+                            <ColumnDirective field='user.email' headerText='Email' width='100' clipMode='EllipsisWithTooltip' />
+                            {/*<ColumnDirective*/}
+                            {/*    field='passed'*/}
+                            {/*    headerText='Qua môn'*/}
+                            {/*    width='40'*/}
+                            {/*    displayAsCheckBox="true"*/}
+                            {/*    editType="booleanedit"*/}
+                            {/*    type="boolean" clipMode='EllipsisWithTooltip' />*/}
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Page, ExcelExport]} />
                     </GridComponent>
                 </div>
             </div>
-            {/*<AddStudentModal*/}
-            {/*    show={modalShow}*/}
-            {/*    onHide={() => setModalShow(false)}*/}
-            {/*/>*/}
         </AdminLayout>
     )  
 }
-
-//function AddStudentModal(props) {
-//    const [selectedUser, setSelectedUser] = useState([]);
-
-//    return (
-//        <Modal
-//            {...props}
-//            size="lg"
-//            aria-labelledby="contained-modal-title-vcenter"
-//            centered
-//        >
-//            <Modal.Header closeButton>
-//                <Modal.Title id="contained-modal-title-vcenter">
-//                    Thêm sinh viên
-//                </Modal.Title>
-//            </Modal.Header>
-//            <Modal.Body>
-//                <h4>Centered Modal</h4>
-//                <p>
-//                    Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-//                    dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-//                    consectetur ac, vestibulum at eros.
-//                </p>
-//            </Modal.Body>
-//            <Modal.Footer>
-//                <Button onClick={props.onHide}>Close</Button>
-//            </Modal.Footer>
-//        </Modal>
-//    );
-//}
-
-//function StudentDialogTemplate(props) {
-//    const [students, setStudents] = useState({});
-
-//    async function getStudentData() {
-//        const studentClient = new StudentsClient();
-//        let allStudent = studentClient.getStudents();
-//        setStudents(allStudent);
-//    }
-
-//    useEffect(() => {
-//        getStudentData();
-//    }, [])
-    
-//    return (        
-//        <div className="form-row">
-//            <div className="form-group">
-//                <DropDownListComponent
-//                    id="userName"
-//                    dataSource={students}
-//                    fields={{ text: 'user.userName', value: 'user.userName' }}
-//                    placeholder="Tên sinh viên"
-//                    popupHeight='300px'
-//                    floatLabelType='Always'>
-//                </DropDownListComponent>
-//            </div>
-//        </div>
-//    );
-//}
 
 export default ClassDetails;

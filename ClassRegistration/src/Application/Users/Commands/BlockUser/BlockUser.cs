@@ -23,7 +23,7 @@ public class BlockUserCommandHandler : IRequestHandler<BlockUserCommand, bool>
     }
 
     public async Task<bool> Handle(BlockUserCommand request, CancellationToken cancellationToken)
-    {
+    {        
         return await _identityService.BlockUserAsync(request.Id);
     }
 }

@@ -306,13 +306,19 @@ export class ClassRegisterClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    registerStudent(userId: number | null | undefined, classId: number | null | undefined, registrationScheduleId: number | null | undefined): Promise<RegistrationResult> {
+    registerStudent(userId: number, classId: number, registrationScheduleId: number): Promise<RegistrationResult> {
         let url_ = this.baseUrl + "/api/ClassRegister?";
-        if (userId !== undefined && userId !== null)
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
             url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
-        if (classId !== undefined && classId !== null)
+        if (classId === undefined || classId === null)
+            throw new Error("The parameter 'classId' must be defined and cannot be null.");
+        else
             url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
-        if (registrationScheduleId !== undefined && registrationScheduleId !== null)
+        if (registrationScheduleId === undefined || registrationScheduleId === null)
+            throw new Error("The parameter 'registrationScheduleId' must be defined and cannot be null.");
+        else
             url_ += "RegistrationScheduleId=" + encodeURIComponent("" + registrationScheduleId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1400,7 +1406,7 @@ export class RegistrationSchedulesClient {
     }
 
     getRegistrationSchedules(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined, filterOperator: string | null | undefined): Promise<RegistrationScheduleDto> {
-        let url_ = this.baseUrl + "/api/RegistrationSchedules?";
+        let url_ = this.baseUrl + "/api/RegistrationSchedules/GetRegistrationSchedules?";
         if (skip === undefined || skip === null)
             throw new Error("The parameter 'skip' must be defined and cannot be null.");
         else
@@ -1448,6 +1454,96 @@ export class RegistrationSchedulesClient {
             });
         }
         return Promise.resolve<RegistrationScheduleDto>(null as any);
+    }
+
+    getPreviousRegistrationSchedules(skip: number, take: number, orderBy: string | null | undefined, filterAttribute: string | null | undefined, filterValue: string | null | undefined, filterOperator: string | null | undefined): Promise<RegistrationScheduleDto> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules/GetPreviousRegistrationSchedules?";
+        if (skip === undefined || skip === null)
+            throw new Error("The parameter 'skip' must be defined and cannot be null.");
+        else
+            url_ += "Skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === undefined || take === null)
+            throw new Error("The parameter 'take' must be defined and cannot be null.");
+        else
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "OrderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (filterAttribute !== undefined && filterAttribute !== null)
+            url_ += "FilterAttribute=" + encodeURIComponent("" + filterAttribute) + "&";
+        if (filterValue !== undefined && filterValue !== null)
+            url_ += "FilterValue=" + encodeURIComponent("" + filterValue) + "&";
+        if (filterOperator !== undefined && filterOperator !== null)
+            url_ += "FilterOperator=" + encodeURIComponent("" + filterOperator) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPreviousRegistrationSchedules(_response);
+        });
+    }
+
+    protected processGetPreviousRegistrationSchedules(response: Response): Promise<RegistrationScheduleDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegistrationScheduleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RegistrationScheduleDto>(null as any);
+    }
+
+    getScheduleById(id: number): Promise<RegistrationScheduleResult> {
+        let url_ = this.baseUrl + "/api/RegistrationSchedules/GetScheduleById?";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined and cannot be null.");
+        else
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetScheduleById(_response);
+        });
+    }
+
+    protected processGetScheduleById(response: Response): Promise<RegistrationScheduleResult> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RegistrationScheduleResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RegistrationScheduleResult>(null as any);
     }
 
     createRegistrationSchedule(command: CreateRegistrationScheduleCommand): Promise<number> {
@@ -2268,6 +2364,99 @@ export class UserClassesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    getStudentsToExport(classId: number, registrationId: number): Promise<UserClassResult[]> {
+        let url_ = this.baseUrl + "/api/UserClasses/GetStudentsToExport?";
+        if (classId === undefined || classId === null)
+            throw new Error("The parameter 'classId' must be defined and cannot be null.");
+        else
+            url_ += "ClassId=" + encodeURIComponent("" + classId) + "&";
+        if (registrationId === undefined || registrationId === null)
+            throw new Error("The parameter 'registrationId' must be defined and cannot be null.");
+        else
+            url_ += "RegistrationId=" + encodeURIComponent("" + registrationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetStudentsToExport(_response);
+        });
+    }
+
+    protected processGetStudentsToExport(response: Response): Promise<UserClassResult[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(UserClassResult.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassResult[]>(null as any);
+    }
+
+    getStudentClasses(userId: number, registrationId: number): Promise<UserClassDto> {
+        let url_ = this.baseUrl + "/api/UserClasses/GetStudentClasses?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        if (registrationId === undefined || registrationId === null)
+            throw new Error("The parameter 'registrationId' must be defined and cannot be null.");
+        else
+            url_ += "RegistrationId=" + encodeURIComponent("" + registrationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetStudentClasses(_response);
+        });
+    }
+
+    protected processGetStudentClasses(response: Response): Promise<UserClassDto> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserClassDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserClassDto>(null as any);
+    }
+
     addUserToClass(command: AddUserToClassCommand): Promise<number> {
         let url_ = this.baseUrl + "/api/UserClasses";
         url_ = url_.replace(/[?&]$/, "");
@@ -2393,6 +2582,126 @@ export class UsersClient {
             });
         }
         return Promise.resolve<UserDto[]>(null as any);
+    }
+
+    createUser(command: CreateUserCommand): Promise<string[]> {
+        let url_ = this.baseUrl + "/api/Users";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateUser(_response);
+        });
+    }
+
+    protected processCreateUser(response: Response): Promise<string[]> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string[]>(null as any);
+    }
+
+    editUser(id: number, command: EditUserCommand): Promise<void> {
+        let url_ = this.baseUrl + "/api/Users/EditUser?";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined and cannot be null.");
+        else
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processEditUser(_response);
+        });
+    }
+
+    protected processEditUser(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    blockUser(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Users/BlockUser?";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined and cannot be null.");
+        else
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processBlockUser(_response);
+        });
+    }
+
+    protected processBlockUser(response: Response): Promise<void> {
+        followIfLoginRedirect(response);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
     }
 }
 
@@ -3000,9 +3309,9 @@ export interface IPrerequisiteCourse extends IBaseAuditableEntity {
 }
 
 export class UserClass extends BaseAuditableEntity implements IUserClass {
-    classId?: number | undefined;
-    registrationScheduleId?: number | undefined;
-    userId?: number | undefined;
+    classId?: number;
+    registrationScheduleId?: number;
+    userId?: number;
     passed?: boolean;
     class?: Class;
     registrationSchedule?: RegistrationSchedule | undefined;
@@ -3047,9 +3356,9 @@ export class UserClass extends BaseAuditableEntity implements IUserClass {
 }
 
 export interface IUserClass extends IBaseAuditableEntity {
-    classId?: number | undefined;
-    registrationScheduleId?: number | undefined;
-    userId?: number | undefined;
+    classId?: number;
+    registrationScheduleId?: number;
+    userId?: number;
     passed?: boolean;
     class?: Class;
     registrationSchedule?: RegistrationSchedule | undefined;
@@ -3200,8 +3509,10 @@ export interface ITuitionFee extends IBaseAuditableEntity {
 
 export class User extends BaseAuditableEntity implements IUser {
     userName?: string;
+    userCode?: string;
     email?: string | undefined;
     departmentId?: number | undefined;
+    enabled?: boolean | undefined;
     department?: Department;
     userClasses?: UserClass[];
     tuitionFee?: TuitionFee[];
@@ -3216,8 +3527,10 @@ export class User extends BaseAuditableEntity implements IUser {
         super.init(_data);
         if (_data) {
             this.userName = _data["userName"];
+            this.userCode = _data["userCode"];
             this.email = _data["email"];
             this.departmentId = _data["departmentId"];
+            this.enabled = _data["enabled"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
             if (Array.isArray(_data["userClasses"])) {
                 this.userClasses = [] as any;
@@ -3252,8 +3565,10 @@ export class User extends BaseAuditableEntity implements IUser {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["userName"] = this.userName;
+        data["userCode"] = this.userCode;
         data["email"] = this.email;
         data["departmentId"] = this.departmentId;
+        data["enabled"] = this.enabled;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
         if (Array.isArray(this.userClasses)) {
             data["userClasses"] = [];
@@ -3282,8 +3597,10 @@ export class User extends BaseAuditableEntity implements IUser {
 
 export interface IUser extends IBaseAuditableEntity {
     userName?: string;
+    userCode?: string;
     email?: string | undefined;
     departmentId?: number | undefined;
+    enabled?: boolean | undefined;
     department?: Department;
     userClasses?: UserClass[];
     tuitionFee?: TuitionFee[];
@@ -3935,6 +4252,7 @@ export interface ICoursesFKDto {
 export class CurrentRegScheduleDto implements ICurrentRegScheduleDto {
     id?: number;
     name?: string;
+    maximumCredit?: number;
     startDate?: Date;
     endDate?: Date;
 
@@ -3951,6 +4269,7 @@ export class CurrentRegScheduleDto implements ICurrentRegScheduleDto {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            this.maximumCredit = _data["maximumCredit"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
         }
@@ -3967,6 +4286,7 @@ export class CurrentRegScheduleDto implements ICurrentRegScheduleDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["maximumCredit"] = this.maximumCredit;
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
         return data;
@@ -3976,6 +4296,7 @@ export class CurrentRegScheduleDto implements ICurrentRegScheduleDto {
 export interface ICurrentRegScheduleDto {
     id?: number;
     name?: string;
+    maximumCredit?: number;
     startDate?: Date;
     endDate?: Date;
 }
@@ -3983,6 +4304,7 @@ export interface ICurrentRegScheduleDto {
 export class UserDto implements IUserDto {
     id?: number;
     userName?: string | undefined;
+    userCode?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
@@ -4001,6 +4323,7 @@ export class UserDto implements IUserDto {
         if (_data) {
             this.id = _data["id"];
             this.userName = _data["userName"];
+            this.userCode = _data["userCode"];
             this.email = _data["email"];
             this.departmentId = _data["departmentId"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
@@ -4023,6 +4346,7 @@ export class UserDto implements IUserDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["userName"] = this.userName;
+        data["userCode"] = this.userCode;
         data["email"] = this.email;
         data["departmentId"] = this.departmentId;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
@@ -4038,6 +4362,7 @@ export class UserDto implements IUserDto {
 export interface IUserDto {
     id?: number;
     userName?: string | undefined;
+    userCode?: string | undefined;
     email?: string | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
@@ -4227,12 +4552,13 @@ export class UserClassResult implements IUserClassResult {
     courseName?: string | undefined;
     departmentName?: string | undefined;
     classType?: string | undefined;
+    lecturerName?: string | undefined;
     passed?: boolean | undefined;
     userClassCount?: number;
     fee?: number;
     class?: Class;
     classResult?: ClassResult | undefined;
-    user?: User | undefined;
+    user?: User;
     registrationSchedule?: RegistrationSchedule;
 
     constructor(data?: IUserClassResult) {
@@ -4252,6 +4578,7 @@ export class UserClassResult implements IUserClassResult {
             this.courseName = _data["courseName"];
             this.departmentName = _data["departmentName"];
             this.classType = _data["classType"];
+            this.lecturerName = _data["lecturerName"];
             this.passed = _data["passed"];
             this.userClassCount = _data["userClassCount"];
             this.fee = _data["fee"];
@@ -4277,6 +4604,7 @@ export class UserClassResult implements IUserClassResult {
         data["courseName"] = this.courseName;
         data["departmentName"] = this.departmentName;
         data["classType"] = this.classType;
+        data["lecturerName"] = this.lecturerName;
         data["passed"] = this.passed;
         data["userClassCount"] = this.userClassCount;
         data["fee"] = this.fee;
@@ -4295,12 +4623,13 @@ export interface IUserClassResult {
     courseName?: string | undefined;
     departmentName?: string | undefined;
     classType?: string | undefined;
+    lecturerName?: string | undefined;
     passed?: boolean | undefined;
     userClassCount?: number;
     fee?: number;
     class?: Class;
     classResult?: ClassResult | undefined;
-    user?: User | undefined;
+    user?: User;
     registrationSchedule?: RegistrationSchedule;
 }
 
@@ -4582,6 +4911,7 @@ export class UserResult implements IUserResult {
     userCode?: string | undefined;
     email?: string | undefined;
     password?: string | undefined;
+    enabled?: boolean | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
     roles?: string[] | undefined;
@@ -4602,6 +4932,7 @@ export class UserResult implements IUserResult {
             this.userCode = _data["userCode"];
             this.email = _data["email"];
             this.password = _data["password"];
+            this.enabled = _data["enabled"];
             this.departmentId = _data["departmentId"];
             this.department = _data["department"] ? Department.fromJS(_data["department"]) : <any>undefined;
             if (Array.isArray(_data["roles"])) {
@@ -4626,6 +4957,7 @@ export class UserResult implements IUserResult {
         data["userCode"] = this.userCode;
         data["email"] = this.email;
         data["password"] = this.password;
+        data["enabled"] = this.enabled;
         data["departmentId"] = this.departmentId;
         data["department"] = this.department ? this.department.toJSON() : <any>undefined;
         if (Array.isArray(this.roles)) {
@@ -4643,6 +4975,7 @@ export interface IUserResult {
     userCode?: string | undefined;
     email?: string | undefined;
     password?: string | undefined;
+    enabled?: boolean | undefined;
     departmentId?: number | undefined;
     department?: Department | undefined;
     roles?: string[] | undefined;
@@ -4755,7 +5088,6 @@ export interface IPrerequisiteCoursesResult {
 export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisiteCommand {
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
-    requirePassed?: string | undefined;
 
     constructor(data?: ICreateCoursePrerequisiteCommand) {
         if (data) {
@@ -4770,7 +5102,6 @@ export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisit
         if (_data) {
             this.courseId = _data["courseId"];
             this.prerequisiteCourseId = _data["prerequisiteCourseId"];
-            this.requirePassed = _data["requirePassed"];
         }
     }
 
@@ -4785,7 +5116,6 @@ export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisit
         data = typeof data === 'object' ? data : {};
         data["courseId"] = this.courseId;
         data["prerequisiteCourseId"] = this.prerequisiteCourseId;
-        data["requirePassed"] = this.requirePassed;
         return data;
     }
 }
@@ -4793,7 +5123,6 @@ export class CreateCoursePrerequisiteCommand implements ICreateCoursePrerequisit
 export interface ICreateCoursePrerequisiteCommand {
     courseId?: number | undefined;
     prerequisiteCourseId?: number | undefined;
-    requirePassed?: string | undefined;
 }
 
 export class RegistrationScheduleDto implements IRegistrationScheduleDto {
@@ -4849,8 +5178,8 @@ export class RegistrationScheduleResult implements IRegistrationScheduleResult {
     name?: string;
     startDate?: Date;
     endDate?: Date;
+    maximumCredit?: number;
     feePerCredit?: number;
-    userClasses?: UserClass[];
     tuitionFees?: TuitionFee[];
 
     constructor(data?: IRegistrationScheduleResult) {
@@ -4868,12 +5197,8 @@ export class RegistrationScheduleResult implements IRegistrationScheduleResult {
             this.name = _data["name"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.maximumCredit = _data["maximumCredit"];
             this.feePerCredit = _data["feePerCredit"];
-            if (Array.isArray(_data["userClasses"])) {
-                this.userClasses = [] as any;
-                for (let item of _data["userClasses"])
-                    this.userClasses!.push(UserClass.fromJS(item));
-            }
             if (Array.isArray(_data["tuitionFees"])) {
                 this.tuitionFees = [] as any;
                 for (let item of _data["tuitionFees"])
@@ -4895,12 +5220,8 @@ export class RegistrationScheduleResult implements IRegistrationScheduleResult {
         data["name"] = this.name;
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["maximumCredit"] = this.maximumCredit;
         data["feePerCredit"] = this.feePerCredit;
-        if (Array.isArray(this.userClasses)) {
-            data["userClasses"] = [];
-            for (let item of this.userClasses)
-                data["userClasses"].push(item.toJSON());
-        }
         if (Array.isArray(this.tuitionFees)) {
             data["tuitionFees"] = [];
             for (let item of this.tuitionFees)
@@ -4915,8 +5236,8 @@ export interface IRegistrationScheduleResult {
     name?: string;
     startDate?: Date;
     endDate?: Date;
+    maximumCredit?: number;
     feePerCredit?: number;
-    userClasses?: UserClass[];
     tuitionFees?: TuitionFee[];
 }
 
@@ -5716,9 +6037,9 @@ export interface IUpdateTodoListCommand {
 }
 
 export class AddUserToClassCommand implements IAddUserToClassCommand {
-    classId?: number | undefined;
-    registrationScheduleId?: number | undefined;
-    userId?: number | undefined;
+    classId?: number;
+    registrationScheduleId?: number;
+    userId?: number;
     passed?: string | undefined;
 
     constructor(data?: IAddUserToClassCommand) {
@@ -5757,10 +6078,146 @@ export class AddUserToClassCommand implements IAddUserToClassCommand {
 }
 
 export interface IAddUserToClassCommand {
-    classId?: number | undefined;
-    registrationScheduleId?: number | undefined;
-    userId?: number | undefined;
+    classId?: number;
+    registrationScheduleId?: number;
+    userId?: number;
     passed?: string | undefined;
+}
+
+export class CreateUserCommand implements ICreateUserCommand {
+    userName?: string;
+    password?: string;
+    userCode?: string;
+    email?: string;
+    departmentId?: number;
+    roles?: string[];
+
+    constructor(data?: ICreateUserCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.password = _data["password"];
+            this.userCode = _data["userCode"];
+            this.email = _data["email"];
+            this.departmentId = _data["departmentId"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateUserCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUserCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["password"] = this.password;
+        data["userCode"] = this.userCode;
+        data["email"] = this.email;
+        data["departmentId"] = this.departmentId;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICreateUserCommand {
+    userName?: string;
+    password?: string;
+    userCode?: string;
+    email?: string;
+    departmentId?: number;
+    roles?: string[];
+}
+
+export class EditUserCommand implements IEditUserCommand {
+    id?: number;
+    userName?: string;
+    password?: string;
+    userCode?: string;
+    email?: string;
+    enabled?: string;
+    departmentId?: number;
+    roles?: string[];
+
+    constructor(data?: IEditUserCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.password = _data["password"];
+            this.userCode = _data["userCode"];
+            this.email = _data["email"];
+            this.enabled = _data["enabled"];
+            this.departmentId = _data["departmentId"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): EditUserCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditUserCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["password"] = this.password;
+        data["userCode"] = this.userCode;
+        data["email"] = this.email;
+        data["enabled"] = this.enabled;
+        data["departmentId"] = this.departmentId;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IEditUserCommand {
+    id?: number;
+    userName?: string;
+    password?: string;
+    userCode?: string;
+    email?: string;
+    enabled?: string;
+    departmentId?: number;
+    roles?: string[];
 }
 
 export class WeatherForecast implements IWeatherForecast {

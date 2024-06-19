@@ -18,21 +18,17 @@ import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { StudentLayout } from '../../StudentLayout';
 import {
-    ClassesClient,
     UserClassesClient,
     RegistrationSchedulesClient,
     ClassTypesClient,
-    CurrentRegistrationScheduleInfoClient,
-    ClassRegisterClient,
     CurrentUserInfoClient,
-    CurrentUserRegistrationResultClient,
-    CurrentUserRegistrationRecordClient
+    CurrentUserRegistrationResultClient
 } from '../../../web-api-client.ts';
 import './reg-result.css'
 
 const RegistrationHistoryDetails = () => {
     const { registrationScheduleId } = useParams();
-    const [currentUserInfo, setCurrentUserInfo] = useState(null);
+    const [currentUserInfo, setCurrentUserInfo] = useState({});
     const [regScheduleInfo, setRegScheduleInfo] = useState({});
     const [userClassData, setUserClassData] = useState({
         result: [],
@@ -56,12 +52,12 @@ const RegistrationHistoryDetails = () => {
         let currentUser = await currentUserInfoClient.getUserInfo();
         setCurrentUserInfo(currentUser);
 
-        //const regScheduleClient = new RegistrationSchedulesClient();
-        //let thisReg = await regScheduleClient.getRegistrationScheduleById(registrationScheduleId);
-        //setRegScheduleInfo(thisReg);
+        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        let currentReg = await registrationSchedulesClient.getScheduleById(registrationScheduleId);
+        setRegScheduleInfo(currentReg);
 
-        const currentUserRegistrationResultClient = new CurrentUserRegistrationResultClient();
-        let currentRegRes = await currentUserRegistrationResultClient.getCurrentUserRegistrationResult(currentUser.id);
+        const userClassesClient = new UserClassesClient();
+        let currentRegRes = await userClassesClient.getStudentClasses(currentUser.id, registrationScheduleId);
         setUserClassData(currentRegRes);
     }
 
@@ -82,7 +78,7 @@ const RegistrationHistoryDetails = () => {
                         <span style={{ fontWeight: 500 }}>Thứ: </span> {props.class.dayOfWeek}
                     </td>
                     <td>
-                        <span style={{ fontWeight: 500 }}>Đã đăng ký: </span> {props.userClassCount}
+                        <span style={{ fontWeight: 500 }}>Sĩ số: </span> {props.userClassCount}
                     </td>
                 </tr>
                 <tr>
@@ -90,7 +86,7 @@ const RegistrationHistoryDetails = () => {
                         <span style={{ fontWeight: 500 }}>Tiết bắt đầu: </span> {props.class.startPeriod}
                     </td>
                     <td>
-                        <span style={{ fontWeight: 500 }}>Số lượng: </span> {props.class.capacity}
+                        <span style={{ fontWeight: 500 }}>Giảng viên: </span> {props.lecturerName}
                     </td>
                 </tr>
                 <tr>
@@ -129,7 +125,7 @@ const RegistrationHistoryDetails = () => {
 
     return (
         <StudentLayout>
-            <h2>Kết quả đợt đăng ký: Học kỳ 1, 2023-2024</h2>
+            <h2>Kết quả đợt đăng ký: {regScheduleInfo?.name}</h2>
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}></div>
@@ -148,7 +144,6 @@ const RegistrationHistoryDetails = () => {
                         locale='vi-VN'
                     >
                         <ColumnsDirective>
-                            <ColumnDirective type='checkbox' width='40'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
                             <ColumnDirective field='class.classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />
                             <ColumnDirective field='courseName' headerText='Tên lớp' width='100' clipMode='EllipsisWithTooltip' />

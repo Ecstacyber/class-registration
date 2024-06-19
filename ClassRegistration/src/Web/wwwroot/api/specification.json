@@ -287,30 +287,30 @@
           {
             "name": "UserId",
             "in": "query",
+            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             },
             "x-position": 1
           },
           {
             "name": "ClassId",
             "in": "query",
+            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             },
             "x-position": 2
           },
           {
             "name": "RegistrationScheduleId",
             "in": "query",
+            "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             },
             "x-position": 3
           }
@@ -1129,7 +1129,7 @@
         }
       }
     },
-    "/api/RegistrationSchedules": {
+    "/api/RegistrationSchedules/GetRegistrationSchedules": {
       "get": {
         "tags": [
           "RegistrationSchedules"
@@ -1205,7 +1205,119 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/RegistrationSchedules/GetPreviousRegistrationSchedules": {
+      "get": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "GetPreviousRegistrationSchedules",
+        "parameters": [
+          {
+            "name": "Skip",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OrderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "FilterAttribute",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "FilterValue",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
+            "name": "FilterOperator",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationScheduleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RegistrationSchedules/GetScheduleById": {
+      "get": {
+        "tags": [
+          "RegistrationSchedules"
+        ],
+        "operationId": "GetScheduleById",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationScheduleResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/RegistrationSchedules": {
       "post": {
         "tags": [
           "RegistrationSchedules"
@@ -1846,6 +1958,93 @@
         }
       }
     },
+    "/api/UserClasses/GetStudentsToExport": {
+      "get": {
+        "tags": [
+          "UserClasses"
+        ],
+        "operationId": "GetStudentsToExport",
+        "parameters": [
+          {
+            "name": "ClassId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "RegistrationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserClassResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/UserClasses/GetStudentClasses": {
+      "get": {
+        "tags": [
+          "UserClasses"
+        ],
+        "operationId": "GetStudentClasses",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "RegistrationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/UserClasses": {
       "post": {
         "tags": [
@@ -1923,6 +2122,101 @@
                 }
               }
             }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "CreateUser",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/EditUser": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "EditUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUserCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Users/BlockUser": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "BlockUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
           }
         }
       }
@@ -2308,18 +2602,15 @@
             "properties": {
               "classId": {
                 "type": "integer",
-                "format": "int32",
-                "nullable": true
+                "format": "int32"
               },
               "registrationScheduleId": {
                 "type": "integer",
-                "format": "int32",
-                "nullable": true
+                "format": "int32"
               },
               "userId": {
                 "type": "integer",
-                "format": "int32",
-                "nullable": true
+                "format": "int32"
               },
               "passed": {
                 "type": "boolean"
@@ -2448,6 +2739,9 @@
               "userName": {
                 "type": "string"
               },
+              "userCode": {
+                "type": "string"
+              },
               "email": {
                 "type": "string",
                 "nullable": true
@@ -2455,6 +2749,10 @@
               "departmentId": {
                 "type": "integer",
                 "format": "int32",
+                "nullable": true
+              },
+              "enabled": {
+                "type": "boolean",
                 "nullable": true
               },
               "department": {
@@ -2838,6 +3136,10 @@
           "name": {
             "type": "string"
           },
+          "maximumCredit": {
+            "type": "integer",
+            "format": "int32"
+          },
           "startDate": {
             "type": "string",
             "format": "date-time"
@@ -2857,6 +3159,10 @@
             "format": "int32"
           },
           "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "userCode": {
             "type": "string",
             "nullable": true
           },
@@ -3016,6 +3322,10 @@
             "type": "string",
             "nullable": true
           },
+          "lecturerName": {
+            "type": "string",
+            "nullable": true
+          },
           "passed": {
             "type": "boolean",
             "nullable": true
@@ -3040,12 +3350,7 @@
             ]
           },
           "user": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/User"
-              }
-            ]
+            "$ref": "#/components/schemas/User"
           },
           "registrationSchedule": {
             "$ref": "#/components/schemas/RegistrationSchedule"
@@ -3175,6 +3480,10 @@
             "type": "string",
             "nullable": true
           },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true
+          },
           "departmentId": {
             "type": "integer",
             "format": "int32",
@@ -3263,10 +3572,6 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
-          },
-          "requirePassed": {
-            "type": "string",
-            "nullable": true
           }
         }
       },
@@ -3305,15 +3610,13 @@
             "type": "string",
             "format": "date-time"
           },
-          "feePerCredit": {
+          "maximumCredit": {
             "type": "integer",
             "format": "int32"
           },
-          "userClasses": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserClass"
-            }
+          "feePerCredit": {
+            "type": "integer",
+            "format": "int32"
           },
           "tuitionFees": {
             "type": "array",
@@ -3675,22 +3978,82 @@
         "properties": {
           "classId": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "registrationScheduleId": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "userId": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "passed": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "CreateUserCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "userCode": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EditUserCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "userCode": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

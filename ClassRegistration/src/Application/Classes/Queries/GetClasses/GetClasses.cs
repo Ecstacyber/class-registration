@@ -26,16 +26,19 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IIdentityService _identityService;
 
-    public GetClassesQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetClassesQueryHandler(IApplicationDbContext context, IMapper mapper, IIdentityService identityService)
     {
         _context = context;
         _mapper = mapper;
+        _identityService = identityService;
     }
    
     public async Task<ClassDto> Handle(GetClassesQuery request, CancellationToken cancellationToken)
     {      
-        var currentRegWindow = await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now, cancellationToken);
+        var currentRegWindow = await _context.RegistrationSchedules
+            .FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now, cancellationToken);
         if (currentRegWindow == null)
         {
             return new ClassDto
@@ -50,6 +53,7 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
         var classes = _context.Classes
             .Include(x => x.Course)
             .Include(x => x.ClassType)
+            .Where(x => x.CanBeRegistered == true)
             .AsNoTracking();
 
         if (!string.IsNullOrEmpty(request.FilterAttribute) && !string.IsNullOrEmpty(request.FilterValue))
@@ -164,26 +168,35 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
                     }
                 }
             }
-            result.UserClassCount = await _context.UserClasses.CountAsync(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id, cancellationToken);
+
+            result.UserClassCount = 0;
             result.LecturerName = "";
-            //var lecturers = await _context.UserClasses
-            //    .Include(x => x.User)
-            //    .Where(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id)
-            //    .ToListAsync(cancellationToken);
-            //if (lecturers.Count > 0)
-            //{
-            //    foreach (var lecturer in lecturers)
-            //    {
-            //        if (string.IsNullOrEmpty(result.LecturerName))
-            //        {
-            //            result.LecturerName += lecturer.User.UserName;
-            //        }
-            //        else
-            //        {
-            //            result.LecturerName = result.LecturerName + ", " + lecturer.User.UserName;
-            //        }
-            //    }                             
-            //}
+            var userClasses = await _context.UserClasses
+                .Include(x => x.User)
+                .Where(x => x.ClassId == result.Id && x.RegistrationScheduleId == currentRegWindow.Id)
+                .ToListAsync(cancellationToken);
+            if (userClasses.Count > 0)
+            {
+                foreach (var user in userClasses)
+                {
+                    var roles = await _identityService.GetUserRoleAsync(user.UserId);
+                    if (roles.Contains("Lecturer"))
+                    {
+                        if (result.LecturerName == "")
+                        {
+                            result.LecturerName += user.User.UserName;
+                        }
+                        else
+                        {
+                            result.LecturerName = result.LecturerName + ", " + user.User.UserName;
+                        }
+                    }
+                    if (roles.Contains("Student"))
+                    {
+                        result.UserClassCount++;
+                    }                  
+                }
+            }
         }
 
         return new ClassDto

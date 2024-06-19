@@ -1,4 +1,5 @@
 ﻿using ClassRegistration.Application.Common.Interfaces;
+using ClassRegistration.Application.Departments.Queries.GetDepartments;
 
 namespace ClassRegistration.Application.UserClasses.Queries.GetUserClassesByUserId;
 
@@ -36,6 +37,31 @@ public class GetUserClassesByUserIdQueryHandler : IRequestHandler<GetUserClasses
         var result = await userClasses
             .ProjectTo<UserClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
+
+        foreach (var userClass in result)
+        {
+            var currentClass = await _context.Classes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userClass.ClassId, cancellationToken);
+            if (currentClass != null)
+            {
+                var type = await _context.ClassTypes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == currentClass.ClassTypeId, cancellationToken);
+                if (type != null)
+                {
+                    userClass.ClassType = type.Type;
+                }
+                var currentCourse = await _context.Courses.AsNoTracking().FirstOrDefaultAsync(x => x.Id == currentClass.CourseId, cancellationToken);
+                if (currentCourse != null)
+                {
+                    userClass.CourseName = currentCourse.CourseName;
+                    var department = await _context.Departments.AsNoTracking().FirstOrDefaultAsync(x => x.Id == currentCourse.DepartmentId, cancellationToken);
+                    if (department != null)
+                    {
+                        userClass.DepartmentName = department.ShortName;
+                    }
+                }
+                userClass.UserClassCount = await _context.UserClasses
+                    .CountAsync(x => x.ClassId == userClass.ClassId && x.RegistrationScheduleId == userClass.RegistrationScheduleId, cancellationToken);
+            }
+        }
 
         return new UserClassDto
         {

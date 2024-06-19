@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useNavigationType, useLocation } from 'react-router-dom';
+﻿import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
     GridComponent,
     ColumnsDirective,
@@ -16,33 +16,19 @@ import {
 } from '@syncfusion/ej2-react-grids';
 import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
-import { StudentLayout } from '../../StudentLayout';
-import {
-    ClassesClient,
-    UserClassesClient,
-    RegistrationSchedulesClient,
-    ClassTypesClient,
-    CurrentRegistrationScheduleInfoClient,
-    ClassRegisterClient,
-    CurrentUserInfoClient,
-    CurrentUserRegistrationResultClient,
-    CurrentUserRegistrationRecordClient
-} from '../../../web-api-client.ts';
-import './reg-result.css'
+import { useNavigate } from 'react-router-dom';
+import { AdminLayout } from '../../AdminLayout';
+import { RegistrationSchedulesClient, UserClassesClient } from '../../../web-api-client.ts';
+import '../../../custom.css'
 
-const RegistrationResult = () => {
-    const [currentUserInfo, setCurrentUserInfo] = useState(null);
-    const [currentRegScheduleInfo, setCurrentRegScheduleInfo] = useState({});
+const StudentClasses = () => {
+    const { userId, registrationScheduleId } = useParams();
     const [userClassData, setUserClassData] = useState({
         result: [],
         count: 0
     });
-    const [regRecord, setRegRecord] = useState({
-        result: [],
-        count: 0
-    });
+    const [currentRegScheduleInfo, setCurrentRegScheduleInfo] = useState({});
     let gridInstance;
-    let recordGridInstance;
     const fields = { text: 'text', value: 'value' };
     const toolbarOptions = ['Delete'];
     const check = {
@@ -332,23 +318,15 @@ const RegistrationResult = () => {
     //    ],
     //    "count": 4
     //}
-    
+
     async function getData() {
-        const currentUserInfoClient = new CurrentUserInfoClient();
-        let currentUser = await currentUserInfoClient.getUserInfo();
-        setCurrentUserInfo(currentUser);
+        const userClassesClient = new UserClassesClient();
+        let currentUserClasses = await userClassesClient.getStudentClasses(userId, registrationScheduleId);
+        setUserClassData(userClassData);
 
-        const currentRegistrationScheduleInfoClient = new CurrentRegistrationScheduleInfoClient();
-        let currentReg = await currentRegistrationScheduleInfoClient.getCurrentRegistrationSchedule();
+        const registrationSchedulesClient = new RegistrationSchedulesClient();
+        let currentReg = await registrationSchedulesClient.getScheduleById(registrationScheduleId);
         setCurrentRegScheduleInfo(currentReg);
-
-        const currentUserRegistrationResultClient = new CurrentUserRegistrationResultClient();
-        let currentRegRes = await currentUserRegistrationResultClient.getCurrentUserRegistrationResult(currentUser.id);
-        setUserClassData(currentRegRes);
-
-        const currentUserRegistrationRecordClient = new CurrentUserRegistrationRecordClient();
-        let currentRegRecord = await currentUserRegistrationRecordClient.getCurrentUserRegistrationRecord(currentUser.id);
-        setRegRecord(currentRegRecord);
     }
 
     useEffect(() => {
@@ -362,20 +340,16 @@ const RegistrationResult = () => {
             args.data.forEach((deleteData) => {
                 userClassesClient.removeUserFromClass(deleteData.id);
             });
+            userClassesClient.getStudentClasses(userId, registrationScheduleId)
+                .then((gridData) => { gridInstance.dataSource = gridData });
         }
-        const currentUserRegistrationResultClient = new CurrentUserRegistrationResultClient();
-        currentUserRegistrationResultClient.getCurrentUserRegistrationResult(currentUserInfo.id)
-            .then((gridData) => { gridInstance.dataSource = gridData });
-
-        const currentUserRegistrationRecordClient = new CurrentUserRegistrationRecordClient();
-        currentUserRegistrationRecordClient.getCurrentUserRegistrationRecord(currentUserInfo.id)
-            .then((gridData) => { recordGridInstance.dataSource = gridData });
+        
     }
 
     function dataStateChange(args) {
         console.log(args);
-        const currentUserRegistrationResultClient = new CurrentUserRegistrationResultClient();
-        currentUserRegistrationResultClient.getCurrentUserRegistrationResult(currentUserInfo.id)
+        const userClassesClient = new UserClassesClient();
+        userClassesClient.getStudentClasses(userId, registrationScheduleId)
             .then((gridData) => { gridInstance.dataSource = gridData });
     }
 
@@ -438,14 +412,14 @@ const RegistrationResult = () => {
     }
 
     return (
-        <StudentLayout>
+        <AdminLayout>
             <h2>Kết quả đăng ký</h2>
             <h2>{currentRegScheduleInfo.name}</h2>
             <div className='control-pane'>
                 <div className='control-section'>
                     <div style={{ paddingBottom: '18px' }}></div>
                     <GridComponent
-                        id="overviewgrid1"
+                        id="studentClassesGrid"
                         dataSource={userClassData}
                         toolbar={toolbarOptions}
                         editSettings={editSettings}
@@ -489,47 +463,18 @@ const RegistrationResult = () => {
                         <AggregatesDirective>
                             <AggregateDirective>
                                 <AggregateColumnsDirective>
-                                    <AggregateColumnDirective field='classType' type='Sum' format='N' footerTemplate={footerInfo}> </AggregateColumnDirective>
-                                    <AggregateColumnDirective field='class.credit' type='Sum' format='N' footerTemplate={footerSum}> </AggregateColumnDirective>
-                                    <AggregateColumnDirective field='fee' type='Sum' format='N' footerTemplate={footerSum}> </AggregateColumnDirective>
+                                    <AggregateColumnDirective field='classType' type='Sum' format='N' footerTemplate={footerInfo}></AggregateColumnDirective>
+                                    <AggregateColumnDirective field='class.credit' type='Sum' format='N' footerTemplate={footerSum}></AggregateColumnDirective>
+                                    <AggregateColumnDirective field='fee' type='Sum' format='N' footerTemplate={footerSum}></AggregateColumnDirective>
                                 </AggregateColumnsDirective>
                             </AggregateDirective>
                         </AggregatesDirective>
                         <Inject services={[Edit, Toolbar, Aggregate, DetailRow]} />
-                    </GridComponent>                    
-                </div>
-            </div>
-            <div style={{ paddingBottom: '18px' }}></div>
-            <h2>Lịch sử đăng ký</h2>
-            <div className='control-pane'>
-                <div className='control-section'>
-                    <div style={{ paddingBottom: '18px' }}></div>
-                    <GridComponent
-                        id="overviewgrid2"
-                        dataSource={regRecord}
-                        enableStickyHeader={true}
-                        enableAdaptiveUI={true}
-                        rowRenderingMode='Horizontal'
-                        enableHover={true}
-                        height='300'
-                        loadingIndicator={{ indicatorType: 'Shimmer' }}
-                        rowHeight={38}
-                        ref={(g) => { recordGridInstance = g; }}
-                        enableHeaderFocus={true}
-                    >
-                        <ColumnsDirective>
-                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective field='created' textAlign='Right' headerText='Thời gian' width='60' format={dateFormat} clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='class.classCode' headerText='Mã lớp' width='40' clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='requestType' headerText='Hành động' width='40' clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='result' headerText='Kết quả' width='40' clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='message' headerText='Chi tiết' width='60' clipMode='EllipsisWithTooltip' />
-                        </ColumnsDirective>
                     </GridComponent>
                 </div>
             </div>
-        </StudentLayout>
+        </AdminLayout>
     )
 }
 
-export default RegistrationResult;
+export default StudentClasses;

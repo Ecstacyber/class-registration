@@ -8,9 +8,9 @@ namespace ClassRegistration.Application.UserClasses.Commands.ClassRegister;
 
 public record ClassRegisterCommand : IRequest<RegistrationResult>
 {
-    public int? UserId { get; init; }
-    public int? ClassId { get; init; }
-    public int? RegistrationScheduleId { get; init; }
+    public int UserId { get; init; }
+    public int ClassId { get; init; }
+    public int RegistrationScheduleId { get; init; }
 }
 
 public class ClassRegisterCommandValidator : AbstractValidator<ClassRegisterCommand>

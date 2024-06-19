@@ -126,6 +126,11 @@ namespace ClassRegistration.Web.Areas.Identity.Pages.Account
                         returnUrl = Url.Content("~/student-index");
                         return LocalRedirect(returnUrl);
                     }
+                    if (returnUrl == "/" && User.IsInRole("Lecturer"))
+                    {
+                        returnUrl = Url.Content("~/lecturer-index");
+                        return LocalRedirect(returnUrl);
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

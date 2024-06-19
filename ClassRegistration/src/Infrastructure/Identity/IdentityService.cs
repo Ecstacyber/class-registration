@@ -14,20 +14,17 @@ public class IdentityService : IIdentityService
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
     private readonly IApplicationDbContext _context;
-    private readonly RoleStore<IdentityRole> _roleStore;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
-        IApplicationDbContext context,
-        RoleStore<IdentityRole> roleManager)
+        IApplicationDbContext context)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _context = context;
-        _roleStore = roleManager;
     }
 
     public async Task<string?> GetUserNameAsync(string userId)
@@ -54,9 +51,10 @@ public class IdentityService : IIdentityService
             HumanId = humanId,
         };
 
-        var result = await _userManager.CreateAsync(user, password);
+        var createResult = await _userManager.CreateAsync(user, password);
+        await _userManager.SetLockoutEnabledAsync(user, false);
 
-        return (result.ToApplicationResult(), user.Id);
+        return (createResult.ToApplicationResult(), user.Id);
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)
@@ -128,6 +126,16 @@ public class IdentityService : IIdentityService
         var user = await _userManager.Users.Include(x => x.Human).FirstOrDefaultAsync(x => x.HumanId == humanId);
         if (user == null) return false;
         await _userManager.SetLockoutEnabledAsync(user, true);
+        await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
+        return true;
+    }
+
+    public async Task<bool> UnblockUserAsync(int humanId)
+    {
+        var user = await _userManager.Users.Include(x => x.Human).FirstOrDefaultAsync(x => x.HumanId == humanId);
+        if (user == null) return false;
+        await _userManager.SetLockoutEnabledAsync(user, false);
+        await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddSeconds(-1));
         return true;
     }
 
@@ -139,7 +147,7 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    public async Task<bool> AddRolesToUserAsync(string userId, List<string> roles)
+    public async Task<bool> AddToRoleAsync(string userId, List<string> roles)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return false;
@@ -168,7 +176,7 @@ public class IdentityService : IIdentityService
         await _userManager.ResetPasswordAsync(user, pwToken, password);
 
         await RemoveAllRolesFromUserAsync(user.Id);
-        await AddRolesToUserAsync(user.Id, roles);
+        await AddToRoleAsync(user.Id, roles);
 
         return Result.Success();
     }

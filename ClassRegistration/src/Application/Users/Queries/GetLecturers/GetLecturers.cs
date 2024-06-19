@@ -67,9 +67,9 @@ public class GetLecturersQueryHandler : IRequestHandler<GetLecturersQuery, UserT
             var orderBy = request.OrderBy.Split('-');
             switch (orderBy[0])
             {
-                //case "userCode":
-                //    humans = orderBy[1] == "Ascending" ? humans.OrderBy(x => x.UserCode) : humans.OrderByDescending(x => x.UserCode);
-                //    break;
+                case "userCode":
+                    humans = orderBy[1] == "Ascending" ? humans.OrderBy(x => x.UserCode) : humans.OrderByDescending(x => x.UserCode);
+                    break;
                 case "userName":
                     humans = orderBy[1] == "Ascending" ? humans.OrderBy(x => x.UserName) : humans.OrderByDescending(x => x.UserName);
                     break;
@@ -85,7 +85,7 @@ public class GetLecturersQueryHandler : IRequestHandler<GetLecturersQuery, UserT
             humans = humans.OrderByDescending(x => x.Id);
         }
 
-        humans = humans.Skip(request.Skip).Take(request.Take);
+        //humans = humans.Skip(request.Skip).Take(request.Take);
 
         var humansDto = await humans
             .ProjectTo<UserResult>(_mapper.ConfigurationProvider)
@@ -100,6 +100,7 @@ public class GetLecturersQueryHandler : IRequestHandler<GetLecturersQuery, UserT
                 results.Add(human);
             }
         }
+        results.Skip(request.Skip).Take(request.Take);
 
         return new UserTableDataDto
         {

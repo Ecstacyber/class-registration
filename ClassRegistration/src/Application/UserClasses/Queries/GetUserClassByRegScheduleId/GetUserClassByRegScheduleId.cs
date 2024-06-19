@@ -6,8 +6,8 @@ namespace ClassRegistration.Application.UserClasses.Queries.GetUserClassByRegSch
 public record GetUserClassByRegScheduleIdQuery : IRequest<UserClassDto>
 {
     public int? CourseId { get; set; }
-    public int? ClassId { get; set; }
-    public int? RegistrationScheduleId { get; set; }
+    public int ClassId { get; set; }
+    public int RegistrationScheduleId { get; set; }
     public int? Skip { get; set; }
     public int? Top { get; set; }
     public string? OrderBy { get; set; }

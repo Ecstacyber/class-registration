@@ -27,6 +27,6 @@ public class GetCurrentRegistrationScheduleQueryHandler : IRequestHandler<GetCur
     public async Task<CurrentRegScheduleDto> Handle(GetCurrentRegistrationScheduleQuery request, CancellationToken cancellationToken)
     {
         return _mapper.Map<CurrentRegScheduleDto>
-            (await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now));
+            (await _context.RegistrationSchedules.FirstOrDefaultAsync(x => x.StartDate <= DateTime.Now && x.EndDate >= DateTime.Now, cancellationToken));
     }
 }

@@ -32,32 +32,33 @@ const RegistrationHistory = () => {
         type: 'dateTime',
         format: 'dd/MM/yyyy hh:mm a'
     };
-    const tempPrevReg = {
-        "result": [
-            {
-                "id": 1,
-                "name": "Học kỳ 1, 2022-2023"
-            },
-            {
-                "id": 1,
-                "name": "Học kỳ 2, 2022-2023"
-            },
-            {
-                "id": 1,
-                "name": "Học kỳ 1, 2023-2024"
-            },
-        ],
-        "count": 3
-    }
+    //const tempPrevReg = {
+    //    "result": [
+    //        {
+    //            "id": 1,
+    //            "name": "Học kỳ 1, 2022-2023"
+    //        },
+    //        {
+    //            "id": 2,
+    //            "name": "Học kỳ 2, 2022-2023"
+    //        },
+    //        {
+    //            "id": 3,
+    //            "name": "Học kỳ 1, 2023-2024"
+    //        },
+    //    ],
+    //    "count": 3
+    //}
 
     async function getData() {
         const registrationSchedulesClient = new RegistrationSchedulesClient();
-        let registrationSchedulesData = await registrationSchedulesClient.getRegistrationSchedules(0, 12);
+        let registrationSchedulesData = await registrationSchedulesClient.getPreviousRegistrationSchedules(0, 12);
         setScheduleData(registrationSchedulesData);
     }
 
     function onRecordDoubleClick(args) {
         console.log(args);
+        navigate('./' + args.rowData.id);
     }
 
     useEffect(() => {
@@ -71,7 +72,7 @@ const RegistrationHistory = () => {
             <div className='control-pane'>
                 <div className='control-section'>
                     <GridComponent id="overviewgrid"
-                        dataSource={tempPrevReg}
+                        dataSource={scheduleData}
                         enableHover={true}
                         height='1000'
                         loadingIndicator={{ indicatorType: 'Shimmer' }}

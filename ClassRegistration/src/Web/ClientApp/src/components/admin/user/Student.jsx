@@ -15,15 +15,15 @@ import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../AdminLayout';
-import { CoursesClient, DepartmentsFKRefClient, StudentsClient } from '../../../web-api-client.ts';
+import { CoursesClient, DepartmentsFKRefClient, StudentsClient, UsersClient } from '../../../web-api-client.ts';
 import '../../../custom.css'
 
 L10n.load({
-    'vi-VN': {
+    'vi-VN-s': {
         grid: {
             'Add': 'Thêm',
             'Edit': 'Sửa',
-            'Delete': 'Xoá',
+            'Delete': 'Vô hiệu hoá',
             'Cancel': 'Huỷ',
             'Update': 'Cập nhật',
             'Save': 'Lưu',
@@ -292,7 +292,7 @@ const Student = () => {
             //    filterAttr = '';
             //    filterText = '';
             //    orderBy = '';
-            //    classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
+            //    studentsClient.getStudents(0, 12)
             //        .then((gridData) => { gridInstance.dataSource = gridData });
             //    return;
             //}
@@ -307,35 +307,53 @@ const Student = () => {
     }
 
     function dataSourceChanged(args) {
-        console.log(args);
+        console.log(args);      
+        const usersClient = new UsersClient();
+        if (args.action === 'add') {
+            let newStudent = {
+                userName: args.data.userName,
+                passWord: args.data.password,
+                userCode: args.data.userCode,
+                email: args.data.email,
+                departmentId: args.data.departmentId,
+                roles: ["student"]
+            }
+            let addResult = usersClient.createUser(newStudent);
+            console.log(addResult);
+        } else if (args.action === 'edit') {
+            let updatedStudent = {
+                id: args.data.id,
+                userName: args.data.userName,
+                passWord: args.data.password,
+                userCode: args.data.userCode,
+                email: args.data.email,
+                departmentId: args.data.departmentId,
+                roles: ["Student"],
+                enabled: "true"
+            }
+            usersClient.editUser(args.data.id, updatedStudent);
+        } else if (args.requestType === 'delete') {
+            args.data.forEach((deleteData) => {
+                usersClient.blockUser(deleteData.id);
+            });
+        }
+        window.location.reload();
         //const studentsClient = new StudentsClient();
-        //if (args.action === 'add') {
-        //    studentsClient.createStudent(args.data);
-        //} else if (args.action === 'edit') {
-        //    studentsClient.updateStudent(args.data.id, args.data);
-        //} else if (args.requestType === 'delete') {
-        //    args.data.forEach((deleteData) => {
-        //        studentsClient.deleteStudent(deleteData.id);
-        //    });
-        //    filterAttr = '';
-        //    filterText = '';
-        //    orderBy = '';
-        //    studentsClient.getStudents(0, 12)
-        //        .then((gridData) => { gridInstance.dataSource = gridData });
-        //    return;
-        //}   
         //filterAttr = '';
         //filterText = '';
         //orderBy = '';
         //studentsClient.getStudents(0, 12)
-        //    .then((gridData) => { gridInstance.dataSource = gridData });
+        //    .then((gridData) => { gridInstance.dataSource = gridData; });
+        //setTimeout(() => {
+        //    window.location.reload();
+        //}, 5000);
     }
 
     function onRecordDoubleClick(args) {
         console.log(args);
-        //if (args.rowData) {
-        //    navigate('./class/' + args.rowData.id);
-        //}
+        if (args.rowData) {
+            navigate('./' + args.rowData.id);
+        }
     }
 
     if (departments != null) {
@@ -367,9 +385,9 @@ const Student = () => {
                             enableHeaderFocus={true}
                             dataStateChange={dataStateChange.bind(this)}
                             dataSourceChanged={dataSourceChanged.bind(this)}
-                            recordDoubleClick={onRecordDoubleClick.bind(this)}
                             actionBegin={actionBegin.bind(this)}
-                            locale='vi-VN'
+                            recordDoubleClick={onRecordDoubleClick.bind(this)}
+                            locale='vi-VN-s'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -377,7 +395,7 @@ const Student = () => {
                                 <ColumnDirective field='userCode' headerText='MSSV' width='50' validationRules={validationRules}></ColumnDirective>
                                 <ColumnDirective field='userName' headerText='Tên' width='150' validationRules={validationRules}></ColumnDirective>
                                 <ColumnDirective field='email' headerText='Email' width='100' type='email' validationRules={validationRules}></ColumnDirective>
-                                <ColumnDirective field='password' headerText='Mật khẩu' type="password" width='80' type='password' visible={false} validationRules={validationRules}></ColumnDirective>
+                                <ColumnDirective field='password' headerText='Mật khẩu' type="password" width='80' visible={false} validationRules={validationRules}></ColumnDirective>           
                                 <ColumnDirective
                                     field='departmentId'
                                     foreignKeyValue='departmentName'
@@ -389,6 +407,15 @@ const Student = () => {
                                     edit={departmentParams}
                                     filterBarTemplate={filterBarTemplate}
                                     clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective
+                                    field='enabled'
+                                    headerText='Kích hoạt'
+                                    width='50'
+                                    displayAsCheckBox="true"
+                                    editType="booleanedit"
+                                    type="boolean"
+                                    validationRules={validationRules}>
+                                </ColumnDirective>
                             </ColumnsDirective>
                             <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                         </GridComponent>

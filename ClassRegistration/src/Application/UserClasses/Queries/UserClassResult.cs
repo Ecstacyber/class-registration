@@ -11,12 +11,13 @@ public class UserClassResult
     public string? CourseName { get; set; }
     public string? DepartmentName { get; set; }
     public string? ClassType { get; set; }
+    public string? LecturerName { get; set; }
     public bool? Passed { get; set; }
     public int UserClassCount { get; set; }
     public long Fee { get; set; }
     public Class Class { get; set; } = null!;
     public ClassResult? ClassResult { get; set; }
-    public User? User { get; set; }
+    public User User { get; set; } = null!;
     public RegistrationSchedule RegistrationSchedule { get; set; } = null!;
     public class Mapping : Profile
     {

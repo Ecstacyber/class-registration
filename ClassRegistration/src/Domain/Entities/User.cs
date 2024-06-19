@@ -7,6 +7,7 @@ public class User : BaseAuditableEntity
     public string UserCode { get; set; } = null!;
     public string? Email { get; set; }
     public int? DepartmentId { get; set; }
+    public bool? Enabled { get; set; }
     public Department Department { get; set; } = null!;
     public IList<UserClass> UserClasses { get; set; } = new List<UserClass>();
     public IList<TuitionFee> TuitionFee { get; set; } = new List<TuitionFee>();

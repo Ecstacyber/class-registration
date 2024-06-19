@@ -27,7 +27,7 @@ import {
 } from '../../../web-api-client.ts';
 
 L10n.load({
-    'vi-VN-1': {
+    'vi-VN-pcd': {
         grid: {
             'Add': 'Thêm',
             'Edit': 'Sửa',
@@ -60,7 +60,7 @@ L10n.load({
             'All': 'Tất cả'
         }
     },
-    'vi-VN-2': {
+    'vi-VN-classes': {
         grid: {
             'Add': 'Thêm',
             'Edit': 'Sửa',
@@ -531,6 +531,13 @@ const CourseDetails = () => {
             //        .then((gridData) => { pcdGridInstance.dataSource = gridData });
             //    return;
             //}
+            if (args.action.requestType === 'delete') {
+                pcgFilterAttr = '';
+                pcgFilterText = '';
+                pcgOrderBy = '';
+                prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
+                    .then((gridData) => { pcdGridInstance.dataSource = gridData });
+            }
 
             prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, args.skip, args.take)
                 .then((gridData) => { pcdGridInstance.dataSource = gridData });
@@ -561,7 +568,7 @@ const CourseDetails = () => {
         } else if (args.requestType === 'delete') {
             args.data.forEach((deleteData) => {
                 prerequisiteCoursesClient.deleteCoursePrerequisite(deleteData.id);
-            });           
+            });
         }
         const prerequisiteCoursesByCourseIdClient = new PrerequisiteCoursesByCourseIdClient();
         pcgFilterAttr = '';
@@ -586,9 +593,9 @@ const CourseDetails = () => {
                 <div className='control-pane'>
                     <div className='control-section'>
                         <div style={{ paddingBottom: '18px' }}>
-                            <h3>Danh sách môn tiên quyết</h3>
+                            <h4>Danh sách môn tiên quyết</h4>
                         </div>
-                        <GridComponent id="overviewgrid"
+                        <GridComponent id="prerequisiteCourseGrid"
                             dataSource={prerequisiteCourseData}
                             toolbar={pcgToolbarOptions}
                             editSettings={pc_editSettings}
@@ -609,7 +616,7 @@ const CourseDetails = () => {
                             dataStateChange={pcd_dataStateChange.bind(this)}
                             dataSourceChanged={pcd_dataSourceChanged.bind(this)}
                             recordDoubleClick={pcd_onRecordDoubleClick.bind(this)}
-                            locale='vi-VN-1'
+                            locale='vi-VN-pcd'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -624,14 +631,14 @@ const CourseDetails = () => {
                                     validationRules={validationRules}
                                     edit={prerequisiteCourseParams}
                                     clipMode='EllipsisWithTooltip' />                                
-                                <ColumnDirective
-                                    field='requiredPassed'
-                                    displayAsCheckBox="true"
-                                    editType="booleanedit"
-                                    type="boolean"
-                                    headerText='Cần qua môn'
-                                    width='40'
-                                    clipMode='EllipsisWithTooltip' />
+                                {/*<ColumnDirective*/}
+                                {/*    field='requiredPassed'*/}
+                                {/*    displayAsCheckBox="true"*/}
+                                {/*    editType="booleanedit"*/}
+                                {/*    type="boolean"*/}
+                                {/*    headerText='Cần qua môn'*/}
+                                {/*    width='40'*/}
+                                {/*    clipMode='EllipsisWithTooltip' />*/}
                             </ColumnsDirective>                           
                             <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                         </GridComponent>
@@ -641,9 +648,9 @@ const CourseDetails = () => {
                 <div className='control-pane'>
                     <div className='control-section'>
                         <div style={{ paddingBottom: '18px' }}>
-                            <h3>Danh sách lớp học</h3>
+                            <h4>Danh sách lớp học</h4>
                         </div>
-                        <GridComponent id="overviewgrid"
+                        <GridComponent id="classesGrid"
                             dataSource={classData}
                             toolbar={toolbarOptions}
                             editSettings={editSettings}
@@ -664,7 +671,7 @@ const CourseDetails = () => {
                             dataStateChange={dataStateChange.bind(this)}
                             dataSourceChanged={dataSourceChanged.bind(this)}
                             recordDoubleClick={onRecordDoubleClick.bind(this)}
-                            locale='vi-VN-2'
+                            locale='vi-VN-classes'
                         >
                             <ColumnsDirective>
                                 <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
@@ -709,7 +716,7 @@ const CourseDetails = () => {
                                     validationRules={validationRules}>
                                 </ColumnDirective>
                             </ColumnsDirective>
-                            <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey, DetailRow]} />
+                            <Inject services={[Filter, Sort, Toolbar, Edit, Page, ForeignKey]} />
                         </GridComponent>
                     </div>
                 </div>
