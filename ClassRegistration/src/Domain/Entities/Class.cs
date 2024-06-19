@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ClassRegistration.Domain.Entities;
 
-namespace ClassRegistration.Domain.Entities;
 public class Class : BaseAuditableEntity
 {
-    public int CourseId { get; set; }
-    public string? ClassCode { get; set; }
-    public string? Fee { get; set; }
-    public int Credit { get; set; }
+    public int? CourseId { get; set; }
+    public int? ClassTypeId { get; set; }
+    public required string ClassCode { get; set; }
     public int DayOfWeek { get; set; }
     public int StartPeriod { get; set; }
     public int EndPeriod { get; set; }
+    public int Credit { get; set; }
+    public int Capacity { get; set; }
+    public bool CanBeRegistered { get; set; }
     public Course Course { get; set; } = null!;
+    public ClassType ClassType { get; set; } = null!;
     public IList<UserClass> UserClasses { get; set; } = new List<UserClass>();
+    public IList<RegistrationRecord> RegistrationRecords { get; set; } = new List<RegistrationRecord>();
 }

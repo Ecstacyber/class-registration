@@ -48,9 +48,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\src\components\lecturer\" />
     <Folder Include="ClientApp\src\assets\brand\" />
-    <Folder Include="ClientApp\src\components\admin\course\" />
-    <Folder Include="ClientApp\src\components\student\" />
+    <Folder Include="ClientApp\src\components\admin\registration-schedule\" />
     <Folder Include="ClientApp\src\store\" />
   </ItemGroup>
 

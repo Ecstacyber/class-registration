@@ -10,28 +10,58 @@ import {
     Toolbar,
     Edit
 } from '@syncfusion/ej2-react-grids';
+import { L10n } from '@syncfusion/ej2-base';
 import { DepartmentsClient } from '../../../web-api-client.ts';
 import '../department/grid-overview.css';
+
+L10n.load({
+    'vi-VN': {
+        grid: {
+            'Add': 'Thêm',
+            'Edit': 'Sửa',
+            'Delete': 'Xoá',
+            'Cancel': 'Huỷ',
+            'Update': 'Cập nhật',
+            'Save': 'Lưu',
+            'EditOperationAlert': 'Không có dòng được chọn để sửa',
+            'DeleteOperationAlert': 'Không có dòng được chọn để xoá',
+            'SaveButton': 'Lưu',
+            'CancelButton': 'Huỷ',
+            'EditFormTitle': 'Thông tin của khoa - ID: ',
+            'AddFormTitle': 'Thêm khoa',
+            'ConfirmDelete': 'Bạn có chắc chắn muốn xoá?',
+            'EmptyRecord': 'Không có dữ liệu',
+            'FilterbarTitle': ' - thanh tìm kiếm',
+            'Matches': 'Không có kết quả'
+        },
+        'pager': {
+            'currentPageInfo': '{0} trên {1} trang ',
+            'totalItemsInfo': '({0} dòng)',
+            'firstPageTooltip': 'Đầu',
+            'lastPageTooltip': 'Cuối',
+            'nextPageTooltip': 'Tiếp',
+            'previousPageTooltip': 'Trước',
+            'nextPagerTooltip': 'Đi đến trang tiếp theo',
+            'previousPagerTooltip': 'Trở về trang trước',
+            'pagerDropDown': 'Số dòng trên 1 trang',
+            'pagerAllDropDown': 'Các dòng',
+            'totalItemInfo': '({0} dòng)',
+            'All': 'Tất cả'
+        }
+    }
+});
 
 export class DepartmentGrid extends React.Component {
     static displayName = DepartmentGrid.name;
 
     departmentClient = new DepartmentsClient();
     data;
-    dReady = false;
-    dtTime = false;
-    isDataBound = false;
-    isDataChanged = true;
-    intervalFun;
-    clrIntervalFun;
-    clrIntervalFun1;
-    clrIntervalFun2;
-    dropSlectedIndex = null;
-    ddObj;
+    orderBy = '';
+    filterAttr = '';
+    filterText = '';
     gridInstance;
-    stTime;
     fields = { text: 'text', value: 'value' };
-    toolbarOptions = ['Add', 'Edit', 'Delete', 'ExcelExport'];
+    toolbarOptions = ['Add', 'Edit', 'Delete'];
     editSettings = {
         allowEditing: true,
         allowAdding: true,
@@ -61,40 +91,100 @@ export class DepartmentGrid extends React.Component {
             }
         ]
     };
-    searchOptions = {
-        fields: ['shortName', 'fullName'],
-        ignoreCase: true,
-        operator: 'contains'
-    };
+    //tempData = {
+    //    "result": [
+    //        {
+    //            "id": 2,
+    //            "shortName": "CNTT",
+    //            "fullName": "Công nghệ Thông tin"
+    //        },
+    //        {
+    //            "id": 3,
+    //            "shortName": "KTPM",
+    //            "fullName": "Kỹ thuật Phần mềm"
+    //        },
+    //        {
+    //            "id": 4,
+    //            "shortName": "HTTT",
+    //            "fullName": "Hệ thống Thông tin"
+    //        },
+    //        {
+    //            "id": 6,
+    //            "shortName": "KHMT",
+    //            "fullName": "Khoa học máy tính"
+    //        }
+    //    ],
+    //    "count": 4
+    //}
+
+    actionComplete(args) {
+        //console.log(args);
+    }
         
     componentDidMount() {
         this.departmentClient.getDepartments('allpages', 0, 12)
             .then((gridData) => { this.gridInstance.dataSource = gridData });
     }
 
+    actionBegin(args) {
+        //console.log(args);
+    }
+
     dataStateChange(state) {
+        console.log(state);
         if (state.action) {
-            if (state.action.requestType === 'paging' && !state.search) {
-                this.departmentClient.getDepartments('allpages', state.skip, state.take)
+            if (state.action.requestType === 'paging') {
+                this.departmentClient.getDepartments(
+                    'allpages',
+                    state.skip,
+                    state.take,
+                    this.orderBy,
+                    this.filterAttr,
+                    this.filterText
+                )
                     .then((gridData) => { this.gridInstance.dataSource = gridData });
                 return;
             }
 
             if (state.action.requestType === 'sorting') {
-                this.departmentClient.getDepartments('allpages', state.skip, state.take, state.action.columnName + '-' + state.action.direction)
-                    .then((gridData) => { this.gridInstance.dataSource = gridData });
-                return;
-            }
-
-            if (state.action.action === 'filter') {
-                if (state.action.currentFilterObject.value && state.action.currentFilterObject.value != '') {
+                if (state.action.columnName && state.action.direction) {
+                    this.orderBy = state.action.columnName + '-' + state.action.direction;
                     this.departmentClient.getDepartments(
                         'allpages',
                         state.skip,
                         state.take,
-                        state.action.columnName + '-' + state.action.direction,
-                        state.action.currentFilterObject.field + '-' + state.action.currentFilterObject.operator,
-                        state.action.currentFilterObject.value)
+                        this.orderBy,
+                        this.filterAttr ? this.filterAttr : '',
+                        this.filterText ? this.filterText : ''
+                    )
+                        .then((gridData) => { this.gridInstance.dataSource = gridData });
+                }
+                else {
+                    this.departmentClient.getDepartments(
+                        'allpages',
+                        state.skip,
+                        state.take,
+                        '',
+                        this.filterAttr ? this.filterAttr : '',
+                        this.filterText ? this.filterText : ''
+                    )
+                        .then((gridData) => { this.gridInstance.dataSource = gridData });
+                    this.orderBy = '';
+                }              
+                return;
+            }
+
+            if (state.action.action === 'filter') {
+                if (state.action.currentFilterObject.value && state.action.currentFilterObject.value !== '') {
+                    this.filterText = state.action.currentFilterObject.value;
+                    this.filterAttr = state.action.currentFilterObject.field;
+                    this.departmentClient.getDepartments(
+                        'allpages',
+                        state.skip,
+                        state.take,
+                        this.orderBy,
+                        this.filterAttr,
+                        this.filterText)
                         .then((gridData) => { this.gridInstance.dataSource = gridData });
                     return;
                 } else {
@@ -106,12 +196,23 @@ export class DepartmentGrid extends React.Component {
             }
 
             if (state.action.action === 'clearFilter') {
-                this.departmentClient.getDepartments('allpages', state.skip, state.take)
+                this.filterAttr = '';
+                this.filterText = '';
+                this.departmentClient.getDepartments(
+                    'allpages',
+                    0,
+                    12,
+                    this.orderBy,
+                    this.filterAttr,
+                    this.filterText)
                     .then((gridData) => { this.gridInstance.dataSource = gridData });
                 return;
             }
             
             if (state.action.requestType === 'refresh') {
+                this.orderBy = '';
+                this.filterAttr = '';
+                this.filterText = '';
                 this.departmentClient.getDepartments('allpages', state.skip, state.take)
                     .then((gridData) => { this.gridInstance.dataSource = gridData });
                 return;
@@ -126,21 +227,21 @@ export class DepartmentGrid extends React.Component {
     }
 
     dataSourceChanged(state) {
+        //console.log(state);
         if (state.action === 'add') {
             this.departmentClient.createDepartment(state.data);
-            this.departmentClient.getDepartments('allpages', state.skip, state.take)
-                .then((gridData) => { this.gridInstance.dataSource = gridData });
         } else if (state.action === 'edit') {
             this.departmentClient.updateDeparment(state.data.id, state.data);
-            this.departmentClient.getDepartments('allpages', state.skip, state.take)
-                .then((gridData) => { this.gridInstance.dataSource = gridData });
         } else if (state.requestType === 'delete') {
             state.data.forEach((deleteData) => {
                 this.departmentClient.deleteDepartment(deleteData.id);
             });
-            this.departmentClient.getDepartments('allpages', state.skip, state.take)
-                .then((gridData) => { this.gridInstance.dataSource = gridData });
         }
+        this.orderBy = '';
+        this.filterAttr = '';
+        this.filterText = '';
+        this.departmentClient.getDepartments('allpages', state.skip, state.take)
+            .then((gridData) => { this.gridInstance.dataSource = gridData });
     }
     
     render() {
@@ -152,7 +253,7 @@ export class DepartmentGrid extends React.Component {
                         <br />
                     </div>
                     <GridComponent id="overviewgrid"
-                        dataSource={this.data}
+                        dataSource={this.tempData}
                         toolbar={this.toolbarOptions}
                         editSettings={this.editSettings}
                         allowPaging={true}
@@ -171,13 +272,15 @@ export class DepartmentGrid extends React.Component {
                         enableHeaderFocus={true}
                         dataStateChange={this.dataStateChange.bind(this)}
                         dataSourceChanged={this.dataSourceChanged.bind(this)}
+                        actionBegin={this.actionBegin.bind(this)}
+                        actionComplete={this.actionComplete.bind(this)}
+                        locale='vi-VN'
                     >
                         <ColumnsDirective>
-                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='50'></ColumnDirective>
+                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='20'></ColumnDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' isPrimaryKey={true} width='100'></ColumnDirective>
-                            <ColumnDirective field='shortName' headerText='Mã khoa' width='100' validationRules={this.validationRules} clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='fullName' headerText='Tên khoa' width='120' validationRules={this.validationRules} clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='description' headerText='Mô tả' width='170' clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='shortName' headerText='Mã khoa' width='80' validationRules={this.validationRules} clipMode='EllipsisWithTooltip' />
+                            <ColumnDirective field='fullName' headerText='Tên khoa' width='140' validationRules={this.validationRules} clipMode='EllipsisWithTooltip' />
                         </ColumnsDirective>
                         <Inject services={[Filter, Sort, Toolbar, Edit, Page]} />
                     </GridComponent>

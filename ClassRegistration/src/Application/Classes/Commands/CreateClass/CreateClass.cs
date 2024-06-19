@@ -6,12 +6,14 @@ namespace ClassRegistration.Application.Classes.Commands.CreateClass;
 public record CreateClassCommand : IRequest<int>
 {
     public int CourseId { get; init; }
-    public string? ClassCode { get; init; }
+    public required string ClassCode { get; init; }
+    public required int ClassTypeId { get; init; }
+    public int Credit { get; init; }
     public int DayOfWeek { get; init; }
     public int StartPeriod { get; init; }
     public int EndPeriod { get; init; }
-    public string? Fee { get; init; }
-    public int Credit { get; init; }
+    public int Capacity { get; init; }
+    public string? CanBeRegistered { get; init; }
 }
 
 public class CreateClassCommandValidator : AbstractValidator<CreateClassCommand>
@@ -26,10 +28,22 @@ public class CreateClassCommandValidator : AbstractValidator<CreateClassCommand>
                 .WithMessage("'{PropertyName}' must exist.");
 
         RuleFor(v => v.ClassCode)
-            .NotEmpty().WithMessage("'{PropertyName}' must exist.")
-            .MaximumLength(10).WithMessage("ClassCode must not exceed 10 characters.");
+            .NotEmpty().WithMessage("'{PropertyName}' must not be empty.");
 
-        RuleFor(v => v.Credit)
+        RuleFor(v => v.DayOfWeek)
+            .NotEmpty()
+            .GreaterThanOrEqualTo(2)
+            .LessThanOrEqualTo(7);
+
+        RuleFor(v => v.StartPeriod)
+            .NotEmpty()
+            .LessThan(x => x.EndPeriod);
+
+        RuleFor(v => v.EndPeriod)
+            .NotEmpty()
+            .GreaterThan(x => x.StartPeriod);
+
+        RuleFor(v => v.Capacity)
             .GreaterThan(0);
     }
 
@@ -54,11 +68,13 @@ public class CreateClassCommandHandler : IRequestHandler<CreateClassCommand, int
         {
             CourseId = request.CourseId,
             ClassCode = request.ClassCode,
-            Fee = request.Fee,
+            ClassTypeId = request.ClassTypeId,
+            Credit = request.Credit,
             DayOfWeek = request.DayOfWeek,
             StartPeriod = request.StartPeriod,
             EndPeriod = request.EndPeriod,
-            Credit = request.Credit
+            Capacity = request.Capacity,
+            CanBeRegistered = request.CanBeRegistered == "true"
         };
         _context.Classes.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
