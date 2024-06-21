@@ -147,7 +147,7 @@ public class GetClassesQueryHandler : IRequestHandler<GetClassesQuery, ClassDto>
 
         if (string.IsNullOrEmpty(request.FilterAttribute) && string.IsNullOrEmpty(request.FilterValue))
         {
-            totalCount = await _context.Classes.CountAsync(cancellationToken);
+            totalCount = await _context.Classes.CountAsync(x => x.CanBeRegistered == true, cancellationToken);
         }
         else
         {

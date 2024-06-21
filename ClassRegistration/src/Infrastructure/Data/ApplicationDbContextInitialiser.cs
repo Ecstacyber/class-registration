@@ -67,14 +67,14 @@ public class ApplicationDbContextInitialiser
 
     public async Task TrySeedAsync()
     {
-        // Default departments
         var adminDepartment = new Department
         {
             ShortName = "ADMIN",
             FullName = "Administrator",
-            Description = "Default administrator department for development, testing",
+            Description = "Default department for development, testing. The name can be changed"
         };
-        if (!_context.Departments.Any(x => x.ShortName == adminDepartment.ShortName))
+            
+        if (!_context.Departments.Any())
         {
             await _context.Departments.AddAsync(adminDepartment);
             await _context.SaveChangesAsync();
@@ -84,9 +84,10 @@ public class ApplicationDbContextInitialiser
         {
             ShortName = "STUDENT",
             FullName = "Student",
-            Description = "Default student department for development, testing",
+            Description = "Default department for development, testing. The name can be changed",
         };
-        if (!_context.Departments.Any(x => x.ShortName == studentDepartment.ShortName))
+
+        if (!_context.Departments.Any())
         {
             await _context.Departments.AddAsync(studentDepartment);
             await _context.SaveChangesAsync();
@@ -160,19 +161,22 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default class types
-        if (!_context.ClassTypes.Any(x => x.Type == "Lý thuyết"))
+        if (!_context.ClassTypes.Any())
         {
-            var lt_type = new ClassType { Type = "Lý thuyết" };
-            _context.ClassTypes.Add(lt_type);
-            await _context.SaveChangesAsync();
+            if (!_context.ClassTypes.Any(x => x.Type == "Lý thuyết"))
+            {
+                var lt_type = new ClassType { Type = "Lý thuyết" };
+                _context.ClassTypes.Add(lt_type);
+                await _context.SaveChangesAsync();
+            }
+            if (!_context.ClassTypes.Any(x => x.Type == "Thực hành"))
+            {
+                var th_type = new ClassType { Type = "Thực hành" };
+                _context.ClassTypes.Add(th_type);
+                await _context.SaveChangesAsync();
+            }
         }
-        if (!_context.ClassTypes.Any(x => x.Type == "Thực hành"))
-        {
-            var th_type = new ClassType { Type = "Thực hành" };
-            _context.ClassTypes.Add(th_type);
-            await _context.SaveChangesAsync();
-        }
-
+        
         // Default data
         // Seed, if necessary
         if (!_context.TodoLists.Any())

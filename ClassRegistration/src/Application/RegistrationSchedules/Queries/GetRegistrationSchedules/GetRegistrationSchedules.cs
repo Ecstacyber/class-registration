@@ -117,7 +117,7 @@ public class GetRegistrationScheduleQueryHandler : IRequestHandler<GetRegistrati
         }
         else
         {
-            registrationSchedules = registrationSchedules.OrderByDescending(x => x.Id);
+            registrationSchedules = registrationSchedules.OrderBy(x => x.EndDate);
         }
 
         registrationSchedules = registrationSchedules.Skip(request.Skip);

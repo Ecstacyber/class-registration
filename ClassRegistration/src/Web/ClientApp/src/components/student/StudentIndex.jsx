@@ -1,4 +1,5 @@
 ﻿import React, { Component, useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import followIfLoginRedirect from '../api-authorization/followIfLoginRedirect';
 import { StudentLayout } from '../StudentLayout';
 import { CurrentRegistrationScheduleInfoClient } from '../../web-api-client.ts'
@@ -6,11 +7,15 @@ import { CurrentRegistrationScheduleInfoClient } from '../../web-api-client.ts'
 const StudentIndex = () => {
     const [currentRegWindow, setCurrentRegWindow] = useState(null);
     const [nextRegWindow, setNextRegWindow] = useState(null);
+    const [currentEndDate, setCurrentEndDate] = useState('');
 
     async function getData() {
         const currentRegistrationScheduleInfoClient = new CurrentRegistrationScheduleInfoClient();
         let currentRegInfo = await currentRegistrationScheduleInfoClient.getCurrentRegistrationSchedule();
         setCurrentRegWindow(currentRegInfo);
+        if (currentRegInfo !== null) {
+            setCurrentEndDate(format(new Date(currentRegInfo.endDate), 'dd/MM/yyyy kk:mm:ss'));
+        }
     }
 
     useEffect(() => {
@@ -18,7 +23,7 @@ const StudentIndex = () => {
     }, [])
 
     const IndexInfo = () => {
-        if (currentRegWindow?.startDate == null) {
+        if (currentRegWindow?.startDate === null) {
             return (
                 <StudentLayout>
                     <div className="container">
@@ -34,7 +39,23 @@ const StudentIndex = () => {
                 <StudentLayout>
                     <div className="container">
                         <div className="row">
-                            <h1>Đợt đăng ký môn học tiếp theo: {currentRegWindow.startDate}</h1>
+                            {/*<h1>Ngày kết thúc đợt đăng ký hiện tại:*/}
+                            {/*    {*/}
+                            {/*        ' '*/}
+                            {/*        + new Date(currentRegWindow?.startDate).getDay()*/}
+                            {/*        + '/'*/}
+                            {/*        + (new Date(currentRegWindow?.startDate).getMonth() + 1)*/}
+                            {/*        + '/'*/}
+                            {/*        + new Date(currentRegWindow?.startDate).getFullYear()*/}
+                            {/*        + ' '*/}
+                            {/*        + new Date(currentRegWindow?.startDate).getHours()*/}
+                            {/*        + ':'*/}
+                            {/*        + new Date(currentRegWindow?.startDate).getMinutes()*/}
+                            {/*        + ':'*/}
+                            {/*        + new Date(currentRegWindow?.startDate).getSeconds()*/}
+                            {/*    }*/}
+                            {/*</h1>*/}
+                            <h1>Ngày kết thúc đợt đăng ký hiện tại: {currentEndDate}</h1>
                         </div>
                     </div>
                 </StudentLayout>

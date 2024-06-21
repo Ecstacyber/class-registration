@@ -256,7 +256,8 @@ const AddLecturerToClass = () => {
 
     async function onAddClick() {
         const userClassesClient = new UserClassesClient();
-        let addRes = [];
+        let success = [];
+        let failed = [];
         for (let i = 0; i < selectedLecturers.length; i++) {
             let newUserClass = {
                 classId: classId,
@@ -265,12 +266,48 @@ const AddLecturerToClass = () => {
                 passed: 'true'
             }
             let res = await userClassesClient.addUserToClass(newUserClass);
-            addRes.push({
-                userName: selectedLecturers[i].userName,
-                result: res
-            });
+            if (res === 0 || res === 1) {
+                failed.push({
+                    userName: selectedLecturers[i].userName,
+                    result: res
+                });
+            }
+            else {
+                success.push({
+                    userName: selectedLecturers[i].userName,
+                    result: res
+                });
+            }
         }
-        console.log(addRes);
+        if (failed.length === 0) {
+            navigate('/admin-index/course/' + courseId + '/class/' + classId + '/window/' + registrationScheduleId);
+        }
+        else if (success.length > 0 && failed.length > 0) {
+            let alertContent = 'Thêm ' + success.length + ' giảng viên thành công, ' + failed.length + ' giảng viên thất bại';
+            for (let i = 0; i < failed.length; i++) {
+                alertContent += '\n' + failed[i].userName + ' - ';
+                if (failed[i].res === 0) {
+                    alertContent += 'Người dùng không tồn tại';
+                }
+                else if (failed[i].res === 1) {
+                    alertContent += 'Người dùng đã có trong lớp';
+                }
+            }
+            alert(alertContent);
+        }
+        else if (failed.length > 0) {
+            let alertContent = 'Thêm ' + failed.length + ' giảng viên thất bại';
+            for (let i = 0; i < failed.length; i++) {
+                alertContent += '\n' + failed[i].userName + ' - ';
+                if (failed[i].res === 0) {
+                    alertContent += 'Người dùng không tồn tại';
+                }
+                else if (failed[i].res === 1) {
+                    alertContent += 'Người dùng đã có trong lớp';
+                }
+            }
+            alert(alertContent);
+        }
     }
 
     return (

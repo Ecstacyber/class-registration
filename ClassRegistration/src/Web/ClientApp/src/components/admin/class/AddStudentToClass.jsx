@@ -12,7 +12,8 @@ import {
 import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
-import { useNavigate, useLocation, useParams, Link } from 'react-router-dom';
+import { ToastComponent } from '@syncfusion/ej2-react-notifications';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { AdminLayout } from '../../AdminLayout';
 import Button from 'react-bootstrap/Button';
 import {
@@ -59,7 +60,8 @@ const AddStudentToClass = () => {
         count: 0
     });
     const [selectedStudents, setSelectedStudents] = useState([]);
-    const location = useLocation();
+    const [successfulAddResult, setSuccessfulAddResult] = useState([]);
+    const [failedAddResult, setFailedAddResult] = useState([]);
     const navigate = useNavigate();
     let orderBy = '';
     let filterAttr = '';
@@ -86,6 +88,8 @@ const AddStudentToClass = () => {
     const filter = {
         ignoreAccent: true
     };
+    //let toastObj;
+    //let position = { X: 'Right' };
     //const tempLecturer = {
     //    "result": [
     //        {
@@ -227,14 +231,10 @@ const AddStudentToClass = () => {
     }
 
     function onRowSelected(args) {
-        console.log(selectedLecturers);
-        console.log(args);
         setSelectedStudents([...selectedStudents, args.data]);
     }
 
     function onRowDeselected(args) {
-        console.log(selectedLecturers);
-        console.log(args);
         setSelectedStudents(selectedStudents.filter(x => x.id !== args.data.id));
     }
 
@@ -254,8 +254,9 @@ const AddStudentToClass = () => {
 
     async function onAddClick() {
         const userClassesClient = new UserClassesClient();
-        let addRes = [];
-        for (let i = 0; i < selectedLecturers.length; i++) {
+        let success = [];
+        let failed = [];
+        for (let i = 0; i < selectedStudents.length; i++) {
             let newUserClass = {
                 classId: classId,
                 registrationScheduleId: registrationScheduleId,
@@ -263,60 +264,162 @@ const AddStudentToClass = () => {
                 passed: 'true'
             }
             let res = await userClassesClient.addUserToClass(newUserClass);
-            addRes.push({
-                userName: selectedStudents[i].userName,
-                result: res
-            });
+            if (res === 0 || res === 1) {
+                failed.push({
+                    userName: selectedStudents[i].userName,
+                    result: res
+                });
+            }
+            else {
+                success.push({
+                    userName: selectedStudents[i].userName,
+                    result: res
+                });
+            }       
         }
-        console.log(addRes);
+        if (failed.length === 0) {
+            navigate('/admin-index/course/' + courseId + '/class/' + classId + '/window/' + registrationScheduleId);
+        }
+        else if (success.length > 0 && failed.length > 0) {
+            let alertContent = 'Thêm ' + success.length + ' sinh viên thành công, ' + failed.length + ' sinh viên thất bại';
+            for (let i = 0; i < failed.length; i++) {
+                alertContent += '\n' + failed[i].userName + ' - ';
+                if (failed[i].res === 0) {
+                    alertContent += 'Người dùng không tồn tại';
+                }
+                else if (failed[i].res === 1) {
+                    alertContent += 'Người dùng đã có trong lớp';
+                }
+            }
+            alert(alertContent);
+        }
+        else if (failed.length > 0) {
+            let alertContent = 'Thêm ' + failed.length + ' sinh viên thất bại';
+            for (let i = 0; i < failed.length; i++) {
+                alertContent += '\n' + failed[i].userName + ' - ';
+                if (failed[i].res === 0) {
+                    alertContent += 'Người dùng không tồn tại';
+                }
+                else if (failed[i].res === 1) {
+                    alertContent += 'Người dùng đã có trong lớp';
+                }
+            }
+            alert(alertContent);
+        }
+        //setSuccessfulAddResult(success);
+        //setFailedAddResult(failed);
+        //toastObj.show();
+        //setSuccessfulAddResult([]);
+        //setFailedAddResult([]);
     }
 
+    //function create() {
+    //    setTimeout(function () {
+    //        if (successfulAddResult.length > 0) {
+    //            toastObj.show({
+    //                title: 'Thông báo',
+    //                content: 'Thêm ' + successfulAddResult.length + ' sinh viên thành công',
+    //                cssClass: 'e-toast-info',
+    //                icon: 'e-info toast-icons'
+    //            });
+    //        }
+    //        else if (successfulAddResult.length > 0 && failedAddResult.length > 0) {
+    //            let toastContent = 'Thêm ' + successfulAddResult.length + ' sinh viên thành công\n' + 'Thêm ' + failedAddResult.length + ' sinh viên thất bại';
+    //            for (let i = 0; i < failedAddResult.length; i++) {
+    //                if (failedAddResult[i].res === 0) {
+    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng không tồn tại';
+    //                }
+    //                else if (failedAddResult[i].res === 1) {
+    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng đã có trong lớp';
+    //                }
+    //            }
+    //            toastObj.show({
+    //                title: 'Thông báo',
+    //                content: toastContent,
+    //                cssClass: 'e-toast-info',
+    //                icon: 'e-info toast-icons'
+    //            });
+    //        }
+    //        else if (failedAddResult.length > 0) {
+    //            let toastContent = 'Thêm ' + failedAddResult.length + ' sinh viên thất bại';
+    //            for (let i = 0; i < failedAddResult.length; i++) {
+    //                if (failedAddResult[i].res === 0) {
+    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng không tồn tại';
+    //                }
+    //                else if (failedAddResult[i].res === 1) {
+    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng đã có trong lớp';
+    //                }
+    //            }
+    //            toastObj.show({
+    //                title: 'Thông báo',
+    //                content: toastContent,
+    //                cssClass: 'e-toast-info',
+    //                icon: 'e-info toast-icons'
+    //            });
+    //        }
+    //    }.bind(this), 200);
+    //}
+
+    //function onclose(e) {
+    //    if (e.toastContainer.childElementCount === 0) {
+    //        hideTosat.element.style.display = 'none';
+    //    }
+    //}
+
     return (
-        <AdminLayout>
-            <h2>{classData?.classCode}</h2>
-            <h3>{classData?.course?.courseName}</h3>
-            <h3 className="py-2">Thêm sinh viên</h3>
-            <div style={{ paddingBottom: '18px' }}>
-                <Link to={'/admin-index/course/' + courseId + '/class/' + classId + '/window/' + registrationScheduleId}>Trở về lớp {classData?.classCode}</Link>
-            </div>
-            <div className='control-pane'>
-                <div className='control-section'>
-                    <div style={{ paddingBottom: '18px' }}>
-                        <AddStudentButton />
-                    </div>
-                    <GridComponent
-                        id="studentGrid"
-                        dataSource={students}
-                        toolbar={toolbarOptions}
-                        allowPaging={true}
-                        enableHover={true}
-                        height='800'
-                        loadingIndicator={{ indicatorType: 'Shimmer' }}
-                        rowHeight={38}
-                        ref={(g) => { gridInstance = g; }}
-                        allowFiltering={true}
-                        filterSettings={filter}
-                        allowSorting={true}
-                        allowMultiSorting={true}
-                        allowSelection={true}
-                        enableHeaderFocus={true}
-                        dataStateChange={dataStateChange.bind(this)}
-                        dataSourceChanged={dataSourceChanged.bind(this)}
-                        rowSelected={onRowSelected.bind(this)}
-                        rowDeselected={onRowDeselected.bind(this)}
-                        locale='vi-VN'
-                    >
-                        <ColumnsDirective>
-                            <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
-                            <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
-                            <ColumnDirective field='userCode' headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />
-                            <ColumnDirective field='userName' headerText='Tên' width='200' clipMode='EllipsisWithTooltip'></ColumnDirective>
-                        </ColumnsDirective>
-                        <Inject services={[Filter, Sort, Page, Toolbar]} />
-                    </GridComponent>
+        <div>
+            {/*<ToastComponent*/}
+            {/*    ref={(toast) => { toastObj = toast; }}*/}
+            {/*    id='addStudentToast'*/}
+            {/*    position={position}*/}
+            {/*    created={create.bind(this)}>*/}
+            {/*</ToastComponent>*/}
+            <AdminLayout>
+                <h2>{classData?.classCode}</h2>
+                <h3>{classData?.course?.courseName}</h3>
+                <h3 className="py-2">Thêm sinh viên</h3>
+                <div style={{ paddingBottom: '18px' }}>
+                    <Link to={'/admin-index/course/' + courseId + '/class/' + classId + '/window/' + registrationScheduleId}>Trở về lớp {classData?.classCode}</Link>
                 </div>
-            </div>
-        </AdminLayout>
+                <div className='control-pane'>
+                    <div className='control-section'>
+                        <div style={{ paddingBottom: '18px' }}>
+                            <AddStudentButton />
+                        </div>
+                        <GridComponent
+                            id="studentGrid"
+                            dataSource={students}
+                            toolbar={toolbarOptions}
+                            allowPaging={true}
+                            enableHover={true}
+                            height='600'
+                            loadingIndicator={{ indicatorType: 'Shimmer' }}
+                            rowHeight={38}
+                            ref={(g) => { gridInstance = g; }}
+                            allowFiltering={true}
+                            filterSettings={filter}
+                            allowSorting={true}
+                            allowMultiSorting={true}
+                            allowSelection={true}
+                            enableHeaderFocus={true}
+                            dataStateChange={dataStateChange.bind(this)}
+                            dataSourceChanged={dataSourceChanged.bind(this)}
+                            rowSelected={onRowSelected.bind(this)}
+                            rowDeselected={onRowDeselected.bind(this)}
+                            locale='vi-VN'
+                        >
+                            <ColumnsDirective>
+                                <ColumnDirective type='checkbox' allowSorting={false} allowFiltering={false} width='40'></ColumnDirective>
+                                <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
+                                <ColumnDirective field='userCode' headerText='MSSV' width='60' clipMode='EllipsisWithTooltip' />
+                                <ColumnDirective field='userName' headerText='Tên' width='200' clipMode='EllipsisWithTooltip'></ColumnDirective>
+                            </ColumnsDirective>
+                            <Inject services={[Filter, Sort, Page, Toolbar]} />
+                        </GridComponent>
+                    </div>
+                </div>
+            </AdminLayout>
+        </div>
     )
 }
 

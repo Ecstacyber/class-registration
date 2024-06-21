@@ -37,6 +37,7 @@ public class GetUserInClassQueryHandler : IRequestHandler<GetStudentsInClass, Us
             .Include(x => x.RegistrationSchedule)
             .Include(x => x.Class)
             .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationId)
+            .OrderBy(x => x.User.UserCode)
             .ProjectTo<UserClassResult>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
