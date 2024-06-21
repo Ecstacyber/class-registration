@@ -52,9 +52,14 @@ public class AddUserToClassCommandHandler : IRequestHandler<AddUserToClassComman
 
     public async Task<int> Handle(AddUserToClassCommand request, CancellationToken cancellationToken)
     {
-        if (_context.UserClasses.Any(x => x.UserId == request.UserId && x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationScheduleId))
+        var currentUser = await _context.Humans.FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
+        if (currentUser == null)
         {
             return 0;
+        }
+        if (_context.UserClasses.Any(x => x.UserId == currentUser.Id && x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationScheduleId))
+        {
+            return 1;
         }
         var entity = new UserClass
         {

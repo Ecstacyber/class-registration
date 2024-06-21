@@ -126,14 +126,14 @@ const ClassDetails = () => {
     const studentToolbarOptions = ['Add', 'Edit', 'Delete'];
     const lecturerToolbarOptions = ['Add', 'Delete', 'ExcelExport'];
     const studentEditSettings = {
-        allowEditing: true,
+        allowEditing: false,
         allowAdding: true,
         allowDeleting: true,
         showDeleteConfirmDialog: true,
         mode: 'Dialog'
     };
     const lecturerEditSettings = {
-        allowEditing: true,
+        allowEditing: false,
         allowAdding: true,
         allowDeleting: true,
         showDeleteConfirmDialog: true,
@@ -211,149 +211,28 @@ const ClassDetails = () => {
 
     function dataStateChange(args) {
         console.log(args);
-        //const studentsInClassClient = new StudentsInClassClient();
-        //const lecturersInClassClient = new LecturersInClassClient();
-        //if (args.action) {
-        //    if (args.action.requestType === 'paging') {
-        //        studentsInClassClient.getStudentsInClass(classId, registrationScheduleId.then((gridData) => { studentGridInstance.dataSource = gridData }));
-        //        lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId.then((gridData) => { lecturerGridInstance.dataSource = gridData }));
-        //        return;
-        //    }
-
-        //    if (args.action.requestType === 'sorting') {
-        //        if (args.action.columnName && args.action.direction) {
-        //            orderBy = args.action.columnName + '-' + args.action.direction;
-        //            classesByCourseIdClient.getClassesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                orderBy,
-        //                filterAttr ? filterAttr : '',
-        //                filterText ? filterText : ''
-        //            )
-        //                .then((gridData) => { gridInstance.dataSource = gridData });
-        //            return;
-        //        }
-        //        else {
-        //            orderBy = '';
-        //            classesByCourseIdClient.getClassesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                '',
-        //                filterAttr ? filterAttr : '',
-        //                filterText ? filterText : ''
-        //            )
-        //                .then((gridData) => { gridInstance.dataSource = gridData });
-        //            return;
-        //        }
-        //    }
-
-        //    if (args.action.action === 'filter') {
-        //        if (args.action.currentFilterObject.value && args.action.currentFilterObject.value !== '') {
-        //            filterAttr = args.action.currentFilterObject.field;
-        //            filterText = args.action.currentFilterObject.value;
-        //            classesByCourseIdClient.getClassesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                orderBy,
-        //                filterAttr,
-        //                filterText
-        //            )
-        //                .then((gridData) => { gridInstance.dataSource = gridData });
-        //            return;
-        //        } else {
-        //            classesByCourseIdClient.getClassesByCourseId(courseId, args.skip, args.take)
-        //                .then((gridData) => { gridInstance.dataSource = gridData });
-        //            return;
-        //        }
-
-        //    }
-
-        //    if (args.action.action === 'clearFilter') {
-        //        filterAttr = '';
-        //        filterText = '';
-        //        classesByCourseIdClient.getClassesByCourseId(courseId, args.skip, args.take)
-        //            .then((gridData) => { gridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    if (args.action.requestType === 'refresh') {
-        //        filterAttr = '';
-        //        filterText = '';
-        //        orderBy = '';
-        //        classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
-        //            .then((gridData) => { gridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    if (args.action.requestType === 'save') {
-        //        filterAttr = '';
-        //        filterText = '';
-        //        orderBy = '';
-        //        classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
-        //            .then((gridData) => { gridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    classesByCourseIdClient.getClassesByCourseId(courseId, args.skip, args.take)
-        //        .then((gridData) => { gridInstance.dataSource = gridData });
-
-        //} else {
-        //    classesByCourseIdClient.getClassesByCourseId(courseId, args.skip, args.take)
-        //        .then((gridData) => { gridInstance.dataSource = gridData });
-        //}
-    }
-
-    function onActionBegin(args) {
-        //if ((args.action === 'add' || args.action === 'edit') && args.requestType === 'save') {
-        //    if (args.data.endPeriod <= args.data.startPeriod) {
-        //        args.cancel = true;
-        //    }
-        //}
+        const studentsInClassClient = new StudentsInClassClient();
+        studentsInClassClient.getStudentsInClass(classId, registrationScheduleId)
+            .then((gridData) => { studentGridInstance.dataSource = gridData; });
+        const lecturersInClassClient = new LecturersInClassClient();
+        lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId)
+            .then((gridData) => { lecturerGridInstance.dataSource = gridData });
     }
 
     function dataSourceChanged(args) {
         console.log(args);
-        //const classesClient = new ClassesClient();
-        //const classesByCourseIdClient = new ClassesByCourseIdClient();
-        //if (args.action === 'add' && args.requestType === 'save') {
-        //    let newClass = {
-        //        courseId: courseId,
-        //        classCode: args.data.classCode,
-        //        classTypeId: args.data.classTypeId,
-        //        dayOfWeek: args.data.dayOfWeek,
-        //        startPeriod: args.data.startPeriod,
-        //        endPeriod: args.data.endPeriod,
-        //        capacity: args.data.capacity
-        //    };
-        //    classesClient.createClass(newClass);
-        //} else if (args.action === 'edit') {
-        //    if (args.data.endPeriod <= args.data.startPeriod) {
-        //        args.cancel = true;
-        //    }
-        //    let updatedClass = {
-        //        id: args.data.id,
-        //        courseId: courseId,
-        //        classCode: args.data.classCode,
-        //        classTypeId: args.data.classTypeId,
-        //        dayOfWeek: args.data.dayOfWeek,
-        //        startPeriod: args.data.startPeriod,
-        //        endPeriod: args.data.endPeriod,
-        //        capacity: args.data.capacity
-        //    };
-        //    classesClient.updateClass(args.data.id, updatedClass);
-        //} else if (args.requestType === 'delete') {
-        //    args.data.forEach((deleteData) => {
-        //        classesClient.deleteClass(deleteData.id);
-        //    });
-        //}
-        //filterAttr = '';
-        //filterText = '';
-        //orderBy = '';
-        //classesByCourseIdClient.getClassesByCourseId(courseId, 0, 12)
-        //    .then((gridData) => { gridInstance.dataSource = gridData });
+        const userClassesClient = new UserClassesClient();
+        if (args.requestType === 'delete') {
+            args.data.forEach((deleteData) => {
+                userClassesClient.removeUserFromClass(deleteData.id);
+            });
+        }
+        //const studentsInClassClient = new StudentsInClassClient();
+        //studentsInClassClient.getStudentsInClass(classId, registrationScheduleId)
+        //    .then((gridData) => { studentGridInstance.dataSource = gridData });
+        //const lecturersInClassClient = new LecturersInClassClient();
+        //lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId)
+        //    .then((gridData) => { lecturerGridInstance.dataSource = gridData });
     }
 
     function onRecordDoubleClick(args) {
@@ -362,157 +241,27 @@ const ClassDetails = () => {
 
     function pcd_dataStateChange(args) {
         console.log(args);
-        //const prerequisiteCoursesByCourseIdClient = new PrerequisiteCoursesByCourseIdClient();
-        //if (args.action) {
-        //    if (args.action.requestType === 'paging') {
-        //        prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(
-        //            courseId,
-        //            args.skip,
-        //            args.take,
-        //            pcgOrderBy,
-        //            pcgFilterAttr,
-        //            pcgFilterText
-        //        )
-        //            .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    if (args.action.requestType === 'sorting') {
-        //        if (args.action.columnName && args.action.direction) {
-        //            pcgOrderBy = args.action.columnName + '-' + args.action.direction;
-        //            prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                pcgOrderBy,
-        //                pcgFilterAttr ? pcgFilterAttr : '',
-        //                pcgFilterText ? pcgFilterText : ''
-        //            )
-        //                .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //            return;
-        //        }
-        //        else {
-        //            pcgOrderBy = '';
-        //            prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                '',
-        //                pcgFilterAttr ? pcgFilterAttr : '',
-        //                pcgFilterText ? pcgFilterText : ''
-        //            )
-        //                .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //            return;
-        //        }
-        //    }
-
-        //    if (args.action.action === 'filter') {
-        //        if (args.action.currentFilterObject.value && args.action.currentFilterObject.value !== '') {
-        //            pcgFilterAttr = args.action.currentFilterObject.field;
-        //            pcgFilterText = args.action.currentFilterObject.value;
-        //            prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(
-        //                courseId,
-        //                args.skip,
-        //                args.take,
-        //                pcgOrderBy,
-        //                pcgFilterAttr,
-        //                pcgFilterText
-        //            )
-        //                .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //            return;
-        //        } else {
-        //            prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-        //                .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //            return;
-        //        }
-        //    }
-
-        //    if (args.action.action === 'clearFilter') {
-        //        pcgFilterAttr = '';
-        //        pcgFilterText = '';
-        //        prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-        //            .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    if (args.action.requestType === 'refresh') {
-        //        pcgFilterAttr = '';
-        //        pcgFilterText = '';
-        //        pcgOrderBy = '';
-        //        prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-        //            .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //        return;
-        //    }
-
-        //    //if (args.action.requestType === 'save') {
-        //    //    pcgFilterAttr = '';
-        //    //    pcgFilterText = '';
-        //    //    pcgOrderBy = '';
-        //    //    prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-        //    //        .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //    //    return;
-        //    //}
-
-        //    prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, args.skip, args.take)
-        //        .then((gridData) => { pcdGridInstance.dataSource = gridData });
-
-        //} else {
-        //    prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, args.skip, args.take)
-        //        .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //}
+        const studentsInClassClient = new StudentsInClassClient();
+        studentsInClassClient.getStudentsInClass(classId, registrationScheduleId)
+            .then((gridData) => { studentGridInstance.dataSource = gridData });
+        const lecturersInClassClient = new LecturersInClassClient();
+        lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId)
+            .then((gridData) => { lecturerGridInstance.dataSource = gridData });
     }
 
     function pcd_dataSourceChanged(args) {
         console.log(args);
-        //const prerequisiteCoursesClient = new PrerequisiteCoursesClient();
-        //if (args.action === 'add' && args.requestType === 'save') {
-        //    let newCoursePrerequisite = {
-        //        courseId: courseId,
-        //        prerequisiteCourseId: args.data.prerequisiteCourseId,
-        //        requirePassed: args.data.requirePassed
-        //    };
-        //    prerequisiteCoursesClient.createCoursePrerequisite(newCoursePrerequisite);
-        //} else if (args.action === 'edit') {
-        //    //let updatedPrerequisiteCourse = {
-        //    //    courseId: courseId,
-        //    //    prerequisiteCourseId: args.data.prerequisiteCourseId,
-        //    //    requirePassed: args.data.requirePassed
-        //    //};
-        //    //prerequisiteCoursesClient.updatePrerequisiteCourses(args.data.id, updatedPrerequisiteCourse);
-        //} else if (args.requestType === 'delete') {
-        //    args.data.forEach((deleteData) => {
-        //        prerequisiteCoursesClient.deleteCoursePrerequisite(deleteData.id);
-        //    });
-        //    const prerequisiteCoursesByCourseIdClient = new PrerequisiteCoursesByCourseIdClient();
-        //    pcgFilterAttr = '';
-        //    pcgFilterText = '';
-        //    pcgOrderBy = '';
-        //    prerequisiteCoursesByCourseIdClient.getPrerequisiteCoursesByCourseId(courseId, 0, 12)
-        //        .then((gridData) => { pcdGridInstance.dataSource = gridData });
-        //    return;
-        //}
+        const studentsInClassClient = new StudentsInClassClient();
+        studentsInClassClient.getStudentsInClass(classId, registrationScheduleId)
+            .then((gridData) => { studentGridInstance.dataSource = gridData });
+        const lecturersInClassClient = new LecturersInClassClient();
+        lecturersInClassClient.getLecturersInClass(classId, registrationScheduleId)
+            .then((gridData) => { lecturerGridInstance.dataSource = gridData });
     }
 
     function pcd_onRecordDoubleClick(args) {
         console.log(args);
     }
-
-    //function studentDialogTemplate(props) {
-    //    return (<StudentDialogTemplate {...props} />);
-    //}
-
-    //function actionComplete(args) {
-    //    if ((args.requestType === 'beginEdit' || args.requestType === 'add')) {
-    //        if (Browser.isDevice) {
-    //            args.dialog.height = window.innerHeight - 90 + 'px';
-    //            args.dialog.dataBind();
-    //        }
-    //    }
-    //}
-
-    //function onAddLecturerClick() {
-    //    navigate('./add-lecturer', { state: { from: location.pathname } });
-    //}
 
     function getExcelExportProperties() {
         let excelExportProperties = {
@@ -684,7 +433,6 @@ const ClassDetails = () => {
                         dataSource={lecturerData}
                         toolbar={lecturerToolbarOptions}
                         editSettings={lecturerEditSettings}
-                        pageSettings={pageSettings}
                         enableHover={true}
                         height='100'
                         loadingIndicator={{ indicatorType: 'Shimmer' }}
@@ -723,17 +471,11 @@ const ClassDetails = () => {
                         dataSource={studentData}
                         toolbar={studentToolbarOptions}
                         editSettings={studentEditSettings}
-                        allowPaging={true}
-                        pageSettings={pageSettings}
                         enableHover={true}
                         height='500'
                         loadingIndicator={{ indicatorType: 'Shimmer' }}
                         rowHeight={38}
                         ref={(g) => { studentGridInstance = g; }}
-                        allowFiltering={true}
-                        filterSettings={filter}
-                        allowSorting={true}
-                        allowMultiSorting={true}
                         allowSelection={true}
                         selectionSettings={select}
                         enableHeaderFocus={true}
@@ -758,7 +500,7 @@ const ClassDetails = () => {
                             {/*    editType="booleanedit"*/}
                             {/*    type="boolean" clipMode='EllipsisWithTooltip' />*/}
                         </ColumnsDirective>
-                        <Inject services={[Filter, Sort, Page, ExcelExport]} />
+                        <Inject services={[Toolbar, ExcelExport, Edit]} />
                     </GridComponent>
                 </div>
             </div>

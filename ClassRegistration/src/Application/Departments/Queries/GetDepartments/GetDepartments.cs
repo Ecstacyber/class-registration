@@ -170,7 +170,7 @@ public class GetDepartmentsQueryHandler : IRequestHandler<GetDepartmentsQuery, D
                 {
                     departments = await _context.Departments
                         .AsNoTracking()
-                        .OrderBy(x => x.Id)
+                        .OrderByDescending(x => x.Id)
                         .Skip((int)request.Skip)
                         .Take((int)request.Top).ToListAsync(cancellationToken);
                 }

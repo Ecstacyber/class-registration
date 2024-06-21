@@ -74,8 +74,19 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                 Result = "RegistrationScheduleIsNull"
             };
         }
-        
-        var currentCount = await _context.UserClasses.CountAsync(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationScheduleId, cancellationToken);
+
+        int currentCount = 0;
+        var usersInClass = await _context.UserClasses
+            .Where(x => x.ClassId == request.ClassId && x.RegistrationScheduleId == request.RegistrationScheduleId)
+            .ToListAsync(cancellationToken);
+        foreach (var u in usersInClass)
+        {
+            var roles = await _identityService.GetUserRoleAsync(u.Id);
+            if (roles.Contains("Student"))
+            {
+                currentCount++;
+            }
+        }
         var currentClass = await _context.Classes.FirstOrDefaultAsync(x => x.Id == request.ClassId, cancellationToken);
         var entity = new UserClass();
 
@@ -162,7 +173,7 @@ public class ClassRegisterCommandHandler : IRequestHandler<ClassRegisterCommand,
                         RegistrationRecord record = new RegistrationRecord
                         {
                             RequestType = "Đăng ký",
-                            Message = "Chưa qua môn tiên quyết",
+                            Message = "Chưa học môn tiên quyết",
                             Result = "Thất bại",
                             RegistrationScheduleId = request.RegistrationScheduleId,
                             UserId = request.UserId,

@@ -474,11 +474,14 @@ const ClassRegistration = () => {
                 <div className='control-pane'>
                     <div className='control-section'>
                         <div className="row" style={{ paddingBottom: '9px' }}>
-                            <div className="col-md-6">
+                            <div className="col-md-4">
                                 <h5>Các môn đã chọn</h5>
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-md-4">
                                 <CreditCounter/>
+                            </div>
+                            <div className="col-md-4">
+                                <h5>Tín chỉ tối đa: {currentRegScheduleInfo?.maximumCredit}</h5>
                             </div>
                         </div>
                         {/*<GridComponent id="overviewgrid"*/}

@@ -516,6 +516,7 @@ const RegistrationResult = () => {
                         rowHeight={38}
                         ref={(g) => { recordGridInstance = g; }}
                         enableHeaderFocus={true}
+                        locale='vi-VN'
                     >
                         <ColumnsDirective>
                             <ColumnDirective field='id' visible={false} headerText='ID' width='100' isPrimaryKey={true}></ColumnDirective>
