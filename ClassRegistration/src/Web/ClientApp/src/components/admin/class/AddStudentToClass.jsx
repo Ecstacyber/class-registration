@@ -12,7 +12,6 @@ import {
 import { createElement, L10n } from '@syncfusion/ej2-base';
 import { DropDownList } from '@syncfusion/ej2-dropdowns';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
-import { ToastComponent } from '@syncfusion/ej2-react-notifications';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { AdminLayout } from '../../AdminLayout';
 import Button from 'react-bootstrap/Button';
@@ -306,74 +305,10 @@ const AddStudentToClass = () => {
             }
             alert(alertContent);
         }
-        //setSuccessfulAddResult(success);
-        //setFailedAddResult(failed);
-        //toastObj.show();
-        //setSuccessfulAddResult([]);
-        //setFailedAddResult([]);
     }
-
-    //function create() {
-    //    setTimeout(function () {
-    //        if (successfulAddResult.length > 0) {
-    //            toastObj.show({
-    //                title: 'Thông báo',
-    //                content: 'Thêm ' + successfulAddResult.length + ' sinh viên thành công',
-    //                cssClass: 'e-toast-info',
-    //                icon: 'e-info toast-icons'
-    //            });
-    //        }
-    //        else if (successfulAddResult.length > 0 && failedAddResult.length > 0) {
-    //            let toastContent = 'Thêm ' + successfulAddResult.length + ' sinh viên thành công\n' + 'Thêm ' + failedAddResult.length + ' sinh viên thất bại';
-    //            for (let i = 0; i < failedAddResult.length; i++) {
-    //                if (failedAddResult[i].res === 0) {
-    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng không tồn tại';
-    //                }
-    //                else if (failedAddResult[i].res === 1) {
-    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng đã có trong lớp';
-    //                }
-    //            }
-    //            toastObj.show({
-    //                title: 'Thông báo',
-    //                content: toastContent,
-    //                cssClass: 'e-toast-info',
-    //                icon: 'e-info toast-icons'
-    //            });
-    //        }
-    //        else if (failedAddResult.length > 0) {
-    //            let toastContent = 'Thêm ' + failedAddResult.length + ' sinh viên thất bại';
-    //            for (let i = 0; i < failedAddResult.length; i++) {
-    //                if (failedAddResult[i].res === 0) {
-    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng không tồn tại';
-    //                }
-    //                else if (failedAddResult[i].res === 1) {
-    //                    toastContent += '\n' + failedAddResult[i].userName + ' - Người dùng đã có trong lớp';
-    //                }
-    //            }
-    //            toastObj.show({
-    //                title: 'Thông báo',
-    //                content: toastContent,
-    //                cssClass: 'e-toast-info',
-    //                icon: 'e-info toast-icons'
-    //            });
-    //        }
-    //    }.bind(this), 200);
-    //}
-
-    //function onclose(e) {
-    //    if (e.toastContainer.childElementCount === 0) {
-    //        hideTosat.element.style.display = 'none';
-    //    }
-    //}
 
     return (
         <div>
-            {/*<ToastComponent*/}
-            {/*    ref={(toast) => { toastObj = toast; }}*/}
-            {/*    id='addStudentToast'*/}
-            {/*    position={position}*/}
-            {/*    created={create.bind(this)}>*/}
-            {/*</ToastComponent>*/}
             <AdminLayout>
                 <h2>{classData?.classCode}</h2>
                 <h3>{classData?.course?.courseName}</h3>
