@@ -23,7 +23,7 @@ const StudentIndex = () => {
     }, [])
 
     const IndexInfo = () => {
-        if (currentRegWindow?.startDate === null) {
+        if (currentEndDate === '') {
             return (
                 <StudentLayout>
                     <div className="container">

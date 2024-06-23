@@ -20,18 +20,18 @@ public class UpdateRegistrationScheduleCommandValidator : AbstractValidator<Upda
     {
         _context = context;
 
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .MustAsync(BeUniqueName)
-                .When(x => x.Id != 0)
-                .WithMessage("'{PropertyName}' must be unique.")
-                .WithErrorCode("Unique");
+        //RuleFor(x => x.Name)
+        //    .NotEmpty()
+        //    .MustAsync(BeUniqueName)
+        //        .When(x => x.Id != 0)
+        //        .WithMessage("'{PropertyName}' must be unique.")
+        //        .WithErrorCode("Unique");
     }
 
-    private async Task<bool> BeUniqueName(string name, CancellationToken token)
-    {
-        return await _context.RegistrationSchedules.AllAsync(x => x.Name != name, token);
-    }
+    //private async Task<bool> BeUniqueName(string name, CancellationToken token)
+    //{
+    //    return await _context.RegistrationSchedules.AllAsync(x => x.Name != name, token);
+    //}
 }
 
 public class UpdateRegistrationScheduleCommandHandler : IRequestHandler<UpdateRegistrationScheduleCommand>

@@ -23,11 +23,11 @@ public class EditUserCommandValidator : AbstractValidator<EditUserCommand>
     {
         _context = context;
 
-        RuleFor(x => x.UserCode)
-            .NotEmpty()
-            .MustAsync(BeUniqueUserCode)
-                .WithMessage("'{PropertyName}' must be unique.")
-                .WithErrorCode("Unique");
+        //RuleFor(x => x.UserCode)
+        //    .NotEmpty()
+        //    .MustAsync(BeUniqueUserCode)
+        //        .WithMessage("'{PropertyName}' must be unique.")
+        //        .WithErrorCode("Unique");
 
         RuleFor(x => x.DepartmentId)
             .MustAsync(ExistedDepartmentId)
@@ -35,10 +35,10 @@ public class EditUserCommandValidator : AbstractValidator<EditUserCommand>
                 .WithErrorCode("NotFound");
     }
 
-    private async Task<bool> BeUniqueUserCode(string userCode, CancellationToken token)
-    {
-        return await _context.Humans.AllAsync(x => x.UserCode != userCode, token);
-    }
+    //private async Task<bool> BeUniqueUserCode(string userCode, CancellationToken token)
+    //{
+    //    return await _context.Humans.AllAsync(x => x.UserCode != userCode, token);
+    //}
 
     private async Task<bool> ExistedDepartmentId(int departmentId, CancellationToken token)
     {
@@ -61,7 +61,10 @@ public class EditUserCommandHandler : IRequestHandler<EditUserCommand, List<stri
     {
         var human = await _context.Humans.FindAsync([request.Id], cancellationToken);
         Guard.Against.NotFound(request.Id, human);
-
+        if (_context.Humans.Any(x => x.Id != request.Id && x.UserCode == request.UserCode))
+        {
+            return ["User code must be unique"];
+        }
         human.UserCode = request.UserCode;
         human.DepartmentId = request.DepartmentId;
         human.UserName = request.UserName;
